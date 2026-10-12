@@ -67,11 +67,22 @@ Start LM Studio, enable the local server, load a coding model, then:
 # Full default suite (models × context windows)
 localbenchmark
 
-# Full default with base url
+# Full default with base URL
 localbenchmark --base-url http://localhost:1234
 
-# Subset of models / contexts
-localbenchmark --models qwen3.8-27b openai/gpt-oss-20b --contexts 50000 80000 100000 --base-url http://localhost:1234
+# Subset of models/contexts
+localbenchmark --models unsloth/qwen3-coder-30b-a3b-instruct openai/gpt-oss-20b --contexts 50000 80000 100000 --base-url http://localhost:1234
+
+```
+
+Start LM Studio, enable the local server, load a coding model, then:
+
+```bash
+# Different types of benchmarks
+
+localbenchmark --benchmark humaneval --models "openai/gpt-oss-20b"
+localbenchmark --benchmark mbpp      --models "openai/gpt-oss-20b"
+localbenchmark --benchmark swebench  --models "openai/gpt-oss-20b" --contexts 80000 150000
 
 ```
 
