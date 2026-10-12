@@ -36,17 +36,9 @@ It answers a practical question: *can this model still write correct code when t
 | **Resume-safe CSVs** | Durable results; skip finished configs; retry LLM errors |
 | **Slow-model abort** | Stop a config after a streak of low decode speed; ranking accounts for incomplete runs |
 | **Rank-sum plots** | Pass rate, decode speed, TTFT, GPU peak, context — weighted ranking (model × context and per model) |
-| **LLMlight helpers** | Lightweight local prompting utilities (optional local GGUF via llama-cpp) |
 
 ---
 
-### Requirements
-
-- Python **≥ 3.10**
-- [LM Studio](https://lmstudio.ai/) running locally with a model loaded (default `http://localhost:1234`)
-- Dependencies: `numpy`, `pandas`, `matplotlib`, `requests`, `tqdm`, `openai`, `scikit-learn`, `pymupdf`, `json_repair`, `datazets`
-
----
 
 ### Installation
 
@@ -62,16 +54,7 @@ pip install git+https://github.com/erdogant/localbenchmark
 
 ##### Install from source
 ```bash
-git clone https://github.com/erdogant/localbenchmark
-cd localbenchmark
-pip install -r requirements.txt
-pip install -e .
-```
-
-##### Check import
-```python
-import localbenchmark
-print(localbenchmark.__version__)
+pip install git+https://github.com/erdogant/localbenchmark
 ```
 
 ---
@@ -82,23 +65,28 @@ Start LM Studio, enable the local server, load a coding model, then:
 
 ```bash
 # Full default suite (models × context windows)
-python -m localbenchmark.llm_coding_benchmark
+localbenchmark
 
-# Subset of models / contexts
-python -m localbenchmark.llm_coding_benchmark \
-  --models openai/gpt-oss-20b \
-  --contexts 50000 80000 100000 \
-  --base-url http://localhost:1234
+# Full default with base URL
+localbenchmark --base-url http://localhost:1234
 
-# Stress the window: fill 50% of context with unrelated code before each task
-python -m localbenchmark.llm_coding_benchmark --fill 0.5
+# Subset of models/contexts
+localbenchmark --models unsloth/qwen3-coder-30b-a3b-instruct openai/gpt-oss-20b --contexts 50000 80000 100000 --base-url http://localhost:1234
 
-# Speed probe only (no HumanEval)
-python -m localbenchmark.llm_coding_benchmark --probe
-
-# Resume / plots only
-python -m localbenchmark.llm_coding_benchmark --plots-only
 ```
+
+Start LM Studio, enable the local server, load a coding model, then:
+
+```bash
+# Different types of benchmarks
+
+localbenchmark --benchmark humaneval --models "openai/gpt-oss-20b"
+localbenchmark --benchmark mbpp      --models "openai/gpt-oss-20b"
+localbenchmark --benchmark swebench  --models "openai/gpt-oss-20b" --contexts 80000 150000
+
+```
+
+Results are written to CSV. Configurations already present in the **summary** CSV are skipped on the next run. Configurations that abort for low tok/s stay in the summary so they are not reloaded endlessly.
 
 **Useful flags**
 
@@ -106,32 +94,21 @@ python -m localbenchmark.llm_coding_benchmark --plots-only
 |------|---------|
 | `--models` | One or more LM Studio model keys |
 | `--contexts` | Context sizes in tokens (default includes 50k, 80k, 100k, 120k, 150k, 180k) |
-| `--fill` | Fraction of the window to fill with filler code (0–0.9) |
 | `--limit` | Run only the first N HumanEval problems |
 | `--results` | Results CSV path (default `coding_benchmark_results.csv`) |
-| `--probe` | Run the speed probe instead of HumanEval |
-| `--no-plots` / `--plots-only` | Skip plots, or only regenerate plots |
-
-Results are written to CSV. Configurations already present in the **summary** CSV are skipped on the next run. Configurations that abort for low tok/s stay in the summary so they are not reloaded endlessly.
 
 ---
 
 ### Plots and ranking
 
 ```bash
-python -m localbenchmark.plot_results \
-  --results coding_benchmark_results.csv \
-  --out plots \
-  --rank-agg sum
+localbenchmarkplot --rank-agg sum      # default
+localbenchmarkplot --rank-agg mean
+localbenchmarkplot --rank-agg median
 
-# Only large windows (context_actual > 100000)
-python -m localbenchmark.plot_results --min-context 100000 --out plots
+# Only large windows (context_actual >= 100000)
+localbenchmarkplot --min-context 100000
 ```
-
-| Flag | Meaning |
-|------|---------|
-| `--rank-agg` | Combine per-metric ranks: `sum` (default), `mean`, or `median` |
-| `--min-context` | Keep rows with `context_actual` **strictly greater** than this value |
 
 **Ranking metrics** (lower combined score is better):
 
@@ -141,7 +118,7 @@ python -m localbenchmark.plot_results --min-context 100000 --out plots
 4. Peak GPU memory
 5. Context size (percentage of best)
 
-Pass rate and decode speed are **weighted ×2**. Figures include pass rate vs context, tok/s, TTFT, GPU memory, quality–speed trade-off, and rank-sum panels (model × context and per model).
+Pass rate and decode speed are **weighted**. Figures include pass rate vs context, tok/s, TTFT, GPU memory, quality–speed trade-off, and rank-sum panels (model × context and per model).
 
 ---
 
@@ -168,7 +145,6 @@ Any context sizes present in the results file are included in the rank plots (no
 ### Resources and Links
 
 - **Documentation:** [Website](https://erdogant.github.io/localbenchmark)
-- **Blog:** [Medium / docs](https://erdogant.github.io/localbenchmark/pages/html/Documentation.html#medium-blog)
 - **Issues:** [GitHub Issues](https://github.com/erdogant/localbenchmark/issues)
 - **Source:** [github.com/erdogant/localbenchmark](https://github.com/erdogant/localbenchmark)
 
