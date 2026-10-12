@@ -313,6 +313,363 @@ def execute_program(program, timeout=CODE_TIMEOUT):
 
 
 # =============================================================================
+# MBPP
+# =============================================================================
+#
+# Mostly Basic Python Problems (Austin et al., 2021). The prompt shows the task
+# and the visible asserts (the standard MBPP setup), so the model knows the
+# function name. The score uses the same asserts; challenge_test_list is not used.
+
+MBPP_DATASET = "google-research-datasets/mbpp"
+MBPP_CONFIG = "full"  # 500 problems in the test split
+
+
+def load_mbpp():
+    from datasets import load_dataset
+    df = load_dataset(MBPP_DATASET, MBPP_CONFIG, split="test").to_pandas()
+    df["task_id"] = df["task_id"].map(lambda x: f"MBPP/{x}")
+    df["prompt"] = df.apply(
+        lambda r: (
+            "You are an expert Python programmer, and here is your task: "
+            f"{r['text']}\n"
+            "Your code should pass these tests:\n\n"
+            + "\n".join(list(r["test_list"]))
+        ),
+        axis=1,
+    )
+    df["setup"] = df["test_setup_code"].fillna("")
+    df["tests"] = df["test_list"].map(lambda t: "\n".join(list(t)))
+    return df
+
+
+def build_program_mbpp(code, row):
+    """Setup code, the model's code, then the asserts, run as one script."""
+    parts = [row["setup"], code, row["tests"]]
+    return "\n\n".join(p for p in parts if p) + "\n"
+
+
+def make_program(benchmark, code, row):
+    if benchmark == "mbpp":
+        return build_program_mbpp(code, row)
+    return build_program(code, row)
+
+
+def load_benchmark(name):
+    if name == "humaneval":
+        return load_humaneval()
+    if name == "mbpp":
+        return load_mbpp()
+    if name == "swebench":
+        return load_swebench()
+    raise ValueError(f"unknown benchmark: {name}")
+
+
+# =============================================================================
+# SWE-BENCH VERIFIED
+# =============================================================================
+#
+# Two stages, because the official evaluation needs Docker:
+#   1. GENERATION (no Docker): check out each repo at its base commit, give the
+#      model the issue plus the files it points to, and save its unified diff.
+#      Each diff is checked with `git apply --check`.
+#   2. EVALUATION (needs `pip install swebench` and a running Docker daemon):
+#      the diffs go to the official harness, which applies them in a container
+#      and runs the tests. Only the harness decides "resolved".
+# Generations are saved as they finish, so an interrupted run resumes.
+
+SWE_DATASET = "princeton-nlp/SWE-bench_Verified"
+SWE_MAX_TOKENS = 8192
+SWE_CONTEXT_FRACTION = 0.5   # share of the window for repo files; the rest is for the answer
+SWE_MAX_FILES = 8
+SWE_EVAL_WORKERS = 4
+SWE_REPO_DIR = Path("swebench_repos")
+SWE_PRED_DIR = Path("swebench_predictions")
+SWE_SYSTEM_PROMPT = (
+    "You are an expert software engineer fixing a bug in an existing repository.\n"
+    "Respond with ONLY a unified diff in git format (--- a/path, +++ b/path, @@ hunks).\n"
+    "Copy context lines exactly from the files shown. Change only what the fix needs.\n"
+    "Do not explain your answer."
+)
+SWE_GEN_FIELDS = [
+    "timestamp", "experiment_id", "model", "context_actual", "instance_id", "repo",
+    "ttft", "generation_time", "decode_time", "decode_tokens_per_sec",
+    "prompt_tokens", "completion_tokens", "finish_reason",
+    "has_patch", "patch_applies", "gpu_memory_mb", "gpu_total_mb",
+    "error_type", "error", "patch",
+]
+SWE_GEN_ERRORS = {"LLM_ERROR", "REPO_ERROR"}  # retried on the next run
+PY_PATH_RE = re.compile(r"[\w./-]+\.py\b")
+IDENT_RE = re.compile(r"\b[A-Za-z_][A-Za-z0-9_]{5,}\b")
+
+
+def load_swebench():
+    from datasets import load_dataset
+    df = load_dataset(SWE_DATASET, split="test").to_pandas()
+    df["task_id"] = df["instance_id"]
+    return df
+
+
+def swe_gen_file(results_file):
+    return results_file.with_name(results_file.stem + "_swebench_generations.csv")
+
+
+def run_git(args, cwd, timeout=600):
+    return subprocess.run(["git", *args], cwd=cwd, capture_output=True,
+                          text=True, timeout=timeout)
+
+
+def ensure_repo(repo):
+    path = SWE_REPO_DIR / repo.replace("/", "__")
+    if not (path / ".git").exists():
+        path.parent.mkdir(parents=True, exist_ok=True)
+        print(f"  cloning {repo} (one time, can be large)...")
+        r = subprocess.run(["git", "clone", f"https://github.com/{repo}.git", str(path)],
+                           capture_output=True, text=True, timeout=3600)
+        if r.returncode != 0:
+            raise RuntimeError(f"clone of {repo} failed: {r.stderr[-300:]}")
+    return path
+
+
+def checkout_base(path, commit):
+    r = run_git(["checkout", "-f", "--detach", commit], path)
+    if r.returncode != 0:  # the commit may be missing from an older clone
+        run_git(["fetch", "--all", "--quiet"], path, timeout=3600)
+        r = run_git(["checkout", "-f", "--detach", commit], path)
+        if r.returncode != 0:
+            raise RuntimeError(f"checkout {commit[:10]} failed: {r.stderr[-300:]}")
+    run_git(["clean", "-fdxq"], path)
+
+
+def select_context_files(path, issue):
+    """
+    Files the issue points at: explicit .py paths first, then files that
+    contain identifiers quoted in the issue. Test files count for less.
+    """
+    score = {}
+    for p in dict.fromkeys(PY_PATH_RE.findall(issue)):
+        p = p.lstrip("./")
+        if (path / p).is_file():
+            score[p] = score.get(p, 0) + 5
+    for ident in list(dict.fromkeys(IDENT_RE.findall(issue)))[:6]:
+        r = run_git(["grep", "-l", "-w", "-I", "-e", ident, "--", "*.py"], path, timeout=120)
+        for f in r.stdout.splitlines()[:40]:
+            score[f] = score.get(f, 0) + (0.5 if "test" in f.lower() else 1.0)
+    ranked = sorted(score, key=lambda f: (-score[f], f))
+    return ranked[:SWE_MAX_FILES]
+
+
+def build_swe_prompt(path, row, context_chars):
+    issue = row["problem_statement"]
+    blocks, used = [], 0
+    for f in select_context_files(path, issue):
+        try:
+            text = (path / f).read_text(encoding="utf-8", errors="ignore")
+        except OSError:
+            continue
+        block = f"### {f}\n```python\n{text}\n```\n"
+        if used + len(block) > context_chars:
+            continue  # skip files that do not fit, try the next one
+        blocks.append(block)
+        used += len(block)
+    files = "\n".join(blocks) if blocks else "(no matching files found)\n"
+    return (
+        f"Repository: {row['repo']} at commit {row['base_commit'][:10]}\n\n"
+        f"## Issue\n{issue}\n\n"
+        f"## Relevant files (current contents)\n{files}\n"
+        "## Task\nWrite a unified diff that fixes this issue."
+    )
+
+
+def extract_diff(text):
+    text = re.sub(r"<think>.*?</think>", "", text, flags=re.DOTALL | re.IGNORECASE)
+    text = re.sub(r"<think>.*\Z", "", text, flags=re.DOTALL | re.IGNORECASE)
+    fenced = re.findall(r"```(?:diff|patch)?\s*\n(.*?)```", text, flags=re.DOTALL)
+    candidates = [f for f in fenced if "--- " in f and "+++ " in f]
+    if candidates:
+        body = max(candidates, key=len)
+    else:
+        m = re.search(r"^(diff --git |--- a/)", text, flags=re.MULTILINE)
+        if not m:
+            return ""
+        body = text[m.start():]
+    return body.strip("\n") + "\n"
+
+
+def patch_applies(path, diff):
+    if not diff.strip():
+        return False
+    with tempfile.NamedTemporaryFile("w", suffix=".diff", delete=False, encoding="utf-8") as f:
+        f.write(diff)
+        name = f.name
+    try:
+        return run_git(["apply", "--check", "--recount", name], path).returncode == 0
+    finally:
+        Path(name).unlink(missing_ok=True)
+
+
+def load_swe_done(gen_file, experiment_id):
+    if not gen_file.exists():
+        return set()
+    try:
+        df = pd.read_csv(gen_file, usecols=["experiment_id", "instance_id", "error_type"],
+                         engine="python", on_bad_lines="skip")
+    except Exception:
+        return set()
+    df = df[~df["error_type"].astype(str).isin(SWE_GEN_ERRORS)]
+    return set(zip(df["experiment_id"], df["instance_id"]))
+
+
+def run_swebench_generation(client, meta, df, gen_file, experiment_id):
+    done = load_swe_done(gen_file, experiment_id)
+    context_chars = int(CHARS_PER_TOKEN * meta["context_actual"] * SWE_CONTEXT_FRACTION)
+
+    for n, (_, row) in enumerate(df.iterrows()):
+        iid = row["instance_id"]
+        if (experiment_id, iid) in done:
+            print(f"[{n + 1}/{len(df)}] {iid} ... SKIP")
+            continue
+        print(f"[{n + 1}/{len(df)}] {iid} ... ", end="", flush=True)
+
+        base = {"timestamp": timestamp(), "experiment_id": experiment_id,
+                "model": meta["model"], "context_actual": meta["context_actual"],
+                "instance_id": iid, "repo": row["repo"]}
+        try:
+            repo_path = ensure_repo(row["repo"])
+            checkout_base(repo_path, row["base_commit"])
+            prompt = build_swe_prompt(repo_path, row,
+                                      max(2000, context_chars - len(row["problem_statement"])))
+        except Exception as e:
+            print("REPO ERROR")
+            append_row(gen_file, SWE_GEN_FIELDS,
+                       {**base, "error_type": "REPO_ERROR", "error": str(e)[:1000]})
+            continue
+
+        try:
+            llm = solve_problem(client, meta["server_model"], prompt, "",
+                                SWE_MAX_TOKENS, system=SWE_SYSTEM_PROMPT)
+        except Exception as e:
+            print("LLM ERROR")
+            append_row(gen_file, SWE_GEN_FIELDS,
+                       {**base, "error_type": "LLM_ERROR", "error": str(e)[:1000]})
+            continue
+
+        patch = extract_diff(llm["raw"])
+        applies = patch_applies(repo_path, patch)
+        gpu_used, gpu_total = get_gpu_memory()
+        print(f"{'patch' if patch else 'no patch'} "
+              f"({'applies' if applies else 'does not apply'}, "
+              f"{llm['decode_tps'] or 0:.1f} tok/s)")
+
+        append_row(gen_file, SWE_GEN_FIELDS, {
+            **base,
+            "ttft": llm["ttft"], "generation_time": llm["generation_time"],
+            "decode_time": llm["decode_time"], "decode_tokens_per_sec": llm["decode_tps"],
+            "prompt_tokens": llm["prompt_tokens"], "completion_tokens": llm["completion_tokens"],
+            "finish_reason": llm["finish_reason"], "has_patch": bool(patch),
+            "patch_applies": applies, "gpu_memory_mb": gpu_used, "gpu_total_mb": gpu_total,
+            "error_type": "" if patch else "NO_PATCH", "error": "", "patch": patch,
+        })
+
+
+def run_swe_harness(meta, experiment_id, real):
+    """Run the official harness. Returns the set of resolved instance ids, or None."""
+    try:
+        import swebench  # noqa: F401
+    except ImportError:
+        print("  swebench is not installed (pip install swebench), and Docker must be running.\n"
+              "  Patches are saved; run the same command again to evaluate them.")
+        return None
+
+    run_id = safe_name(experiment_id)[:120]
+    model_name = safe_name(meta["model"])[:120]
+    SWE_PRED_DIR.mkdir(exist_ok=True)
+    pred = SWE_PRED_DIR / f"{run_id}.jsonl"
+    with open(pred, "w", encoding="utf-8") as f:
+        for rec in real.to_dict("records"):
+            f.write(json.dumps({"instance_id": rec["instance_id"],
+                                "model_name_or_path": model_name,
+                                "model_patch": rec["patch"]}) + "\n")
+
+    cmd = [sys.executable, "-m", "swebench.harness.run_evaluation",
+           "--dataset_name", SWE_DATASET, "--predictions_path", str(pred),
+           "--max_workers", str(SWE_EVAL_WORKERS), "--run_id", run_id]
+    print(f"  running the official SWE-bench harness on {len(real)} patches...")
+    r = subprocess.run(cmd)
+    if r.returncode != 0:
+        print(f"  harness exited with code {r.returncode}; patches are kept, re-run to retry.")
+        return None
+
+    for p in Path(".").glob(f"*{run_id}*.json"):
+        try:
+            data = json.loads(p.read_text(encoding="utf-8"))
+        except Exception:
+            continue
+        if isinstance(data, dict) and "resolved_ids" in data:
+            return set(data["resolved_ids"])
+    print(f"  no harness report containing 'resolved_ids' for run {run_id} in the current folder.")
+    return None
+
+
+def run_swebench_eval(meta, experiment_id, gen_file, results_file):
+    if not gen_file.exists():
+        return
+    gens = pd.read_csv(gen_file, engine="python", on_bad_lines="skip")
+    gens = gens[gens["experiment_id"] == experiment_id].drop_duplicates("instance_id", keep="last")
+    gens = gens[~gens["error_type"].astype(str).isin(SWE_GEN_ERRORS)]
+    if gens.empty:
+        return
+
+    already = {iid for (eid, iid) in load_completed(results_file) if eid == experiment_id}
+    todo = gens[~gens["instance_id"].isin(already)]
+    if todo.empty:
+        print("Evaluation: all generated patches are already scored.")
+        return
+
+    has = todo["has_patch"].astype(str).str.lower().eq("true")
+    resolved = set()
+    if has.any():
+        resolved = run_swe_harness(meta, experiment_id, todo[has])
+        if resolved is None:
+            return  # keep the generations; evaluate on the next run
+
+    for rec in todo.to_dict("records"):
+        iid = rec["instance_id"]
+        has_patch = str(rec["has_patch"]).lower() == "true"
+        ok = has_patch and iid in resolved
+        append_result({
+            "timestamp": timestamp(), "experiment_id": experiment_id,
+            "model": meta["model"], "server_model": meta["server_model"],
+            "instance_id": meta["instance_id"],
+            "context_requested": meta["context_requested"],
+            "context_actual": meta["context_actual"], "fill_ratio": 0.0,
+            "cache_label": meta["cache_label"], "problem_id": iid, "passed": ok,
+            "error_type": "" if ok else ("TEST_FAILURE" if has_patch else "NO_PATCH"),
+            "finish_reason": rec.get("finish_reason"), "ttft": rec.get("ttft"),
+            "generation_time": rec.get("generation_time"),
+            "decode_time": rec.get("decode_time"), "execution_time": None,
+            "prompt_tokens": rec.get("prompt_tokens"),
+            "completion_tokens": rec.get("completion_tokens"),
+            "decode_tokens_per_sec": rec.get("decode_tokens_per_sec"),
+            "load_time": meta["load_time"],
+            "gpu_memory_mb": rec.get("gpu_memory_mb"), "gpu_total_mb": rec.get("gpu_total_mb"),
+            "error": "", "code": rec.get("patch") if isinstance(rec.get("patch"), str) else "",
+        }, results_file)
+    print(f"Evaluation: {len(todo)} instances scored, {sum(1 for i in todo['instance_id'] if i in resolved)} resolved.")
+
+
+def run_swebench_experiment(df, meta, args, results_file):
+    """Generate patches (resumable), then score the ones that are not scored yet."""
+    experiment_id = experiment_id_for(meta["model"], meta["context_requested"],
+                                      meta["cache_label"], args.fill)
+    print(f"\n{'=' * 80}\nEXPERIMENT {experiment_id}\n{'=' * 80}")
+    client = OpenAI(base_url=api(args.base_url, "/v1"), api_key="lm-studio",
+                    timeout=REQUEST_TIMEOUT, max_retries=0)
+    gen_file = swe_gen_file(results_file)
+    run_swebench_generation(client, meta, df, gen_file, experiment_id)
+    run_swebench_eval(meta, experiment_id, gen_file, results_file)
+
+
+# =============================================================================
 # LLM (streaming, so TTFT and decode speed are measured separately)
 # =============================================================================
 
@@ -325,7 +682,7 @@ SYSTEM_PROMPT = (
 )
 
 
-def solve_problem(client, model, prompt, filler, max_tokens):
+def solve_problem(client, model, prompt, filler, max_tokens, system=None):
     if filler:
         user = (
             "Below is unrelated reference code. Ignore it.\n"
@@ -342,7 +699,7 @@ def solve_problem(client, model, prompt, filler, max_tokens):
     stream = client.chat.completions.create(
         model=model,
         messages=[
-            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "system", "content": system or SYSTEM_PROMPT},
             {"role": "user", "content": user},
         ],
         temperature=TEMPERATURE,
@@ -379,6 +736,7 @@ def solve_problem(client, model, prompt, filler, max_tokens):
 
     return {
         "code": extract_code(text),
+        "raw": text,
         "ttft": (first - start) if first else None,
         "generation_time": end - start,
         "decode_time": decode_time,
@@ -771,7 +1129,7 @@ def run_experiment(df, meta, args, results_file, force_rerun=False):
                            "error": str(e)[:2000], "code": ""}, results_file)
             continue
 
-        execution = execute_program(build_program(llm["code"], row))
+        execution = execute_program(make_program(args.benchmark, llm["code"], row))
         gpu_used, gpu_total = get_gpu_memory()  # sampled after inference
 
         passed = execution["passed"]
@@ -895,14 +1253,17 @@ def main():
     parser.add_argument("--models", nargs="+", default=MODELS)
     parser.add_argument("--contexts", nargs="+", type=int, default=CONTEXTS)
     parser.add_argument("--base-url", default=DEFAULT_LM_STUDIO_URL)
-    parser.add_argument("--results", default="coding_benchmark_results.csv")
+    parser.add_argument("--benchmark", choices=["humaneval", "mbpp", "swebench"],
+                        default="humaneval", help="Which benchmark to run.")
+    parser.add_argument("--results", default=None,
+                        help="Results CSV (default depends on --benchmark).")
     parser.add_argument("--limit", type=int, default=None, help="Only run the first N problems.")
     parser.add_argument("--plots-only", action="store_true", help="Do not run anything; just (re)generate plots from the existing results CSV.")
     args = parser.parse_args()
 
     # Fixed defaults (no longer CLI flags)
     args.no_plots = False
-    args.max_tokens = DEFAULT_MAX_TOKENS
+    args.max_tokens = SWE_MAX_TOKENS if args.benchmark == "swebench" else DEFAULT_MAX_TOKENS
     args.fill = 0.0
     args.vary_filler = False
     args.plots_dir = "plots"
@@ -910,6 +1271,11 @@ def main():
     args.probe_tokens = list(PROBE_TOKENS)
     args.probe_reps = 2
     args.probe_file = "speed_probe.csv"
+
+    if args.results is None:
+        args.results = {"humaneval": "coding_benchmark_results.csv",
+                        "mbpp": "coding_benchmark_results_mbpp.csv",
+                        "swebench": "coding_benchmark_results_swebench.csv"}[args.benchmark]
 
     args.base_url = args.base_url.rstrip("/")
     results_file = Path(args.results)
@@ -946,8 +1312,8 @@ def main():
         print(f"\nMODE: speed probe (no HumanEval). Levels: {args.probe_tokens}, "
               f"reps: {args.probe_reps}")
     else:
-        print("\nLoading HumanEval...")
-        df = load_humaneval()
+        print(f"\nLoading {args.benchmark} dataset...")
+        df = load_benchmark(args.benchmark)
         if args.limit is not None:
             df = df.head(args.limit)
         print(f"Coding tasks in Evaluation dataset: {len(df)}")
@@ -1032,8 +1398,11 @@ def main():
                 if args.probe:
                     run_probe(meta, args, probe_file)
                 else:
-                    run_experiment(df, meta, args, results_file,
-                                   force_rerun=force_rerun)
+                    if args.benchmark == "swebench":
+                        run_swebench_experiment(df, meta, args, results_file)
+                    else:
+                        run_experiment(df, meta, args, results_file,
+                                       force_rerun=force_rerun)
                     create_summary(results_file)
 
             except Exception as e:

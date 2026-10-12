@@ -82,8 +82,63 @@ def wilson(passes, n, z=1.96):
     return (c - h) * 100, (c + h) * 100
 
 
+RAW_REQUIRED = {"experiment_id", "problem_id", "passed", "model", "cache_label",
+                "context_actual", "fill_ratio"}
+
+
+def is_raw_results(path):
+    """True for a per-problem results CSV; False for summaries and other tables."""
+    try:
+        cols = set(pd.read_csv(path, nrows=0).columns)
+    except Exception:
+        return False
+    return RAW_REQUIRED.issubset(cols)
+
+
+def find_raw_results(folder="."):
+    """Every per-problem results CSV in a folder, whatever its name."""
+    return sorted(p for p in Path(folder).glob("*.csv") if is_raw_results(p))
+
+
+def resolve_inputs(results=None, folder="."):
+    """
+    Return a list of (per_problem_csv, subfolder_name_or_None).
+
+    - No --results: every per-problem CSV in the folder, one subfolder each.
+    - --results <raw file>: that file, written straight into --out.
+    - --results <name>_summary.csv: its per-problem sibling <name>.csv.
+    """
+    if results is None:
+        return [(p, p.stem) for p in find_raw_results(folder)]
+
+    p = Path(results)
+    if not p.exists():
+        raise FileNotFoundError(f"results file not found: {p}")
+    if is_raw_results(p):
+        return [(p, None)]
+
+    if p.stem.endswith("_summary"):
+        sibling = p.with_name(p.stem[: -len("_summary")] + ".csv")
+        if sibling.exists() and is_raw_results(sibling):
+            print(f"{p.name} is an aggregated summary; plotting from {sibling.name}.")
+            return [(sibling, None)]
+        raise FileNotFoundError(
+            f"{p.name} is an aggregated summary. The plots need the per-problem file "
+            f"{sibling.name}, which is not in {p.parent.resolve()}. "
+            "localbenchmark writes both files; copy the per-problem CSV next to the summary.")
+
+    raise ValueError(
+        f"{p.name} is not a per-problem results file "
+        f"(it needs the columns: {', '.join(sorted(RAW_REQUIRED))}).")
+
+
 def load_results(path):
     df = pd.read_csv(path)
+    missing = RAW_REQUIRED - set(df.columns)
+    if missing:
+        raise ValueError(
+            f"{Path(path).name} is not a per-problem results file "
+            f"(missing columns: {', '.join(sorted(missing))})")
     df = df.dropna(subset=["experiment_id", "problem_id"])
 
     # If a problem was re-run (e.g. a retried LLM error), keep the latest row.
@@ -814,7 +869,12 @@ def make_all(results_file, out_dir, rank_agg="sum", min_context=None):
 
 def main():
     parser = argparse.ArgumentParser(description="Plot benchmark results.")
-    parser.add_argument("--results", default="coding_benchmark_results.csv")
+    parser.add_argument(
+        "--results", default=None,
+        help="One results CSV. Default: every per-problem CSV in --folder.")
+    parser.add_argument(
+        "--folder", default=".",
+        help="Folder to search for results CSVs when --results is not given (default: current folder).")
     parser.add_argument("--out", default="plots")
     parser.add_argument(
         "--rank-agg", choices=["sum", "mean", "median"], default="sum",
@@ -825,8 +885,27 @@ def main():
         help="Only include runs with context_actual strictly greater than "
              "this value (e.g. 100000 keeps 120k/150k/180k).")
     args = parser.parse_args()
-    make_all(args.results, args.out, rank_agg=args.rank_agg,
-             min_context=args.min_context)
+
+    try:
+        inputs = resolve_inputs(args.results, args.folder)
+    except (FileNotFoundError, ValueError) as e:
+        print(f"ERROR: {e}")
+        raise SystemExit(1)
+
+    if not inputs:
+        print(f"No per-problem results CSV found in {Path(args.folder).resolve()}")
+        print("Expected files like coding_benchmark_results.csv or "
+              "coding_benchmark_results_mbpp.csv (not the *_summary.csv files).")
+        raise SystemExit(1)
+
+    print(f"Results to plot: {', '.join(p.name for p, _ in inputs)}")
+    for path, sub in inputs:
+        out = Path(args.out) / sub if sub else Path(args.out)
+        print(f"\n===== {path.name} -> {out} =====")
+        try:
+            make_all(path, out, rank_agg=args.rank_agg, min_context=args.min_context)
+        except Exception as e:
+            print(f"Plotting {path.name} failed: {e}")
 
 
 if __name__ == "__main__":
