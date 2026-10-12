@@ -30,33 +30,7 @@ except Exception as e:
 # =============================================================================
 # CONFIGURATION
 # =============================================================================
-
-DEFAULT_LM_STUDIO_URL = "http://localhost:1234"
-CONTEXTS = [50_000, 80_000, 100_000, 120_000, 150_000, 180_000]
 CACHE_CONFIGS = [{"label": "default", "load_params": {}}]
-
-MODELS = [
-    "qwen3.6-35b-a3b-uncensored-hauhaucs-aggressive",
-    "unsloth/qwen3-coder-30b-a3b-instruct",
-    "qwen2.5-coder-3b-instruct",
-
-    "mistralai/codestral-22b-v0.1",
-    "openai/gpt-oss-20b",
-    "ornith-1.0-9b",
-    "meta/muse-glimmer",
-
-    "google/gemma-4-26b-a4b-qat",
-    "gemma-4-12b-coder-fable5-composer2.5-v1",
-
-    "qwythos-9b-claude-mythos-5-1m",
-    "claude3.5-4b-instruct",
-    
-    "liquid/lfm2-24b-a2b",
-    "glm-4.7-flash-reap-23b-a3b",
-    "glm-4.7-flash-claude-opus-4.5-high-reasoning-distill",
-
-]
-
 # Reasoning models burn tokens on thinking; 2048 truncates them.
 DEFAULT_MAX_TOKENS = 4096
 TEMPERATURE = 0.0
@@ -913,26 +887,29 @@ def create_summary(results_file):
 # =============================================================================
 
 def main():
+    DEFAULT_LM_STUDIO_URL = "http://localhost:1234"
+    CONTEXTS = [50_000, 80_000, 100_000, 120_000, 150_000, 180_000]
+    MODELS = []
+
     parser = argparse.ArgumentParser(description="Benchmark local coding LLMs through LM Studio.")
     parser.add_argument("--models", nargs="+", default=MODELS)
     parser.add_argument("--contexts", nargs="+", type=int, default=CONTEXTS)
     parser.add_argument("--base-url", default=DEFAULT_LM_STUDIO_URL)
     parser.add_argument("--results", default="coding_benchmark_results.csv")
     parser.add_argument("--limit", type=int, default=None, help="Only run the first N problems.")
-    parser.add_argument("--max-tokens", type=int, default=DEFAULT_MAX_TOKENS)
-    parser.add_argument("--fill", type=float, default=0.0, help="Fraction (0-0.9) of the context window to fill with unrelated code before each problem. 0 = plain HumanEval (does NOT exercise the context window).")
-    parser.add_argument("--vary-filler", action="store_true", help="Use different filler per problem so LM Studio's prompt/prefix cache cannot hide prefill cost. Much slower at high --fill.")
-    parser.add_argument("--plots-dir", default="plots", help="Folder for plots (default: plots).")
-    parser.add_argument("--no-plots", action="store_true", help="Skip plot generation at the end.")
     parser.add_argument("--plots-only", action="store_true", help="Do not run anything; just (re)generate plots from the existing results CSV.")
-    parser.add_argument("--probe", action="store_true", help="Run the speed probe instead of HumanEval: measure decode and prefill speed at controlled numbers of tokens in the cache, for every model/context. Needed to explain WHY tok/s drops (window size vs tokens used vs VRAM).")
-    parser.add_argument("--probe-tokens", nargs="+", type=int, default=PROBE_TOKENS, help="Tokens-in-cache levels for --probe.")
-    parser.add_argument("--probe-reps", type=int, default=2)
-    parser.add_argument("--probe-file", default="speed_probe.csv")
     args = parser.parse_args()
 
-    if not 0 <= args.fill <= 0.9:
-        parser.error("--fill must be between 0 and 0.9")
+    # Fixed defaults (no longer CLI flags)
+    args.no_plots = False
+    args.max_tokens = DEFAULT_MAX_TOKENS
+    args.fill = 0.0
+    args.vary_filler = False
+    args.plots_dir = "plots"
+    args.probe = False
+    args.probe_tokens = list(PROBE_TOKENS)
+    args.probe_reps = 2
+    args.probe_file = "speed_probe.csv"
 
     args.base_url = args.base_url.rstrip("/")
     results_file = Path(args.results)
@@ -940,16 +917,24 @@ def main():
     diag_file = results_file.with_name(results_file.stem + "_diagnostics.jsonl")
     contexts = sorted(set(args.contexts))
 
-    print("\n" + "=" * 80 + "\nLLM CODING BENCHMARK\n" + "=" * 80)
+    print("\n" + "=" * 80 + "\nLOCAL LLM CODING BENCHMARK\n" + "=" * 80)
     print("Models:", *args.models, sep="\n  - ")
     print("Contexts:", [f"{c:,}" for c in contexts])
-    print("Cache configs:", [c["label"] for c in CACHE_CONFIGS])
-    print(f"Fill ratio: {args.fill}  (vary filler: {args.vary_filler})")
-    if args.fill == 0:
-        print("WARNING: fill=0 -> prompts are tiny; context size will not affect accuracy. Use --fill 0.5 or similar to test context.")
+    # print("Cache configs:", [c["label"] for c in CACHE_CONFIGS])
+    # print(f"Fill ratio: {args.fill}  (vary filler: {args.vary_filler})")
+    # if args.fill == 0:
+    #     print("NOTE: fill=0 -> prompts are tiny; context size will not affect accuracy.")
 
     if args.plots_only:
         run_plots(results_file, args.plots_dir, probe_file, diag_file)
+        return
+
+    # Per-model context discovery (a bad model no longer aborts the run).
+    if args.models is None or len(args.models) == 0:
+        print("\n" + "=" * 80 )
+        print('STOP: No models are specified.')
+        print('localbenchmark --models "qwen3.8-27b" "openai/gpt-oss-20b" --contexts "50000" "80000"')
+        print("=" * 80 )
         return
 
     check_lm_studio(args.base_url)
@@ -967,7 +952,7 @@ def main():
             df = df.head(args.limit)
         print(f"Coding tasks in Evaluation dataset: {len(df)}")
 
-    # Per-model context discovery (a bad model no longer aborts the run).
+
     model_contexts = {}
     for model in args.models:
         try:

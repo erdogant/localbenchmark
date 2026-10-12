@@ -35,9 +35,10 @@ dependencies = [
 ]
 
 [project.scripts]
-llmeval = "localbenchmark.localbenchmark:main"
 localbenchmark = "localbenchmark.localbenchmark:main"
-llmbenchmark = "localbenchmark.localbenchmark:main"
+localbenchmarkplot = "localbenchmark.llm_plots:main"
+# localbenchmarkcli = "localbenchmark.clizard_main:main"
+
 
 [tool.setuptools]
 include-package-data = true
