@@ -99,11 +99,6 @@ localbenchmarkplot --rank-agg median
 localbenchmarkplot --min-context 100000
 ```
 
-| Flag | Meaning |
-|------|---------|
-| `--rank-agg` | Combine per-metric ranks: `sum` (default), `mean`, or `median` |
-| `--min-context` | Keep rows with `context_actual` **strictly greater** than this value |
-
 **Ranking metrics** (lower combined score is better):
 
 1. Pass rate (early aborts count unfinished work against the model)
@@ -112,7 +107,7 @@ localbenchmarkplot --min-context 100000
 4. Peak GPU memory
 5. Context size (percentage of best)
 
-Pass rate and decode speed are **weighted ×2**. Figures include pass rate vs context, tok/s, TTFT, GPU memory, quality–speed trade-off, and rank-sum panels (model × context and per model).
+Pass rate and decode speed are **weighted**. Figures include pass rate vs context, tok/s, TTFT, GPU memory, quality–speed trade-off, and rank-sum panels (model × context and per model).
 
 ---
 
