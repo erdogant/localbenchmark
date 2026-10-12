@@ -1,0 +1,259 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Installation &mdash; localbenchmark localbenchmark documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=e0179649" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=f434bc13"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Results, resume, and summary" href="Save%20and%20Load.html" />
+    <link rel="prev" title="Background" href="Abstract.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            localbenchmark
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Background</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Abstract.html">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Abstract.html#schematic-overview">Schematic overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Installation</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#create-conda-environment">Create Conda Environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#create-venv-environment">Create venv Environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pypi">Pypi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#github-source">Github Source</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#from-source-development">From source (development)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#lm-studio">LM Studio</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#dependencies">Dependencies</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#uninstalling">Uninstalling</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#remove-environment">Remove environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#remove-installation">Remove installation</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Results</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Save%20and%20Load.html">Results, resume, and summary</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Examples.html">Quickstart — coding benchmark</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Examples.html#speed-probe">Speed probe</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Examples.html#plots-and-ranking">Plots and ranking</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Examples.html#useful-cli-flags">Useful CLI flags</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Examples.html#what-is-ranked">What is ranked</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Documentation.html">Sponsor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Documentation.html#medium-blog">Medium Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Documentation.html#github">Github</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Documentation.html#colab-notebook">Colab Notebook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Documentation.html#citing">Citing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Coding%20quality.html">Coding quality</a></li>
+<li class="toctree-l1"><a class="reference internal" href="localbenchmark.localbenchmark.html">API References</a></li>
+</ul>
+
+    <a href= "genindex.html">Index</a>
+  
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">localbenchmark</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Installation</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/Installation.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h1>
+<p>Python <strong>3.10+</strong> is required. Recommended is to install <code class="docutils literal notranslate"><span class="pre">localbenchmark</span></code> in an isolated
+environment using conda or venv.</p>
+<section id="create-conda-environment">
+<h2>Create Conda Environment<a class="headerlink" href="#create-conda-environment" title="Link to this heading"></a></h2>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">conda create -n env_localbenchmark python=3.12</span>
+<span class="go">conda activate env_localbenchmark</span>
+<span class="go">pip install localbenchmark</span>
+</pre></div>
+</div>
+</section>
+<section id="create-venv-environment">
+<h2>Create venv Environment<a class="headerlink" href="#create-venv-environment" title="Link to this heading"></a></h2>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>Create<span class="w"> </span>a<span class="w"> </span>new<span class="w"> </span>project<span class="w"> </span>directory
+<span class="go">mkdir my_localbenchmark_project</span>
+<span class="go">cd my_localbenchmark_project</span>
+
+<span class="gp"># </span>Create<span class="w"> </span>virtual<span class="w"> </span>environment
+<span class="go">python -m venv venv</span>
+
+<span class="gp"># </span>Activate<span class="w"> </span>it
+<span class="gp"># </span>On<span class="w"> </span>macOS/Linux:
+<span class="go">source venv/bin/activate</span>
+
+<span class="gp"># </span>On<span class="w"> </span>Windows:
+<span class="go">venv\Scripts\activate</span>
+
+<span class="gp"># </span>Install<span class="w"> </span>localbenchmark
+<span class="go">pip install localbenchmark</span>
+</pre></div>
+</div>
+</section>
+<section id="pypi">
+<h2>Pypi<a class="headerlink" href="#pypi" title="Link to this heading"></a></h2>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>Install<span class="w"> </span>from<span class="w"> </span>PyPI:
+<span class="go">pip install localbenchmark</span>
+
+<span class="gp"># </span>Force<span class="w"> </span>update<span class="w"> </span>to<span class="w"> </span>latest<span class="w"> </span>version
+<span class="go">pip install -U localbenchmark</span>
+</pre></div>
+</div>
+</section>
+<section id="github-source">
+<h2>Github Source<a class="headerlink" href="#github-source" title="Link to this heading"></a></h2>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>Install<span class="w"> </span>directly<span class="w"> </span>from<span class="w"> </span>GitHub
+<span class="go">pip install git+https://github.com/erdogant/localbenchmark</span>
+</pre></div>
+</div>
+</section>
+<section id="from-source-development">
+<h2>From source (development)<a class="headerlink" href="#from-source-development" title="Link to this heading"></a></h2>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">git clone https://github.com/erdogant/localbenchmark</span>
+<span class="go">cd localbenchmark</span>
+<span class="go">pip install -r requirements.txt</span>
+<span class="go">pip install -e .</span>
+</pre></div>
+</div>
+</section>
+<section id="lm-studio">
+<h2>LM Studio<a class="headerlink" href="#lm-studio" title="Link to this heading"></a></h2>
+<p>The coding benchmark and speed probe expect a running
+<a class="reference external" href="https://lmstudio.ai/">LM Studio</a> server (default <code class="docutils literal notranslate"><span class="pre">http://localhost:1234</span></code>)
+with models available on the machine.</p>
+<ol class="arabic simple">
+<li><p>Install LM Studio</p></li>
+<li><p>Download one or more coding models</p></li>
+<li><p>Enable the local server (Developer mode)</p></li>
+<li><p>Note the model key (as shown in LM Studio) for <code class="docutils literal notranslate"><span class="pre">--models</span></code></p></li>
+</ol>
+</section>
+<section id="dependencies">
+<h2>Dependencies<a class="headerlink" href="#dependencies" title="Link to this heading"></a></h2>
+<p>Core packages: <code class="docutils literal notranslate"><span class="pre">numpy</span></code>, <code class="docutils literal notranslate"><span class="pre">pandas</span></code>, <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code>, <code class="docutils literal notranslate"><span class="pre">requests</span></code>, <code class="docutils literal notranslate"><span class="pre">tqdm</span></code>,
+<code class="docutils literal notranslate"><span class="pre">openai</span></code>, <code class="docutils literal notranslate"><span class="pre">scikit-learn</span></code>, <code class="docutils literal notranslate"><span class="pre">pymupdf</span></code>, <code class="docutils literal notranslate"><span class="pre">json_repair</span></code>, <code class="docutils literal notranslate"><span class="pre">datazets</span></code>.</p>
+<p>Optional: <code class="docutils literal notranslate"><span class="pre">llama-cpp-python</span></code> if you load local GGUF files through LLMlight
+helpers instead of LM Studio.</p>
+</section>
+</section>
+<section id="uninstalling">
+<h1>Uninstalling<a class="headerlink" href="#uninstalling" title="Link to this heading"></a></h1>
+<section id="remove-environment">
+<h2>Remove environment<a class="headerlink" href="#remove-environment" title="Link to this heading"></a></h2>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>List<span class="w"> </span>all<span class="w"> </span>the<span class="w"> </span>active<span class="w"> </span>environments.<span class="w"> </span>env_localbenchmark<span class="w"> </span>should<span class="w"> </span>be<span class="w"> </span>listed.
+<span class="go">conda env list</span>
+
+<span class="gp"># </span>Remove<span class="w"> </span>the<span class="w"> </span>environment
+<span class="go">conda env remove --name env_localbenchmark</span>
+
+<span class="gp"># </span>List<span class="w"> </span>all<span class="w"> </span>the<span class="w"> </span>active<span class="w"> </span>environments.<span class="w"> </span>env_localbenchmark<span class="w"> </span>should<span class="w"> </span>be<span class="w"> </span>absent.
+<span class="go">conda env list</span>
+</pre></div>
+</div>
+</section>
+<section id="remove-installation">
+<h2>Remove installation<a class="headerlink" href="#remove-installation" title="Link to this heading"></a></h2>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">pip uninstall localbenchmark</span>
+</pre></div>
+</div>
+<hr>
+<center>
+        <script async src="https://media.ethicalads.io/media/client/ethicalads.min.js"></script>
+        <!-- Show an image ad -->
+        <!-- <div data-ea-publisher="erdogantgithubio" data-ea-type="image"></div> -->
+        <div data-ea-publisher="erdogantgithubio" data-ea-type="image" data-ea-style="stickybox"></div>
+</center>
+<hr></section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Abstract.html" class="btn btn-neutral float-left" title="Background" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Save%20and%20Load.html" class="btn btn-neutral float-right" title="Results, resume, and summary" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022-2026, Erdogan Taskesen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

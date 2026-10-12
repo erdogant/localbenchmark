@@ -1,0 +1,215 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quickstart — coding benchmark &mdash; localbenchmark localbenchmark documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=e0179649" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=f434bc13"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Sponsor" href="Documentation.html" />
+    <link rel="prev" title="Results, resume, and summary" href="Save%20and%20Load.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            localbenchmark
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Background</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Abstract.html">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Abstract.html#schematic-overview">Schematic overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Installation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Installation.html#uninstalling">Uninstalling</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Results</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Save%20and%20Load.html">Results, resume, and summary</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Quickstart — coding benchmark</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#speed-probe">Speed probe</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#plots-and-ranking">Plots and ranking</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#useful-cli-flags">Useful CLI flags</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#what-is-ranked">What is ranked</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Documentation.html">Sponsor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Documentation.html#medium-blog">Medium Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Documentation.html#github">Github</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Documentation.html#colab-notebook">Colab Notebook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Documentation.html#citing">Citing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Coding%20quality.html">Coding quality</a></li>
+<li class="toctree-l1"><a class="reference internal" href="localbenchmark.localbenchmark.html">API References</a></li>
+</ul>
+
+    <a href= "genindex.html">Index</a>
+  
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">localbenchmark</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Quickstart — coding benchmark</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/Examples.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="quickstart-coding-benchmark">
+<h1>Quickstart — coding benchmark<a class="headerlink" href="#quickstart-coding-benchmark" title="Link to this heading"></a></h1>
+<p>Start LM Studio, enable the local server, load a coding model, then run:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>Default<span class="w"> </span>model<span class="w"> </span>list<span class="w"> </span>×<span class="w"> </span>default<span class="w"> </span>context<span class="w"> </span>grid
+<span class="go">python -m localbenchmark.llm_coding_benchmark</span>
+
+<span class="gp"># </span>One<span class="w"> </span>model,<span class="w"> </span>selected<span class="w"> </span>windows
+<span class="go">python -m localbenchmark.llm_coding_benchmark \</span>
+<span class="go">  --models openai/gpt-oss-20b \</span>
+<span class="go">  --contexts 50000 80000 100000 \</span>
+<span class="go">  --base-url http://localhost:1234</span>
+
+<span class="gp"># </span>Fill<span class="w"> </span>half<span class="w"> </span>the<span class="w"> </span>context<span class="w"> </span>with<span class="w"> </span>unrelated<span class="w"> </span>code<span class="w"> </span>before<span class="w"> </span>each<span class="w"> </span>problem
+<span class="go">python -m localbenchmark.llm_coding_benchmark --fill 0.5</span>
+
+<span class="gp"># </span>Only<span class="w"> </span>the<span class="w"> </span>first<span class="w"> </span><span class="m">20</span><span class="w"> </span>HumanEval<span class="w"> </span>problems<span class="w"> </span><span class="o">(</span>smoke<span class="w"> </span><span class="nb">test</span><span class="o">)</span>
+<span class="go">python -m localbenchmark.llm_coding_benchmark --limit 20</span>
+</pre></div>
+</div>
+</section>
+<section id="speed-probe">
+<h1>Speed probe<a class="headerlink" href="#speed-probe" title="Link to this heading"></a></h1>
+<p>Measure prefill / decode speed at controlled tokens-in-cache levels (no HumanEval):</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">python -m localbenchmark.llm_coding_benchmark --probe</span>
+</pre></div>
+</div>
+</section>
+<section id="plots-and-ranking">
+<h1>Plots and ranking<a class="headerlink" href="#plots-and-ranking" title="Link to this heading"></a></h1>
+<p>After results exist in CSV:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">python -m localbenchmark.plot_results \</span>
+<span class="go">  --results coding_benchmark_results.csv \</span>
+<span class="go">  --out plots \</span>
+<span class="go">  --rank-agg sum</span>
+
+<span class="gp"># </span>Focus<span class="w"> </span>on<span class="w"> </span>large<span class="w"> </span>windows<span class="w"> </span>only<span class="w"> </span><span class="o">(</span>context_actual<span class="w"> </span>&gt;<span class="w"> </span><span class="m">100000</span><span class="o">)</span>
+<span class="go">python -m localbenchmark.plot_results --min-context 100000 --out plots</span>
+</pre></div>
+</div>
+</section>
+<section id="useful-cli-flags">
+<h1>Useful CLI flags<a class="headerlink" href="#useful-cli-flags" title="Link to this heading"></a></h1>
+<p><strong>Benchmark</strong> (<code class="docutils literal notranslate"><span class="pre">llm_coding_benchmark</span></code>):</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">--models</span></code> — LM Studio model keys</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--contexts</span></code> — token window sizes (default includes 50k, 80k, 100k, 120k, 150k, 180k)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--fill</span></code> — fraction of the window to fill with filler (0–0.9)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--limit</span></code> — first N HumanEval problems</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--results</span></code> — results CSV path</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--probe</span></code> — speed probe instead of HumanEval</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--no-plots</span></code> / <code class="docutils literal notranslate"><span class="pre">--plots-only</span></code></p></li>
+</ul>
+<p><strong>Plots</strong> (<code class="docutils literal notranslate"><span class="pre">plot_results</span></code>):</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">--rank-agg</span></code> — <code class="docutils literal notranslate"><span class="pre">sum</span></code> (default), <code class="docutils literal notranslate"><span class="pre">mean</span></code>, or <code class="docutils literal notranslate"><span class="pre">median</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--min-context</span></code> — keep rows with <code class="docutils literal notranslate"><span class="pre">context_actual</span></code> strictly greater than this value</p></li>
+</ul>
+</section>
+<section id="what-is-ranked">
+<h1>What is ranked<a class="headerlink" href="#what-is-ranked" title="Link to this heading"></a></h1>
+<p>Each <strong>model × context</strong> (and a per-model roll-up) is scored on:</p>
+<ol class="arabic simple">
+<li><p>Pass rate (early aborts count unfinished work against the model)</p></li>
+<li><p>Decode speed (percentage of best)</p></li>
+<li><p>Time to first token</p></li>
+<li><p>Peak GPU memory</p></li>
+<li><p>Context size (percentage of best)</p></li>
+</ol>
+<p>Pass rate and decode speed are weighted <strong>×2</strong>. Lower combined score is better.</p>
+<hr>
+<center>
+        <script async src="https://media.ethicalads.io/media/client/ethicalads.min.js"></script>
+        <!-- Show an image ad -->
+        <!-- <div data-ea-publisher="erdogantgithubio" data-ea-type="image"></div> -->
+        <div data-ea-publisher="erdogantgithubio" data-ea-type="image" data-ea-style="stickybox"></div>
+</center>
+<hr></section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Save%20and%20Load.html" class="btn btn-neutral float-left" title="Results, resume, and summary" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Documentation.html" class="btn btn-neutral float-right" title="Sponsor" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022-2026, Erdogan Taskesen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,54 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "localbenchmark"
+dynamic = ["version"]
+authors = [{ name = "Erdogan Taskesen", email = "erdogant@gmail.com" },]
+description = "localbenchmark: local LLM evaluation — coding benchmarks, long-context stress tests, and ranking plots via LM Studio."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+keywords = ["Python", "localbenchmark", "LLM", "benchmark", "HumanEval", "LM Studio", "Machine Learning", "AI"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Intended Audience :: Education",
+    "Intended Audience :: Science/Research",
+    "Operating System :: Unix",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: MacOS",
+    "Operating System :: OS Independent",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    "numpy >= 2.0.0",
+    "pandas",
+    "matplotlib",
+    "requests",
+    "tqdm",
+    "openai",
+    "scikit-learn",
+    "pymupdf",
+    "json_repair",
+    "datasets",
+]
+
+[project.scripts]
+llmeval = "localbenchmark.localbenchmark:main"
+localbenchmark = "localbenchmark.localbenchmark:main"
+llmbenchmark = "localbenchmark.localbenchmark:main"
+
+[tool.setuptools]
+include-package-data = true
+
+# Add the entire directory with subdirs into the package
+[tool.setuptools.packages.find]
+include = ["localbenchmark*"]
+
+[tool.setuptools.dynamic]
+version = { attr = "localbenchmark.__version__" }
+
+[project.urls]
+Homepage = "https://erdogant.github.io/localbenchmark"
+Download = "https://github.com/erdogant/localbenchmark/archive/{version}.tar.gz"

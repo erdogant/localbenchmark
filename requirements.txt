@@ -1,0 +1,10 @@
+numpy >= 2.0.0
+pandas
+matplotlib
+requests
+tqdm
+openai
+scikit-learn
+pymupdf
+json_repair
+datasets
