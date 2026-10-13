@@ -1,0 +1,40 @@
+{"id": "nw-01", "domain": "hr", "type": "short", "prompt": "How many days of annual leave do full-time employees get per calendar year?", "accept": ["25"], "context": ["hr_leave_policy.md"]}
+{"id": "nw-02", "domain": "hr", "type": "numeric", "prompt": "How many weeks of paid parental leave does a primary caregiver receive?", "gold": 16, "context": ["hr_leave_policy.md"]}
+{"id": "nw-03", "domain": "hr", "type": "numeric", "prompt": "After how many consecutive sick days is a doctor's note required?", "gold": 3, "context": ["hr_leave_policy.md"]}
+{"id": "nw-04", "domain": "hr", "type": "numeric", "prompt": "How many working days does a line manager have to answer a leave request?", "gold": 5, "context": ["hr_leave_policy.md"]}
+{"id": "nw-05", "domain": "hr", "type": "numeric", "prompt": "How long is the probation period, in months?", "gold": 3, "context": ["onboarding.md"]}
+{"id": "nw-06", "domain": "expenses", "type": "numeric", "prompt": "What is the daily meal allowance in EUR for domestic business trips?", "gold": 45, "context": ["expense_policy.md"]}
+{"id": "nw-07", "domain": "expenses", "type": "numeric", "prompt": "Above how many EUR is an original receipt required?", "gold": 25, "context": ["expense_policy.md"]}
+{"id": "nw-08", "domain": "expenses", "type": "numeric", "prompt": "How many days after the end of a trip must an expense report be submitted?", "gold": 14, "context": ["expense_policy.md"]}
+{"id": "nw-09", "domain": "expenses", "type": "mc", "prompt": "Which flight class is standard for flights shorter than 6 hours?", "options": {"A": "Business", "B": "Economy", "C": "First class", "D": "Premium economy"}, "answer": "B", "context": ["expense_policy.md"]}
+{"id": "nw-10", "domain": "travel", "type": "numeric", "prompt": "Above what total trip cost in EUR does a trip need departmental approval before booking?", "gold": 2000, "context": ["travel_policy.md"]}
+{"id": "nw-11", "domain": "security", "type": "keywords", "prompt": "What minimum password length does the security policy require, and when are passwords changed?", "groups": [{"concept": "length", "any": ["14", "fourteen"]}, {"concept": "rotation", "any": ["compromised"]}], "min_score": 1.0, "context": ["security_policy.md"]}
+{"id": "nw-12", "domain": "security", "type": "short", "prompt": "Within how many hours must a security incident be reported?", "accept": ["1 hour", "one hour"], "context": ["security_policy.md"]}
+{"id": "nw-13", "domain": "security", "type": "mc", "prompt": "Which authentication method is mandatory for every staff account?", "options": {"A": "Multi-factor authentication", "B": "Fingerprint only", "C": "Hardware token for executives only", "D": "Shared team password"}, "answer": "A", "context": ["security_policy.md"]}
+{"id": "nw-14", "domain": "data", "type": "numeric", "prompt": "For how many years are customer support tickets kept after they are closed?", "gold": 3, "context": ["data_retention.md"]}
+{"id": "nw-15", "domain": "data", "type": "numeric", "prompt": "For how many years are invoices and billing records kept?", "gold": 7, "context": ["data_retention.md"]}
+{"id": "nw-16", "domain": "data", "type": "numeric", "prompt": "How many days are backups retained before they are deleted automatically?", "gold": 35, "context": ["data_retention.md"]}
+{"id": "nw-17", "domain": "products", "type": "numeric", "prompt": "What is the monthly price in EUR of the Starter plan?", "gold": 49, "context": ["product_pricing.md"]}
+{"id": "nw-18", "domain": "products", "type": "numeric", "prompt": "How many users are included in the Team plan?", "gold": 25, "context": ["product_pricing.md"]}
+{"id": "nw-19", "domain": "products", "type": "numeric", "prompt": "How many days long is the free trial?", "gold": 14, "context": ["product_pricing.md"]}
+{"id": "nw-20", "domain": "products", "type": "numeric", "prompt": "What percentage discount is given for paying a full year in advance?", "gold": 10, "context": ["product_pricing.md"]}
+{"id": "nw-21", "domain": "support", "type": "keywords", "prompt": "How quickly must a P1 incident receive a first response, and what is the resolution target?", "groups": [{"concept": "response", "any": ["1 hour", "one hour"]}, {"concept": "resolution", "any": ["8 hours", "eight hours"]}], "min_score": 1.0, "context": ["support_sla.md"]}
+{"id": "nw-22", "domain": "support", "type": "short", "prompt": "Which customer plan receives 24/7 coverage for P1 incidents?", "accept": ["Enterprise"], "context": ["support_sla.md"]}
+{"id": "nw-23", "domain": "company", "type": "mc", "prompt": "Who is the CFO of Northwind Analytics?", "options": {"A": "Lena Vos", "B": "Ahmed Rahimi", "C": "Sophie Lindgren", "D": "Jan Pieters"}, "answer": "C", "context": ["leadership.md"]}
+{"id": "nw-24", "domain": "company", "type": "keywords", "prompt": "Who founded Northwind Analytics in 2014?", "groups": [{"concept": "founder 1", "any": ["Lena Vos"]}, {"concept": "founder 2", "any": ["Marco de Jong"]}], "min_score": 1.0, "context": ["company_overview.md"]}
+{"id": "nw-25", "domain": "company", "type": "numeric", "prompt": "In which year was Northwind Analytics founded?", "gold": 2014, "context": ["company_overview.md"]}
+{"id": "nw-26", "domain": "company", "type": "numeric", "prompt": "How much Series B funding did Northwind close in 2019, in EUR?", "gold": 22000000, "rel_tol": 0.01, "context": ["company_history.md"]}
+{"id": "nw-27", "domain": "company", "type": "short", "prompt": "In which city is the company headquarters?", "accept": ["Utrecht"], "context": ["company_overview.md"]}
+{"id": "nw-28", "domain": "company", "type": "keywords", "prompt": "Name the two offices outside the headquarters.", "groups": [{"concept": "office 1", "any": ["Lisbon"]}, {"concept": "office 2", "any": ["Austin"]}], "min_score": 1.0, "context": ["company_overview.md"]}
+{"id": "nw-29", "domain": "engineering", "type": "mc", "prompt": "How often are Pulse releases shipped?", "options": {"A": "Daily", "B": "Weekly", "C": "Every two weeks", "D": "Monthly"}, "answer": "C", "context": ["release_process.md"]}
+{"id": "nw-30", "domain": "engineering", "type": "short", "prompt": "How many approvals does a code change need before it can be merged?", "accept": ["2", "two"], "context": ["release_process.md"]}
+{"id": "nw-31", "domain": "unanswerable", "type": "unanswerable", "prompt": "What is the company's stock ticker symbol?", "context": ["company_history.md", "leadership.md"]}
+{"id": "nw-32", "domain": "unanswerable", "type": "unanswerable", "prompt": "How many customers does Northwind have in Japan?", "context": ["product_pricing.md", "company_history.md"]}
+{"id": "nw-33", "domain": "unanswerable", "type": "unanswerable", "prompt": "What is the parental leave policy for contractors?", "context": ["hr_leave_policy.md"]}
+{"id": "nw-34", "domain": "unanswerable", "type": "unanswerable", "prompt": "What was Northwind's net profit in 2024?", "context": ["company_history.md"]}
+{"id": "nw-35", "domain": "unanswerable", "type": "unanswerable", "prompt": "Which cloud provider hosts the production database?", "context": ["security_policy.md", "release_process.md"]}
+{"id": "nw-36", "domain": "unanswerable", "type": "unanswerable", "prompt": "What is the dress code for client meetings?", "context": ["onboarding.md"]}
+{"id": "nw-37", "domain": "unanswerable", "type": "unanswerable", "prompt": "How many paid days of leave are available to care for a sick family member?", "context": ["hr_leave_policy.md"]}
+{"id": "nw-38", "domain": "unanswerable", "type": "unanswerable", "prompt": "What is the monthly price of the Pro plan?", "context": ["product_pricing.md"]}
+{"id": "nw-39", "domain": "unanswerable", "type": "unanswerable", "prompt": "Who is the Head of Engineering?", "context": ["leadership.md"]}
+{"id": "nw-40", "domain": "unanswerable", "type": "unanswerable", "prompt": "Does Northwind have an office in Berlin?", "context": ["company_overview.md"]}

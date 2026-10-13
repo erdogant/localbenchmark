@@ -313,6 +313,215 @@ def execute_program(program, timeout=CODE_TIMEOUT):
 
 
 # =============================================================================
+# COMPANY / KNOWLEDGE SUITES: documents in the prompt, deterministic scoring
+# =============================================================================
+#
+# Full-context mode: every selected document goes into the prompt for every
+# question. Each item is scored with suite_scoring.score_item. Results go to
+# their own CSV (suite_results_<suite>.csv) with extra columns for the score,
+# domain, item type, and whether the item's cited documents were included.
+
+# Suite mode needs suite_scoring.py and docs.py in the same package folder as this
+# file. If they are missing, the other benchmarks still work; suite mode stops with a message.
+try:
+    from . import suite_scoring as SS
+    from . import docs as DOCS
+except ImportError:
+    try:
+        import suite_scoring as SS   # running this file directly from its folder
+        import docs as DOCS
+    except ImportError:
+        SS = DOCS = None
+
+SUITE_SYSTEM_PROMPT = (
+    "You answer questions about one company using only the documents provided. "
+    "If the documents do not contain the answer, say that the documents do not "
+    "contain this information. Do not guess. Answer briefly.")
+SUITE_QUESTION_TOKENS = 300   # estimate for the question text and template
+SUITE_EXTRA_FIELDS = ["score", "domain", "item_type", "docs_included", "score_detail"]
+SUITE_FIELDS = FIELDS + SUITE_EXTRA_FIELDS
+
+
+def item_question(item):
+    text = str(item["prompt"])
+    if item.get("type") == "mc":
+        options = "\n".join(f"{k}) {v}" for k, v in sorted(item["options"].items()))
+        text += "\n\nOptions:\n" + options + "\n\nAnswer with the option letter and its text."
+    return text
+
+
+def build_suite_prompt(docs_context, item):
+    return (f"## Company documents\n\n{docs_context}\n\n"
+            f"## Question\n{item_question(item)}")
+
+
+def row_to_item(row):
+    """A DataFrame row back to a suite item, without the NaN that pandas adds for missing keys."""
+    return {k: v for k, v in row.to_dict().items()
+            if not (isinstance(v, float) and math.isnan(v))}
+
+
+def prepare_suite(args):
+    """Load the suite and the document folder. Returns (suite, df, docs, docs_context)."""
+    suite = SS.load_suite(args.suite)
+    docs = DOCS.load_docs(args.docs, limit=args.docs_limit, ids=args.docs_ids)
+    missing_files = SS.check_context(suite, args.docs)
+    if missing_files:
+        raise ValueError(f"suite cites documents that are not in {args.docs}: "
+                         + ", ".join(f"{i}:{c}" for i, c in missing_files[:5]))
+    selected = {d.id for d in docs}
+    rows = []
+    for it in suite.items:
+        included = all(c in selected for c in it.get("context", []))
+        rows.append({**it, "task_id": it["id"], "docs_included": included})
+    df = pd.DataFrame(rows)
+    return suite, df, docs, DOCS.build_context(docs)
+
+
+def run_suite_experiment(df, meta, args, results_file, docs_context, force_rerun=False):
+    experiment_id = experiment_id_for(
+        meta["model"], meta["context_requested"], meta["cache_label"], args.fill)
+    print(f"\n{'=' * 80}\nEXPERIMENT {experiment_id}\n{'=' * 80}")
+
+    client = OpenAI(base_url=api(args.base_url, "/v1"), api_key="lm-studio",
+                    timeout=REQUEST_TIMEOUT, max_retries=0)
+    completed = set() if force_rerun else load_completed(results_file)
+    slow_streak = 0
+
+    for n, (_, row) in enumerate(df.iterrows()):
+        pid = row["task_id"]
+        if (experiment_id, pid) in completed:
+            print(f"[{n + 1}/{len(df)}] {pid} ... SKIP")
+            continue
+        print(f"[{n + 1}/{len(df)}] {pid} ... ", end="", flush=True)
+
+        item = row_to_item(row)
+        base = {
+            "timestamp": timestamp(),
+            "experiment_id": experiment_id,
+            "model": meta["model"],
+            "server_model": meta["server_model"],
+            "instance_id": meta["instance_id"],
+            "context_requested": meta["context_requested"],
+            "context_actual": meta["context_actual"],
+            "fill_ratio": 0.0,
+            "cache_label": meta["cache_label"],
+            "problem_id": pid,
+            "load_time": meta["load_time"],
+            "domain": item.get("domain"),
+            "item_type": item.get("type"),
+            "docs_included": bool(item.get("docs_included")),
+        }
+
+        try:
+            llm = solve_problem(client, meta["server_model"],
+                                build_suite_prompt(docs_context, item), "",
+                                args.max_tokens, system=SUITE_SYSTEM_PROMPT)
+        except Exception as e:
+            print("LLM ERROR")
+            gpu_used, gpu_total = get_gpu_memory()
+            append_row(results_file, SUITE_FIELDS, {
+                **base, "passed": False, "error_type": "LLM_ERROR", "score": None,
+                "gpu_memory_mb": gpu_used, "gpu_total_mb": gpu_total,
+                "error": str(e)[:2000], "code": ""})
+            continue
+
+        result = SS.score_item(item, llm["raw"])
+        gpu_used, gpu_total = get_gpu_memory()
+        passed = bool(result.passed)
+
+        if passed:
+            error_type = ""
+        elif not base["docs_included"]:
+            error_type = "MISSING_DOC"
+        elif llm["finish_reason"] == "length":
+            error_type = "TRUNCATED"
+        elif not llm["raw"].strip():
+            error_type = "EMPTY_RESPONSE"
+        elif item.get("type") == "unanswerable":
+            error_type = "INVENTED_ANSWER"
+        else:
+            error_type = "WRONG_ANSWER"
+
+        tps = llm["decode_tps"]
+        score_text = "-" if result.score is None else f"{result.score:.2f}"
+        print(f"{'PASS' if passed else 'FAIL'}  score {score_text}"
+              f"  ({llm['prompt_tokens']} prompt tok, {tps or 0:.1f} tok/s)")
+
+        append_row(results_file, SUITE_FIELDS, {
+            **base,
+            "passed": passed,
+            "error_type": error_type,
+            "score": result.score,
+            "score_detail": json.dumps(result.detail, ensure_ascii=False, default=str),
+            "finish_reason": llm["finish_reason"],
+            "ttft": llm["ttft"],
+            "generation_time": llm["generation_time"],
+            "decode_time": llm["decode_time"],
+            "execution_time": None,
+            "prompt_tokens": llm["prompt_tokens"],
+            "completion_tokens": llm["completion_tokens"],
+            "decode_tokens_per_sec": tps,
+            "gpu_memory_mb": gpu_used,
+            "gpu_total_mb": gpu_total,
+            "error": "",
+            "code": llm["raw"][:4000],
+        })
+
+        if tps is not None and tps < MIN_TPS:
+            slow_streak += 1
+            if slow_streak >= SET_MAX_ITERS:
+                print(f"\nAborting experiment: decode TPS < {MIN_TPS} tok/s for "
+                      f"{SET_MAX_ITERS} consecutive problems (last: {tps:.1f} tok/s).")
+                break
+        else:
+            slow_streak = 0
+
+    suite_summary(results_file)
+
+
+def suite_summary(results_file):
+    """Per-domain scores, and separate figures for answerable and unanswerable items."""
+    if not results_file.exists():
+        return
+    df = pd.read_csv(results_file, engine="python", on_bad_lines="skip")
+    if df.empty or "score" not in df.columns:
+        return
+    df = df[df["error_type"].astype(str) != "LLM_ERROR"]
+    df = df.drop_duplicates(["experiment_id", "problem_id"], keep="last").copy()
+    df["passed"] = df["passed"].astype(str).str.lower().eq("true")
+    df["score"] = pd.to_numeric(df["score"], errors="coerce")
+    df["unanswerable"] = df["item_type"].eq("unanswerable")
+
+    by_domain = (df.groupby(["model", "context_actual", "domain"], dropna=False)
+                 .agg(items=("problem_id", "count"), passed=("passed", "sum"),
+                      mean_score=("score", "mean"))
+                 .reset_index())
+    by_domain["pass_rate"] = 100 * by_domain["passed"] / by_domain["items"]
+
+    overall = []
+    for keys, g in df.groupby(["model", "context_actual"], dropna=False):
+        ans, un = g[~g["unanswerable"]], g[g["unanswerable"]]
+        overall.append({
+            "model": keys[0], "context_actual": keys[1],
+            "answerable_pass_rate": 100 * ans["passed"].mean() if len(ans) else float("nan"),
+            "mean_score": g["score"].mean(),
+            "unanswerable_declined_rate": 100 * un["passed"].mean() if len(un) else float("nan"),
+            "invented_answers": int((un["error_type"] == "INVENTED_ANSWER").sum()),
+            "missing_doc_items": int((g["error_type"] == "MISSING_DOC").sum()),
+        })
+    overall = pd.DataFrame(overall)
+
+    out = results_file.with_name(results_file.stem + "_by_domain.csv")
+    by_domain.to_csv(out, index=False)
+    print("\n" + "=" * 80 + "\nSUITE SUMMARY\n" + "=" * 80)
+    print(overall.round(1).to_string(index=False))
+    print()
+    print(by_domain.round(1).to_string(index=False))
+    print(f"\nPer-domain table saved to: {out}")
+
+
+# =============================================================================
 # MBPP
 # =============================================================================
 #
@@ -1253,8 +1462,16 @@ def main():
     parser.add_argument("--models", nargs="+", default=MODELS)
     parser.add_argument("--contexts", nargs="+", type=int, default=CONTEXTS)
     parser.add_argument("--base-url", default=DEFAULT_LM_STUDIO_URL)
-    parser.add_argument("--benchmark", choices=["humaneval", "mbpp", "swebench"],
+    parser.add_argument("--benchmark", choices=["humaneval", "mbpp", "swebench", "suite"],
                         default="humaneval", help="Which benchmark to run.")
+    parser.add_argument("--suite", default=None,
+                        help="Suite file (.jsonl) for --benchmark suite, e.g. suites/northwind_demo.jsonl")
+    parser.add_argument("--docs", default="company_docs",
+                        help="Folder with the company documents (default: company_docs).")
+    parser.add_argument("--docs-limit", type=int, default=None,
+                        help="Use only the first N documents (name order).")
+    parser.add_argument("--docs-ids", nargs="+", default=None,
+                        help="Use exactly these document file names.")
     parser.add_argument("--results", default=None,
                         help="Results CSV (default depends on --benchmark).")
     parser.add_argument("--limit", type=int, default=None, help="Only run the first N problems.")
@@ -1272,7 +1489,16 @@ def main():
     args.probe_reps = 2
     args.probe_file = "speed_probe.csv"
 
-    if args.results is None:
+    if args.benchmark == "suite" and SS is None:
+        print("STOP: suite mode needs suite_scoring.py and docs.py in the localbenchmark "
+              "package folder (next to localbenchmark.py and llm_plots.py).")
+        return
+    if args.results is None and args.benchmark == "suite":
+        if not args.suite:
+            print("STOP: --benchmark suite needs --suite <file.jsonl>")
+            return
+        args.results = f"suite_results_{SS.load_suite(args.suite).name}.csv"
+    elif args.results is None:
         args.results = {"humaneval": "coding_benchmark_results.csv",
                         "mbpp": "coding_benchmark_results_mbpp.csv",
                         "swebench": "coding_benchmark_results_swebench.csv"}[args.benchmark]
@@ -1305,18 +1531,26 @@ def main():
 
     check_lm_studio(args.base_url)
     repair_results_file(results_file)
-    check_results_schema(results_file)
+    if args.benchmark != "suite":
+        check_results_schema(results_file)
 
+    docs_context = None
     if args.probe:
         df = None
         print(f"\nMODE: speed probe (no HumanEval). Levels: {args.probe_tokens}, "
               f"reps: {args.probe_reps}")
     else:
-        print(f"\nLoading {args.benchmark} dataset...")
-        df = load_benchmark(args.benchmark)
+        if args.benchmark == "suite":
+            print(f"\nLoading suite {args.suite} and documents from {args.docs}...")
+            suite, df, docs, docs_context = prepare_suite(args)
+            print(f"Documents in prompt: {len(docs)} "
+                  f"({DOCS.estimate_tokens(docs_context):,} tokens, estimate)")
+        else:
+            print(f"\nLoading {args.benchmark} dataset...")
+            df = load_benchmark(args.benchmark)
         if args.limit is not None:
             df = df.head(args.limit)
-        print(f"Coding tasks in Evaluation dataset: {len(df)}")
+        print(f"Tasks in evaluation dataset: {len(df)}")
 
 
     model_contexts = {}
@@ -1333,6 +1567,14 @@ def main():
         for c in ctxs
         for kv in CACHE_CONFIGS
     ]
+    if args.benchmark == "suite":
+        need = DOCS.estimate_tokens(docs_context) + SUITE_QUESTION_TOKENS
+        fits = [p for p in plan if need + DOCS.ANSWER_HEADROOM <= p[1]]
+        for m, c, _ in plan:
+            if (m, c, _) not in fits:
+                print(f"SKIP {m} @ {c:,}: documents need about {need:,} tokens, window too small")
+        plan = fits
+
     problem_ids = [] if args.probe else list(df["task_id"])
     print(f"\nConfigurations: {len(plan)}"
           + ("" if args.probe else f"   Evaluations: {len(plan) * len(df):,}"))
@@ -1400,6 +1642,9 @@ def main():
                 else:
                     if args.benchmark == "swebench":
                         run_swebench_experiment(df, meta, args, results_file)
+                    elif args.benchmark == "suite":
+                        run_suite_experiment(df, meta, args, results_file, docs_context,
+                                             force_rerun=force_rerun)
                     else:
                         run_experiment(df, meta, args, results_file,
                                        force_rerun=force_rerun)
