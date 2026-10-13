@@ -96,8 +96,11 @@ def is_raw_results(path):
 
 
 def find_raw_results(folder="."):
-    """Every per-problem results CSV in a folder, whatever its name."""
-    return sorted(p for p in Path(folder).glob("*.csv") if is_raw_results(p))
+    """Every per-problem results CSV in a folder and in its benchmark sub-folders
+    (humaneval/, mbpp/, swebench/, suite/, dryrun/), whatever the file name."""
+    root = Path(folder)
+    candidates = list(root.glob("*.csv")) + list(root.glob("*/*.csv"))
+    return sorted(p for p in candidates if is_raw_results(p))
 
 
 def resolve_inputs(results=None, folder="."):
@@ -875,7 +878,8 @@ def main():
     parser.add_argument(
         "--folder", default=".",
         help="Folder to search for results CSVs when --results is not given (default: current folder).")
-    parser.add_argument("--out", default="plots")
+    parser.add_argument("--out", default=None,
+                        help="Output folder. Default: a plots/ folder next to each results file.")
     parser.add_argument(
         "--rank-agg", choices=["sum", "mean", "median"], default="sum",
         help="How to combine per-metric ranks in figures 09/10 "
@@ -900,7 +904,8 @@ def main():
 
     print(f"Results to plot: {', '.join(p.name for p, _ in inputs)}")
     for path, sub in inputs:
-        out = Path(args.out) / sub if sub else Path(args.out)
+        base = Path(args.out) if args.out else path.parent / "plots"
+        out = base / sub if sub else base
         print(f"\n===== {path.name} -> {out} =====")
         try:
             make_all(path, out, rank_agg=args.rank_agg, min_context=args.min_context)

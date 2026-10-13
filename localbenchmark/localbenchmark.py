@@ -11,6 +11,7 @@ import json
 import math
 import os
 import re
+import struct
 import subprocess
 import sys
 import sysconfig
@@ -1453,6 +1454,629 @@ def create_summary(results_file):
 # MAIN
 # =============================================================================
 
+# =============================================================================
+# DRY RUN: memory and speed estimates, written like a benchmark run
+# =============================================================================
+#
+# `localbenchmark --dry-run` loads no model and sends no request. It writes to
+# dryrun/: dryrun_estimates.csv, dryrun_leaderboard.csv and plots/*.png.
+#
+# Memory per model, quantization and context:
+#   weights  = size of the GGUF file on disk (exact), else bits-per-weight estimate
+#   KV cache = bytes per token from the GGUF header (layers, KV heads, head size),
+#              else --kv-bytes (a default that is not measured for that model)
+#   overhead = DRYRUN_OVERHEAD_GB
+# Decode speed: each token reads the active weights and the whole KV cache. The part
+# of the model that does not fit in VRAM is read at system RAM speed, so the ceiling
+# blends GPU and RAM bandwidth by the offloaded share. It is an upper bound.
+
+DRYRUN_OVERHEAD_GB = 0.5            # buffers and runtime; measured as ~0.5 GB for Ornith 9B
+DEFAULT_VRAM_GB = 16.0              # used when nvidia-smi is not available
+MODEL_PARAMS_MOE = 3                # active size for a mixture-of-experts model without one in its name
+GPU_BANDWIDTH = 600                 # GB/s; replace with your card's number (--gpu-bandwidth)
+RAM_BANDWIDTH = 40                  # GB/s; typical dual-channel system RAM (--ram-bandwidth), range 8 to 60
+KV_BYTES_PER_TOKEN = 55_000         # default for models without a GGUF file (--kv-bytes)
+KV_ELEMENT_BYTES = 2                # f16 KV cache
+QUANT_BITS = {"Q3_K_M": 3.8, "Q4_K_M": 4.8, "Q5_K_M": 5.6, "Q6_K": 6.5, "Q8_0": 8.4}
+QUANT_TOKEN = {"Q3_K_M": "q3km", "Q4_K_M": "q4km", "Q5_K_M": "q5km", "Q6_K": "q6k", "Q8_0": "q80"}
+DRYRUN_DEFAULT_QUANTS = ["Q4_K_M", "Q6_K", "Q8_0"]   # add Q3_K_M / Q5_K_M with --quants
+BENCHMARK_ITEMS = {"humaneval": 164, "mbpp": 500, "swebench": 500}
+# Known models, matched on the last part of the model key (exact, lower case).
+# total_b / active_b are in billions of parameters. active_b is the parameters read per
+# token (equal to total_b for dense models). max_context is the model's context limit.
+# Add a model here when its name does not show its size correctly. Check values against
+# the model card.
+MODEL_SIZE_LOOKUP = {
+    "gpt-oss-20b":            {"total_b": 21.0, "active_b": 3.6},    # mixture of experts
+    "phi-4":                  {"total_b": 14.0, "active_b": 14.0, "max_context": 16_000},
+    "phi4":                   {"total_b": 14.0, "active_b": 14.0, "max_context": 16_000},
+    "muse-glimmer":           {"total_b": 30.0, "active_b": 30.0},
+    "devstral-small-2-2512":  {"total_b": 24.0, "active_b": 24.0},
+}
+DRYRUN_CSV = "dryrun_estimates.csv"
+DRYRUN_LEADERBOARD = "dryrun_leaderboard.csv"
+DRYRUN_PLOT_QUANT = "Q4_K_M"        # quantization used in the single-quantization figures
+RED = "#d62728"                     # above GPU memory
+GREEN = "#74c476"                   # within GPU memory
+GREY = "#d9d9d9"                    # size unknown
+DRYRUN_FIELDS = ["model", "label", "total_b", "active_b", "size_source", "file", "quant", "bits",
+                 "context", "weights_gb", "weights_source", "kv_bytes_per_token", "kv_source",
+                 "kv_gb", "total_gb", "vram_gb", "headroom_gb", "exceeds_gpu", "offload_share",
+                 "read_gb_per_token", "bandwidth_used", "decode_ceiling_tps"]
+_SIZE_RE = re.compile(r"(\d+(?:\.\d+)?)b(?![a-z])", re.IGNORECASE)   # 27b, 3.5b, 30b
+_ACTIVE_RE = re.compile(r"-a(\d+(?:\.\d+)?)b", re.IGNORECASE)        # -a3b: active parameters
+_GGUF_FIXED = {0: "<B", 1: "<b", 2: "<H", 3: "<h", 4: "<I", 5: "<i", 6: "<f", 7: "<?",
+               10: "<Q", 11: "<q", 12: "<d"}
+_GGUF_CACHE = {}
+
+
+def _num(x, digits=1):
+    if x is None or (isinstance(x, float) and math.isnan(x)):
+        return "nan"
+    return f"{x:.{digits}f}"
+
+
+def lookup_model(name):
+    """Entry from MODEL_SIZE_LOOKUP for this model, or None. Matches the last part of the key."""
+    return MODEL_SIZE_LOOKUP.get(name.split("/")[-1].lower())
+
+
+def model_params(name):
+    """(total_b, active_b, source). Lookup first, then the name. Unknown sizes are nan."""
+    known = lookup_model(name)
+    if known:
+        return float(known["total_b"]), float(known["active_b"]), "lookup"
+    low = name.lower()
+    active_match = _ACTIVE_RE.search(low)
+    sizes = [float(x) for x in _SIZE_RE.findall(_ACTIVE_RE.sub("", low))]
+    total = max(sizes) if sizes else float("nan")
+    if active_match:
+        active = float(active_match.group(1))
+    elif "moe" in low:
+        active = float(MODEL_PARAMS_MOE)
+    else:
+        active = total  # dense: every parameter is read for every token (nan if unknown)
+    source = "unknown" if (math.isnan(total) and math.isnan(active)) else "from name"
+    return total, active, source
+
+
+# ---- GGUF header: file size and KV-cache layout, without reading any weights ----
+
+def _gguf_str(f):
+    (n,) = struct.unpack("<Q", f.read(8))
+    return f.read(n).decode("utf-8", errors="replace")
+
+
+def _gguf_value(f, vtype):
+    if vtype in _GGUF_FIXED:
+        fmt = _GGUF_FIXED[vtype]
+        (v,) = struct.unpack(fmt, f.read(struct.calcsize(fmt)))
+        return v
+    if vtype == 8:
+        return _gguf_str(f)
+    if vtype == 9:
+        (etype,) = struct.unpack("<I", f.read(4))
+        (count,) = struct.unpack("<Q", f.read(8))
+        if etype == 8:
+            if count > 64:  # long arrays (tokenizer vocabularies) are skipped, not read
+                for _ in range(count):
+                    (n,) = struct.unpack("<Q", f.read(8))
+                    f.seek(n, 1)
+                return None
+            return [_gguf_str(f) for _ in range(count)]
+        if etype in _GGUF_FIXED:
+            fmt = _GGUF_FIXED[etype]
+            size = struct.calcsize(fmt)
+            if count > 64:
+                f.seek(count * size, 1)
+                return None
+            return [struct.unpack(fmt, f.read(size))[0] for _ in range(count)]
+        raise ValueError(f"unknown GGUF array type {etype}")
+    raise ValueError(f"unknown GGUF value type {vtype}")
+
+
+def read_gguf_metadata(path):
+    """Key-value header of a GGUF file. Reads metadata only, never the tensors."""
+    with open(path, "rb") as f:
+        if f.read(4) != b"GGUF":
+            raise ValueError("not a GGUF file")
+        (version,) = struct.unpack("<I", f.read(4))
+        if version < 2:
+            raise ValueError(f"GGUF version {version} is not supported")
+        _, n_kv = struct.unpack("<QQ", f.read(16))
+        meta = {}
+        for _ in range(n_kv):
+            key = _gguf_str(f)
+            (vtype,) = struct.unpack("<I", f.read(4))
+            meta[key] = _gguf_value(f, vtype)
+    return meta
+
+
+def kv_profile(meta, elem_bytes=KV_ELEMENT_BYTES):
+    """
+    KV-cache bytes per token of context, from the model's architecture.
+    Only attention layers keep a KV cache. Hybrid models (recurrent layers mixed with
+    attention) have a full-attention interval, e.g. 4 = every fourth layer is attention.
+    """
+    arch = meta.get("general.architecture")
+    if not arch:
+        return None
+    layers = meta.get(f"{arch}.block_count")
+    heads = meta.get(f"{arch}.attention.head_count")
+    kv_heads = meta.get(f"{arch}.attention.head_count_kv", heads)
+    emb = meta.get(f"{arch}.embedding_length")
+    key_len = meta.get(f"{arch}.attention.key_length") or (emb // heads if emb and heads else None)
+    val_len = meta.get(f"{arch}.attention.value_length") or key_len
+    if None in (layers, kv_heads, key_len, val_len):
+        return None
+    interval = next((v for k, v in meta.items()
+                     if k.startswith(f"{arch}.") and k.endswith("full_attention_interval")
+                     and isinstance(v, int) and v > 1), None)
+    if isinstance(kv_heads, list):          # per-layer KV heads; 0 means no KV cache in that layer
+        attn_layers = sum(1 for h in kv_heads if h)
+        kv_heads_total = sum(kv_heads)
+    else:
+        attn_layers = layers // interval if interval else layers
+        kv_heads_total = attn_layers * kv_heads
+    return {"arch": arch, "layers": layers, "attention_layers": attn_layers,
+            "kv_heads": kv_heads, "key_len": key_len, "val_len": val_len,
+            "full_attention_interval": interval,
+            "kv_bytes_per_token": elem_bytes * kv_heads_total * (key_len + val_len),
+            "sliding_window": meta.get(f"{arch}.attention.sliding_window")}
+
+
+def gguf_kv(path):
+    """KV profile of a GGUF file, cached. None if the file cannot be read."""
+    key = str(path)
+    if key not in _GGUF_CACHE:
+        try:
+            _GGUF_CACHE[key] = kv_profile(read_gguf_metadata(path))
+        except Exception:
+            _GGUF_CACHE[key] = None
+    return _GGUF_CACHE[key]
+
+
+def scan_gguf_index(roots):
+    index = []
+    for root in roots:
+        root = Path(root)
+        if not root.is_dir():
+            continue
+        for p in sorted(root.rglob("*.gguf")):
+            try:
+                size = p.stat().st_size
+            except OSError:
+                continue
+            rel = p.relative_to(root).as_posix().lower()
+            index.append({"path": p, "name": p.name, "rel": rel,
+                          "alnum": re.sub(r"[^a-z0-9]", "", p.name.lower()),
+                          "relalnum": re.sub(r"[^a-z0-9]", "", rel), "size": size})
+    return index
+
+
+def find_gguf(index, model, quant):
+    """The GGUF file of this model and quantization, or None."""
+    base = model.split("/")[-1].lower()
+    hits = [f for f in index if base in f["rel"] and QUANT_TOKEN[quant] in f["relalnum"]]
+    return hits[0] if hits else None
+
+
+def model_kv_profile(index, model):
+    """KV profile from any GGUF file of this model (the architecture does not depend on quant)."""
+    base = model.split("/")[-1].lower()
+    for f in index:
+        if base in f["rel"]:
+            profile = gguf_kv(f["path"])
+            if profile:
+                return profile
+    return None
+
+
+def vram_estimate(total_b, bits, context, kv_bytes):
+    weights_gb = total_b * bits / 8
+    kv_gb = context * kv_bytes / 1e9
+    return weights_gb, kv_gb, weights_gb + kv_gb + DRYRUN_OVERHEAD_GB
+
+
+def resolve_vram(given_gb):
+    if given_gb is not None:
+        return float(given_gb), "given"
+    try:
+        _, total_mb = get_gpu_memory()
+    except Exception:
+        total_mb = None
+    if total_mb:
+        return total_mb * 1048576 / 1e9, "nvidia-smi"   # MiB to decimal GB, same unit as the file sizes
+    return DEFAULT_VRAM_GB, "default"
+
+
+def print_table(headers, rows):
+    widths = [max([len(str(h))] + [len(str(r[i])) for r in rows])
+              for i, h in enumerate(headers)]
+    line = "  ".join(str(h).ljust(w) for h, w in zip(headers, widths))
+    print(line)
+    print("-" * len(line))
+    for r in rows:
+        print("  ".join(str(c).ljust(w) for c, w in zip(r, widths)).rstrip())
+
+
+def dryrun_rows(models, contexts, vram_gb, gpu_bw, ram_bw, quants, index,
+                kv_default=KV_BYTES_PER_TOKEN, overhead_gb=DRYRUN_OVERHEAD_GB):
+    rows = []
+    for model in models:
+        total_b, active_b, size_source = model_params(model)
+        label = model.split("/")[-1]
+        profile = model_kv_profile(index, model)
+        if profile:
+            kv_bpt, kv_source = profile["kv_bytes_per_token"], "GGUF file"
+        else:
+            kv_bpt, kv_source = kv_default, "default (not measured)"
+        known = lookup_model(model)
+        limit = known.get("max_context") if known else None
+        model_contexts = [c for c in contexts if limit is None or c <= limit]
+        for quant in quants:
+            bits = QUANT_BITS[quant]
+            found = find_gguf(index, model, quant)
+            if found:
+                weights_gb = found["size"] / 1e9
+                weights_source, file_name = "GGUF file", found["name"]
+            else:
+                weights_gb = total_b * bits / 8
+                weights_source, file_name = "estimate", ""
+            active_weights_gb = weights_gb * active_b / total_b if total_b else float("nan")
+            for c in model_contexts:
+                kv_gb = kv_bpt * c / 1e9
+                tot = weights_gb + kv_gb + overhead_gb
+                exceeds = None if math.isnan(tot) else tot > vram_gb
+                offload = float("nan") if math.isnan(tot) else min(1.0, max(0.0, (tot - vram_gb) / tot))
+                read_gb = active_weights_gb + kv_gb
+                if math.isnan(read_gb):
+                    ceiling, used = float("nan"), "unknown"
+                else:
+                    seconds = read_gb * ((1 - offload) / gpu_bw + offload / ram_bw)
+                    ceiling = 1 / seconds
+                    used = "GPU" if offload == 0 else ("RAM" if offload >= 1 else "GPU+RAM")
+                rows.append({"model": model, "label": label, "total_b": total_b,
+                             "active_b": active_b, "size_source": size_source, "file": file_name,
+                             "quant": quant, "bits": bits, "context": c,
+                             "weights_gb": weights_gb, "weights_source": weights_source,
+                             "kv_bytes_per_token": kv_bpt, "kv_source": kv_source, "kv_gb": kv_gb,
+                             "total_gb": tot, "vram_gb": vram_gb, "headroom_gb": vram_gb - tot,
+                             "exceeds_gpu": exceeds, "offload_share": offload,
+                             "read_gb_per_token": read_gb, "bandwidth_used": used,
+                             "decode_ceiling_tps": ceiling})
+    return pd.DataFrame(rows, columns=DRYRUN_FIELDS)
+
+
+def dryrun_leaderboard(df):
+    """Rank-sum over decode-speed ceiling and memory headroom, for every model x quantization x
+    context. Lower rank is better. Unknown sizes stay nan and are not ranked."""
+    board = df.copy()
+    board["score"] = (board["decode_ceiling_tps"].rank(ascending=False)
+                      + board["headroom_gb"].rank(ascending=False))
+    board["rank"] = board["score"].rank(method="min")
+    cols = ["rank", "label", "quant", "context", "weights_source", "kv_source", "total_gb",
+            "headroom_gb", "exceeds_gpu", "bandwidth_used", "decode_ceiling_tps", "score"]
+    return board.sort_values(["rank", "decode_ceiling_tps"], ascending=[True, False],
+                             na_position="last")[cols]
+
+
+def plot_dryrun(df, board, vram_gb, plots_dir):
+    import numpy as np
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    from matplotlib.patches import Patch
+    from matplotlib.lines import Line2D
+
+    plots_dir.mkdir(parents=True, exist_ok=True)
+    contexts = sorted(df["context"].unique())
+    cmax = int(max(contexts))
+    quants = list(dict.fromkeys(df["quant"]))
+    labels = list(dict.fromkeys(df["label"]))
+    colours = plt.get_cmap("tab10")
+    paths = []
+
+    # 1. total GB per model x quantization (rows) against context (columns); red = above GPU memory
+    df = df.assign(row=df["label"] + " " + df["quant"])
+    rows = list(dict.fromkeys(df["row"]))
+    pivot = df.pivot(index="row", columns="context", values="total_gb").reindex(index=rows, columns=contexts)
+    rgb = np.ones(pivot.shape + (3,))
+    for i in range(pivot.shape[0]):
+        for j in range(pivot.shape[1]):
+            v = pivot.values[i, j]
+            rgb[i, j] = matplotlib.colors.to_rgb(GREY if np.isnan(v) else (RED if v > vram_gb else GREEN))
+    fig, ax = plt.subplots(figsize=(1.2 * len(contexts) + 4, 0.45 * len(rows) + 2.5))
+    ax.imshow(rgb, aspect="auto")
+    for i in range(pivot.shape[0]):
+        for j in range(pivot.shape[1]):
+            ax.text(j, i, _num(pivot.values[i, j]), ha="center", va="center", fontsize=8)
+    ax.set_xticks(range(len(contexts)), [f"{c // 1000}k" for c in contexts])
+    ax.set_yticks(range(len(rows)), rows)
+    ax.set_xlabel("Context window (tokens)")
+    ax.set_title(f"Estimated total GB by context (GPU {vram_gb:.1f} GB)")
+    ax.legend(handles=[Patch(color=RED, label="above GPU memory"),
+                       Patch(color=GREEN, label="within GPU memory"),
+                       Patch(color=GREY, label="size unknown")],
+              loc="upper left", bbox_to_anchor=(1.01, 1), fontsize=8, frameon=False)
+    p = plots_dir / "D1_total_gb_heatmap.png"
+    fig.savefig(p, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    paths.append(p)
+
+    # 2. total GB against context for one quantization; red markers = above GPU memory
+    plot_quant = DRYRUN_PLOT_QUANT if DRYRUN_PLOT_QUANT in quants else quants[0]
+    sub = df[df["quant"] == plot_quant]
+    fig, ax = plt.subplots(figsize=(9, 5.5))
+    skipped = []
+    for i, label in enumerate(labels):
+        g = sub[sub["label"] == label].sort_values("context")
+        if g["total_gb"].isna().all():
+            skipped.append(label)
+            continue
+        colour = colours(i % 10)
+        ax.plot(g["context"], g["total_gb"], color=colour, lw=1.5, label=label)
+        for x, y in zip(g["context"], g["total_gb"]):
+            ax.scatter(x, y, color=RED if y > vram_gb else colour, s=40, zorder=3)
+            ax.annotate(f"{y:.1f}", (x, y), textcoords="offset points", xytext=(0, 6), ha="center", fontsize=7)
+    ax.axhline(vram_gb, color="black", ls="--", lw=1)
+    ax.text(cmax, vram_gb, f"GPU {vram_gb:.1f} GB ", ha="right", va="bottom", fontsize=8)
+    ax.set_xticks(contexts, [f"{c // 1000}k" for c in contexts])
+    ax.set_xlabel("Context window (tokens)")
+    ax.set_ylabel("Estimated total GB")
+    title = f"Estimated memory against context ({plot_quant})"
+    if skipped:
+        title += f"\nnot plotted, size unknown: {', '.join(skipped)}"
+    ax.set_title(title)
+    ax.grid(alpha=0.3)
+    handles, names = ax.get_legend_handles_labels()
+    handles.append(Line2D([0], [0], marker="o", color="w", markerfacecolor=RED, label="above GPU memory"))
+    ax.legend(handles=handles, loc="center left", bbox_to_anchor=(1.01, 0.5), fontsize=8, frameon=False)
+    p = plots_dir / "D2_memory_vs_context.png"
+    fig.savefig(p, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    paths.append(p)
+
+    # 3. speed ceiling against memory, every configuration; red = above GPU memory
+    fig, ax = plt.subplots(figsize=(9, 6.5))
+    plotted = df.dropna(subset=["total_gb", "decode_ceiling_tps"])
+    for i, label in enumerate(labels):
+        for _, r in plotted[plotted["label"] == label].iterrows():
+            colour = RED if r["total_gb"] > vram_gb else colours(i % 10)
+            ax.scatter(r["total_gb"], r["decode_ceiling_tps"], color=colour, s=45)
+            ax.annotate(f"{label} {r['quant']} {int(r['context']) // 1000}k",
+                        (r["total_gb"], r["decode_ceiling_tps"]),
+                        textcoords="offset points", xytext=(4, 2), fontsize=6, color=colour)
+    ax.axvline(vram_gb, color="black", ls="--", lw=1)
+    ax.set_xlabel("Estimated total GB")
+    ax.set_ylabel("Decode-speed ceiling (tokens/s, upper bound)")
+    skipped = sorted(set(df["label"]) - set(plotted["label"]))
+    title = "Speed against memory: up and to the left is better"
+    if skipped:
+        title += f"\nnot plotted, size unknown: {', '.join(skipped)}"
+    ax.set_title(title)
+    ax.grid(alpha=0.3)
+    ax.legend(handles=[Line2D([0], [0], marker="o", color="w", markerfacecolor=RED, label="above GPU memory")],
+              loc="upper right", fontsize=8, frameon=False)
+    p = plots_dir / "D3_speed_vs_memory.png"
+    fig.savefig(p, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    paths.append(p)
+
+    # 4. ranking of every configuration; red = above GPU memory
+    ranked = board[board["score"].notna()].iloc[::-1]
+    unknown = sorted(set(board["label"]) - set(ranked["label"]))
+    fig, ax = plt.subplots(figsize=(10, 0.32 * max(len(ranked), 1) + 2))
+    names = [f"{r.label} {r.quant} {int(r.context) // 1000}k" for r in ranked.itertuples()]
+    bars = [RED if r.exceeds_gpu else "#4C78A8" for r in ranked.itertuples()]
+    ax.barh(range(len(ranked)), ranked["score"], color=bars)
+    ax.set_yticks(range(len(ranked)), names, fontsize=8)
+    for y, r in enumerate(ranked.itertuples()):
+        ax.text(r.score + 0.05, y, f"rank {int(r.rank)}  |  {r.total_gb:.1f} GB  |  "
+                f"{r.decode_ceiling_tps:.0f} tok/s ceiling", va="center", fontsize=7)
+    ax.set_xlabel("Rank-sum score (lower is better)")
+    title = "Ranking by speed ceiling and memory headroom, per context"
+    if unknown:
+        title += f"\nnot ranked, size unknown: {', '.join(unknown)}"
+    ax.set_title(title)
+    if len(ranked):
+        ax.set_xlim(0, ranked["score"].max() * 1.6)
+    ax.grid(axis="x", alpha=0.3)
+    ax.legend(handles=[Patch(color=RED, label="above GPU memory"), Patch(color="#4C78A8", label="within GPU memory")],
+              loc="lower right", fontsize=8, frameon=False)
+    p = plots_dir / "D4_ranking.png"
+    fig.savefig(p, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    paths.append(p)
+
+    # 5. decode-speed ceiling against context for one quantization; red = above GPU memory
+    fig, ax = plt.subplots(figsize=(9, 5.5))
+    for i, label in enumerate(labels):
+        g = sub[sub["label"] == label].sort_values("context").dropna(subset=["decode_ceiling_tps"])
+        if g.empty:
+            continue
+        colour = colours(i % 10)
+        ax.plot(g["context"], g["decode_ceiling_tps"], color=colour, lw=1.5, label=label)
+        for _, r in g.iterrows():
+            ax.scatter(r["context"], r["decode_ceiling_tps"], color=RED if r["total_gb"] > vram_gb else colour, s=40, zorder=3)
+    ax.set_xticks(contexts, [f"{c // 1000}k" for c in contexts])
+    ax.set_xlabel("Context window (tokens)")
+    ax.set_ylabel("Decode-speed ceiling (tokens/s, upper bound)")
+    ax.set_title(f"Speed ceiling against context ({plot_quant}); red = model above GPU memory")
+    ax.grid(alpha=0.3)
+    if ax.get_legend_handles_labels()[0]:
+        ax.legend(loc="center left", bbox_to_anchor=(1.01, 0.5), fontsize=8, frameon=False)
+    p = plots_dir / "D5_speed_vs_context.png"
+    fig.savefig(p, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    paths.append(p)
+    return paths
+
+
+def kv_explanation(profile):
+    if not profile:
+        return ""
+    kv = profile["kv_heads"]
+    kv_text = "sum of per-layer KV heads" if isinstance(kv, list) else f"{kv} KV heads"
+    hybrid = (f", only {profile['attention_layers']} of {profile['layers']} layers hold KV "
+              f"(full attention every {profile['full_attention_interval']})"
+              if profile["full_attention_interval"] else f", {profile['layers']} layers")
+    return (f"2 bytes x {profile['attention_layers']} attention layers x {kv_text} x "
+            f"({profile['key_len']} key + {profile['val_len']} value){hybrid}")
+
+
+def dryrun_console(df, models, contexts, quants, index=()):
+    for model in models:
+        total, active, size_source = model_params(model)
+        known = lookup_model(model)
+        if known and known.get("max_context"):
+            print(f"{model}: context limit {known['max_context']:,} tokens; larger windows are not computed")
+        sub = df[df["model"] == model]
+        if sub.empty:
+            print("  no context to compute (all requested contexts are above the model limit)\n")
+            continue
+        first = sub.iloc[0]
+        profile = model_kv_profile(index, model)
+        print(f"{model}\n  {_num(total)} B total, {_num(active)} B active per token ({size_source})")
+        print(f"  KV cache: {int(first['kv_bytes_per_token']):,} bytes per token ({first['kv_source']})")
+        if profile:
+            print(f"    = {kv_explanation(profile)}")
+        for quant in quants:
+            hit = find_gguf(index, model, quant)
+            print(f"  {quant}: " + (f"GGUF file {hit['path']}" if hit else "no GGUF file found; weights estimated"))
+        rows = []
+        for quant in quants:
+            q = sub[sub["quant"] == quant].sort_values("context")
+            rows.append([quant, _num(q["weights_gb"].iloc[0], 2), q["weights_source"].iloc[0]]
+                        + [_num(v, 2) for v in q["total_gb"]])
+        print_table(["quant", "weights GB", "weights from"] + [f"total GB @{c // 1000}k" for c in contexts], rows)
+        print()
+        rows = []
+        for quant in quants:
+            q = sub[sub["quant"] == quant].sort_values("context")
+            rows.append([quant] + [_num(v, 0) for v in q["decode_ceiling_tps"]])
+        print_table(["quant"] + [f"tok/s @{c // 1000}k" for c in contexts], rows)
+        print()
+
+
+def dryrun_plan(args, models, contexts):
+    items = None
+    if args.benchmark == "suite":
+        if SS is None:
+            print("Suite mode: suite_scoring.py and docs.py are not in the package folder.")
+        elif not args.suite:
+            print("Suite mode: --suite is missing.")
+        else:
+            items = len(SS.load_suite(args.suite).items)
+            try:
+                docs = DOCS.load_docs(args.docs, limit=args.docs_limit, ids=args.docs_ids)
+                print(f"Documents: {len(docs)} files, about "
+                      f"{sum(d.est_tokens for d in docs):,} tokens (estimate)")
+            except Exception as e:
+                print(f"Documents: not checked ({e})")
+    else:
+        items = BENCHMARK_ITEMS[args.benchmark]
+    if items is not None and args.limit is not None:
+        items = min(items, args.limit)
+
+    configs = len(models) * len(contexts)
+    print(f"\nRun plan: {configs} configurations ({len(models)} models x {len(contexts)} contexts)")
+    if items is not None:
+        print(f"Items per configuration: {items}   total evaluations: {configs * items:,}")
+
+
+def dryrun_report(args, models, contexts):
+    out_file = Path(args.results)
+    out_dir = out_file.parent
+    quants = list(args.quants)
+    vram_gb, vram_src = resolve_vram(args.vram_gb)
+    roots = list(LOCAL_MODEL_DIRS) + [Path(p) for p in (args.model_dir or [])]
+    index = scan_gguf_index(roots)
+
+    print("\n" + "=" * 80 + "\nDRY RUN: estimates only; nothing is loaded and no requests are sent\n"
+          + "=" * 80)
+    print(f"GPU memory: {vram_gb:.1f} GB ({vram_src}) | GPU bandwidth: {args.gpu_bandwidth:.0f} GB/s "
+          f"| system RAM bandwidth: {args.ram_bandwidth:.0f} GB/s")
+    print(f"GGUF files found: {len(index)} in " + (", ".join(str(r) for r in roots if Path(r).is_dir()) or "no model folder"))
+    print(f"Quantizations: {', '.join(quants)}")
+    print(f"Benchmark: {args.benchmark} | contexts: " + ", ".join(f"{c // 1000}k" for c in contexts))
+    print()
+
+    df = dryrun_rows(models, contexts, vram_gb, args.gpu_bandwidth, args.ram_bandwidth, quants,
+                     index, kv_default=args.kv_bytes, overhead_gb=args.overhead_gb)
+    df.to_csv(out_file, index=False)
+    board = dryrun_leaderboard(df)
+    board.to_csv(out_dir / DRYRUN_LEADERBOARD, index=False)
+
+    dryrun_console(df, models, contexts, quants, index)
+    dryrun_plan(args, models, contexts)
+
+    print("\nLeaderboard (every model, quantization and context; speed ceiling and memory headroom):")
+    print_table(["rank", "model", "quant", "context", "total GB", "headroom GB", "bandwidth", "decode ceiling tok/s"],
+                [[_num(r.rank, 0), r.label, r.quant, f"{int(r.context) // 1000}k", _num(r.total_gb),
+                  _num(r.headroom_gb), r.bandwidth_used, _num(r.decode_ceiling_tps, 0)]
+                 for r in board.itertuples()])
+    print("\nThe ranking uses estimates only. Quality needs a benchmark run.")
+    print("Decode ceilings are upper bounds. Where the model does not fit in VRAM, the part in")
+    print("system RAM is read at the RAM bandwidth, so the ceiling is blended by the offloaded share.")
+
+    paths = plot_dryrun(df, board, vram_gb, out_dir / "plots")
+    print(f"\nWritten to {out_dir}/: {out_file.name}, {DRYRUN_LEADERBOARD}")
+    for p in paths:
+        print(f"         {p}")
+
+
+RESULT_NAMES = {"humaneval": "coding_benchmark_results.csv",
+                "mbpp": "coding_benchmark_results_mbpp.csv",
+                "swebench": "coding_benchmark_results_swebench.csv"}
+LOCAL_MODEL_DIRS = [Path.home() / ".lmstudio" / "models",
+                    Path.home() / ".cache" / "lm-studio" / "models"]
+
+
+def resolve_output(explicit, default_name, bench_dir):
+    """
+    Output file for a job. A file found in the current folder is resumed first (as
+    before); otherwise the benchmark folder is used. If neither has the file, it is
+    created in the benchmark folder.
+    """
+    if explicit:
+        path = Path(explicit)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        return path
+    here = Path(default_name)
+    if here.exists():
+        print(f"Resuming from {here} (found in the current folder)")
+        return here
+    there = bench_dir / default_name
+    if there.exists():
+        print(f"Resuming from {there}")
+    return there
+
+
+def discover_models(base_url):
+    """All local models: from the LM Studio server if it runs, otherwise from the model folders."""
+    try:
+        r = requests.get(api(base_url, "/api/v1/models"), timeout=3)
+        r.raise_for_status()
+        keys = [m["key"] for m in r.json().get("models", [])
+                if m.get("key") and m.get("type", "llm") == "llm"]
+        if keys:
+            return sorted(set(keys)), "the LM Studio server"
+    except Exception:
+        pass
+    keys = set()
+    for root in LOCAL_MODEL_DIRS:
+        if not root.is_dir():
+            continue
+        for gguf in root.rglob("*.gguf"):
+            parts = gguf.relative_to(root).parts
+            key = f"{parts[0]}/{parts[1]}" if len(parts) >= 3 else (parts[0] if len(parts) == 2 else gguf.stem)
+            if "embed" not in key.lower():
+                keys.add(key)
+    source = "the model folders on disk (" + ", ".join(str(r) for r in LOCAL_MODEL_DIRS if r.is_dir()) + ")"
+    return sorted(keys), source
+
+
 def main():
     DEFAULT_LM_STUDIO_URL = "http://localhost:1234"
     CONTEXTS = [50_000, 80_000, 100_000, 120_000, 150_000, 180_000]
@@ -1476,6 +2100,25 @@ def main():
                         help="Results CSV (default depends on --benchmark).")
     parser.add_argument("--limit", type=int, default=None, help="Only run the first N problems.")
     parser.add_argument("--plots-only", action="store_true", help="Do not run anything; just (re)generate plots from the existing results CSV.")
+    parser.add_argument("--dry-run", "--dryrun", dest="dry_run", action="store_true",
+                        help="Print memory and speed estimates and the run plan; load nothing.")
+    parser.add_argument("--gpu-bandwidth", type=float, default=GPU_BANDWIDTH,
+                        help="GPU memory bandwidth in GB/s, used by --dry-run.")
+    parser.add_argument("--vram-gb", type=float, default=None,
+                        help="GPU memory in GB, used by --dry-run (default: read from nvidia-smi).")
+    parser.add_argument("--ram-bandwidth", type=float, default=RAM_BANDWIDTH,
+                        help="System RAM bandwidth in GB/s for the part of a model that does not fit "
+                             "in VRAM (--dry-run). Typical range 8 to 60.")
+    parser.add_argument("--overhead-gb", type=float, default=DRYRUN_OVERHEAD_GB,
+                        help="Fixed GB added to every --dry-run estimate (compute buffers, runtime). "
+                             "Calibrate against the LM Studio 'Estimated Memory Usage' value.")
+    parser.add_argument("--kv-bytes", type=int, default=KV_BYTES_PER_TOKEN,
+                        help="KV-cache bytes per token for models without a GGUF file (--dry-run).")
+    parser.add_argument("--model-dir", action="append", default=None,
+                        help="Extra folder with GGUF model files for --dry-run (repeatable).")
+    parser.add_argument("--quants", nargs="+", default=DRYRUN_DEFAULT_QUANTS, choices=list(QUANT_BITS),
+                        help="Quantizations for --dry-run (default: Q4_K_M Q6_K Q8_0; "
+                             "add Q3_K_M and Q5_K_M explicitly).")
     args = parser.parse_args()
 
     # Fixed defaults (no longer CLI flags)
@@ -1483,50 +2126,57 @@ def main():
     args.max_tokens = SWE_MAX_TOKENS if args.benchmark == "swebench" else DEFAULT_MAX_TOKENS
     args.fill = 0.0
     args.vary_filler = False
-    args.plots_dir = "plots"
     args.probe = False
     args.probe_tokens = list(PROBE_TOKENS)
     args.probe_reps = 2
-    args.probe_file = "speed_probe.csv"
 
     if args.benchmark == "suite" and SS is None:
         print("STOP: suite mode needs suite_scoring.py and docs.py in the localbenchmark "
               "package folder (next to localbenchmark.py and llm_plots.py).")
         return
-    if args.results is None and args.benchmark == "suite":
-        if not args.suite:
-            print("STOP: --benchmark suite needs --suite <file.jsonl>")
-            return
-        args.results = f"suite_results_{SS.load_suite(args.suite).name}.csv"
-    elif args.results is None:
-        args.results = {"humaneval": "coding_benchmark_results.csv",
-                        "mbpp": "coding_benchmark_results_mbpp.csv",
-                        "swebench": "coding_benchmark_results_swebench.csv"}[args.benchmark]
+    if args.benchmark == "suite" and not args.dry_run and not args.suite:
+        print("STOP: --benchmark suite needs --suite <file.jsonl>")
+        return
 
     args.base_url = args.base_url.rstrip("/")
-    results_file = Path(args.results)
-    probe_file = Path(args.probe_file)
-    diag_file = results_file.with_name(results_file.stem + "_diagnostics.jsonl")
     contexts = sorted(set(args.contexts))
 
+    # Every job writes into its own folder: dryrun/, humaneval/, mbpp/, swebench/, suite/
+    bench_dir = Path("dryrun") if args.dry_run else Path(args.benchmark)
+    bench_dir.mkdir(parents=True, exist_ok=True)
+    args.plots_dir = str(bench_dir / "plots")
+    if args.dry_run:
+        results_file = Path(args.results) if args.results else bench_dir / DRYRUN_CSV
+        probe_file = bench_dir / "speed_probe.csv"
+    else:
+        name = (f"suite_results_{SS.load_suite(args.suite).name}.csv" if args.benchmark == "suite"
+                else RESULT_NAMES[args.benchmark])
+        results_file = resolve_output(args.results, name, bench_dir)
+        probe_file = resolve_output(None, "speed_probe.csv", bench_dir)
+    args.results = str(results_file)
+    args.probe_file = str(probe_file)
+    diag_file = results_file.with_name(results_file.stem + "_diagnostics.jsonl")
+
     print("\n" + "=" * 80 + "\nLOCAL LLM CODING BENCHMARK\n" + "=" * 80)
-    print("Models:", *args.models, sep="\n  - ")
+    print(f"Output folder: {bench_dir}/")
     print("Contexts:", [f"{c:,}" for c in contexts])
-    # print("Cache configs:", [c["label"] for c in CACHE_CONFIGS])
-    # print(f"Fill ratio: {args.fill}  (vary filler: {args.vary_filler})")
-    # if args.fill == 0:
-    #     print("NOTE: fill=0 -> prompts are tiny; context size will not affect accuracy.")
 
     if args.plots_only:
         run_plots(results_file, args.plots_dir, probe_file, diag_file)
         return
 
-    # Per-model context discovery (a bad model no longer aborts the run).
-    if args.models is None or len(args.models) == 0:
-        print("\n" + "=" * 80 )
-        print('STOP: No models are specified.')
-        print('localbenchmark --models "qwen3.8-27b" "openai/gpt-oss-20b" --contexts "50000" "80000"')
-        print("=" * 80 )
+    if not args.models:
+        keys, source = discover_models(args.base_url)
+        if not keys:
+            print("STOP: no --models given and no local models were found.\n"
+                  "Load a model in LM Studio, or pass --models \"openai/gpt-oss-20b\".")
+            return
+        args.models = keys
+        print(f"No --models given: using {len(keys)} model(s) from {source}.")
+    print("Models:", *args.models, sep="\n  - ")
+
+    if args.dry_run:
+        dryrun_report(args, args.models, contexts)
         return
 
     check_lm_studio(args.base_url)
