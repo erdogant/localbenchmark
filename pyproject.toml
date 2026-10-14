@@ -37,6 +37,7 @@ dependencies = [
 [project.scripts]
 localbenchmark = "localbenchmark.localbenchmark:main"
 localbenchmarkplot = "localbenchmark.llm_plots:main"
+suite_scoring = "localbenchmark.suite_scoring:main"
 # localbenchmarkcli = "localbenchmark.clizard_main:main"
 
 

@@ -344,7 +344,10 @@ def check_gold(suite):
 
 def check_context(suite, folder):
     """(item id, file name) for every 'context' entry that is not in the document folder."""
-    present = {p.name for p in Path(folder).iterdir() if p.is_file()}
+    folder = Path(folder)
+    if not folder.is_dir():
+        raise FileNotFoundError(f"document folder does not exist: {folder.resolve()}")
+    present = {p.name for p in folder.iterdir() if p.is_file()}
     return sorted({(it["id"], c) for it in suite.items
                    for c in it.get("context", []) if c not in present})
 
@@ -367,9 +370,17 @@ def main():
         raise SystemExit(1)
     print("gold check: every scored item passes its own gold answer")
     if args.docs:
+        if not Path(args.docs).is_dir():
+            print(f"MISSING DOCUMENTS: the folder {Path(args.docs).resolve()} does not exist.")
+            print("  Create it and copy the document files into it.")
+            raise SystemExit(1)
         missing = check_context(suite, args.docs)
         if missing:
-            print("MISSING DOCUMENTS (context files not found in the folder):")
+            found = [p.name for p in Path(args.docs).iterdir() if p.is_file()] if Path(args.docs).is_dir() else []
+            print(f"MISSING DOCUMENTS: {len(missing)} references not found in {Path(args.docs).resolve()}")
+            if not found:
+                print("  The folder is empty or does not exist. Copy the document files into it.")
+            print("  Files in the folder:", ", ".join(sorted(found)) or "(none)")
             for item_id, name in missing:
                 print(f"  {item_id}: {name}")
             raise SystemExit(1)

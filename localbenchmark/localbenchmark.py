@@ -338,6 +338,8 @@ SUITE_SYSTEM_PROMPT = (
     "You answer questions about one company using only the documents provided. "
     "If the documents do not contain the answer, say that the documents do not "
     "contain this information. Do not guess. Answer briefly.")
+SUITE_CLOSED_BOOK_PROMPT = (
+    "Answer the question. Be brief. If you are not sure, give your best answer.")
 SUITE_QUESTION_TOKENS = 300   # estimate for the question text and template
 SUITE_EXTRA_FIELDS = ["score", "domain", "item_type", "docs_included", "score_detail"]
 SUITE_FIELDS = FIELDS + SUITE_EXTRA_FIELDS
@@ -363,20 +365,39 @@ def row_to_item(row):
 
 
 def prepare_suite(args):
-    """Load the suite and the document folder. Returns (suite, df, docs, docs_context)."""
+    """
+    Load the suite and, if it cites documents, the document folder.
+    A suite without any 'context' is a closed-book test: no documents, the model answers
+    from its own knowledge. Returns (suite, df, docs, docs_context).
+    """
     suite = SS.load_suite(args.suite)
-    docs = DOCS.load_docs(args.docs, limit=args.docs_limit, ids=args.docs_ids)
-    missing_files = SS.check_context(suite, args.docs)
-    if missing_files:
-        raise ValueError(f"suite cites documents that are not in {args.docs}: "
-                         + ", ".join(f"{i}:{c}" for i, c in missing_files[:5]))
+    closed_book = bool(getattr(args, "closed_book", False)) or not any(
+        "context" in it for it in suite.items)
+    args.closed_book = closed_book
+
+    rubric = [it for it in suite.items if it.get("type") == "rubric"]
+    if rubric:
+        print(f"Skipping {len(rubric)} rubric item(s): they need a judge model, which is not built yet.")
+    items = [it for it in suite.items if it.get("type") != "rubric"]
+
+    if closed_book:
+        docs, docs_context = [], ""
+        print("Closed-book run: the suite cites no documents; the model answers from its own knowledge.")
+    else:
+        docs = DOCS.load_docs(args.docs, limit=args.docs_limit, ids=args.docs_ids)
+        missing_files = SS.check_context(suite, args.docs)
+        if missing_files:
+            raise ValueError(f"suite cites documents that are not in {args.docs}: "
+                             + ", ".join(f"{i}:{c}" for i, c in missing_files[:5]))
+        docs_context = DOCS.build_context(docs)
+
     selected = {d.id for d in docs}
     rows = []
-    for it in suite.items:
+    for it in items:
         included = all(c in selected for c in it.get("context", []))
         rows.append({**it, "task_id": it["id"], "docs_included": included})
     df = pd.DataFrame(rows)
-    return suite, df, docs, DOCS.build_context(docs)
+    return suite, df, docs, docs_context
 
 
 def run_suite_experiment(df, meta, args, results_file, docs_context, force_rerun=False):
@@ -415,9 +436,11 @@ def run_suite_experiment(df, meta, args, results_file, docs_context, force_rerun
         }
 
         try:
-            llm = solve_problem(client, meta["server_model"],
-                                build_suite_prompt(docs_context, item), "",
-                                args.max_tokens, system=SUITE_SYSTEM_PROMPT)
+            closed = getattr(args, "closed_book", False)
+            prompt = item_question(item) if closed else build_suite_prompt(docs_context, item)
+            system = SUITE_CLOSED_BOOK_PROMPT if closed else SUITE_SYSTEM_PROMPT
+            llm = solve_problem(client, meta["server_model"], prompt, "",
+                                args.max_tokens, system=system)
         except Exception as e:
             print("LLM ERROR")
             gpu_used, gpu_total = get_gpu_memory()
@@ -1466,15 +1489,9 @@ def create_summary(results_file):
 #   KV cache = bytes per token from the GGUF header (layers, KV heads, head size),
 #              else --kv-bytes (a default that is not measured for that model)
 #   overhead = DRYRUN_OVERHEAD_GB
-# By default (--lmstudio, on) the *load* total does not pre-allocate the full-window
-# KV: LM Studio grows the KV cache as tokens are used. Full-context KV is still
-# shown as kv_gb. Use --no-lmstudio to reserve the entire context KV in total_gb.
-# Decode speed ceiling (bandwidth upper bound):
-#   read_gb/token = (active_b * bits / 8) + kv_gb(context)
-#   tok/s = 1 / (read_gb * ((1-offload)/gpu_bw + offload/ram_bw))
-# Weight term = active parameters only (MoE). KV for the stated context is included;
-# omitting it overestimates tok/s for most models at long context. Offload blend uses
-# the load footprint (weights + optional pre-allocated KV + overhead).
+# Decode speed: each token reads the active weights and the whole KV cache. The part
+# of the model that does not fit in VRAM is read at system RAM speed, so the ceiling
+# blends GPU and RAM bandwidth by the offloaded share. It is an upper bound.
 
 DRYRUN_OVERHEAD_GB = 0.5            # buffers and runtime; measured as ~0.5 GB for Ornith 9B
 DEFAULT_VRAM_GB = 16.0              # used when nvidia-smi is not available
@@ -1707,16 +1724,7 @@ def print_table(headers, rows):
 
 
 def dryrun_rows(models, contexts, vram_gb, gpu_bw, ram_bw, quants, index,
-                kv_default=KV_BYTES_PER_TOKEN, overhead_gb=DRYRUN_OVERHEAD_GB,
-                lmstudio=True):
-    """
-    Build dry-run estimate rows.
-
-    lmstudio=True (default): do not fold the full-window KV into total_gb /
-    headroom (LM Studio grows KV as tokens are used). kv_gb is still the
-    full-context size for memory growth. lmstudio=False: pre-allocate the
-    entire context KV in total_gb (conservative).
-    """
+                kv_default=KV_BYTES_PER_TOKEN, overhead_gb=DRYRUN_OVERHEAD_GB):
     rows = []
     for model in models:
         total_b, active_b, size_source = model_params(model)
@@ -1738,24 +1746,14 @@ def dryrun_rows(models, contexts, vram_gb, gpu_bw, ram_bw, quants, index,
             else:
                 weights_gb = total_b * bits / 8
                 weights_source, file_name = "estimate", ""
-            # Active parameters only for the weight term:
-            #   active_b * bits / 8
-            # (not full GGUF × active/total — file size is for memory totals).
-            if active_b and not math.isnan(active_b):
-                active_weights_gb = active_b * bits / 8.0
-            else:
-                active_weights_gb = float("nan")
+            active_weights_gb = weights_gb * active_b / total_b if total_b else float("nan")
             for c in model_contexts:
                 kv_gb = kv_bpt * c / 1e9
-                # Memory at load / headroom: LM Studio does not lock full KV up front.
-                kv_alloc_gb = 0.0 if lmstudio else kv_gb
-                tot = weights_gb + kv_alloc_gb + overhead_gb
+                tot = weights_gb + kv_gb + overhead_gb
                 exceeds = None if math.isnan(tot) else tot > vram_gb
                 offload = float("nan") if math.isnan(tot) else min(1.0, max(0.0, (tot - vram_gb) / tot))
-                # Per-token traffic: active weights + KV present at this context.
-                read_gb = (active_weights_gb + kv_gb
-                           if not math.isnan(active_weights_gb) else float("nan"))
-                if math.isnan(read_gb) or read_gb <= 0:
+                read_gb = active_weights_gb + kv_gb
+                if math.isnan(read_gb):
                     ceiling, used = float("nan"), "unknown"
                 else:
                     seconds = read_gb * ((1 - offload) / gpu_bw + offload / ram_bw)
@@ -1781,8 +1779,7 @@ def dryrun_leaderboard(df):
                       + board["headroom_gb"].rank(ascending=False))
     board["rank"] = board["score"].rank(method="min")
     cols = ["rank", "label", "quant", "context", "weights_source", "kv_source", "total_gb",
-            "headroom_gb", "exceeds_gpu", "offload_share", "bandwidth_used",
-            "decode_ceiling_tps", "score"]
+            "headroom_gb", "exceeds_gpu", "bandwidth_used", "decode_ceiling_tps", "score"]
     return board.sort_values(["rank", "decode_ceiling_tps"], ascending=[True, False],
                              na_position="last")[cols]
 
@@ -2026,21 +2023,10 @@ def dryrun_report(args, models, contexts):
     print(f"GGUF files found: {len(index)} in " + (", ".join(str(r) for r in roots if Path(r).is_dir()) or "no model folder"))
     print(f"Quantizations: {', '.join(quants)}")
     print(f"Benchmark: {args.benchmark} | contexts: " + ", ".join(f"{c // 1000}k" for c in contexts))
-    if args.lmstudio:
-        print("KV allocation: LM Studio mode (default) — full-window KV is NOT pre-allocated in total GB.")
-        print("WARNING: LM Studio does not pre-allocate the entire KV cache for the max context")
-        print("         window at load time. KV memory grows as the conversation / token length")
-        print("         increases during use, rather than locking down 100% up front.")
-        print("         total GB ≈ weights + overhead; kv_gb is full-context size (memory growth).")
-        print("         Decode ceiling = active weights + KV at this context. Use --no-lmstudio")
-        print("         to reserve full KV in total GB.")
-    else:
-        print("KV allocation: pre-allocate full-window KV in total GB (--no-lmstudio).")
     print()
 
     df = dryrun_rows(models, contexts, vram_gb, args.gpu_bandwidth, args.ram_bandwidth, quants,
-                     index, kv_default=args.kv_bytes, overhead_gb=args.overhead_gb,
-                     lmstudio=args.lmstudio)
+                     index, kv_default=args.kv_bytes, overhead_gb=args.overhead_gb)
     df.to_csv(out_file, index=False)
     board = dryrun_leaderboard(df)
     board.to_csv(out_dir / DRYRUN_LEADERBOARD, index=False)
@@ -2049,32 +2035,13 @@ def dryrun_report(args, models, contexts):
     dryrun_plan(args, models, contexts)
 
     print("\nLeaderboard (every model, quantization and context; speed ceiling and memory headroom):")
-    print_table(
-        ["rank", "model", "quant", "context", "total GB", "headroom GB",
-         "offload %", "bandwidth", "decode ceiling tok/s"],
-        [[
-            _num(r.rank, 0),
-            r.label,
-            r.quant,
-            f"{int(r.context) // 1000}k",
-            _num(r.total_gb),
-            _num(r.headroom_gb),
-            ("nan" if r.offload_share != r.offload_share  # NaN check
-             else f"{100.0 * float(r.offload_share):.0f}%"),
-            r.bandwidth_used,
-            _num(r.decode_ceiling_tps, 0),
-        ] for r in board.itertuples()],
-    )
+    print_table(["rank", "model", "quant", "context", "total GB", "headroom GB", "bandwidth", "decode ceiling tok/s"],
+                [[_num(r.rank, 0), r.label, r.quant, f"{int(r.context) // 1000}k", _num(r.total_gb),
+                  _num(r.headroom_gb), r.bandwidth_used, _num(r.decode_ceiling_tps, 0)]
+                 for r in board.itertuples()])
     print("\nThe ranking uses estimates only. Quality needs a benchmark run.")
-    print("Decode ceilings are bandwidth upper bounds at the stated context:")
-    print("  read/token = (active_b × bits / 8) + kv_gb(context)")
-    print("  tok/s = 1 / (read × ((1−offload)/GPU_BW + offload/RAM_BW))")
-    print("Weights use active parameters only (MoE). KV is included — otherwise long-context")
-    print("ceilings heavily overestimate real decode traffic.")
-    if args.lmstudio:
-        print("total GB (default --lmstudio) = weights + overhead only; KV still grows with use.")
-    else:
-        print("total GB (--no-lmstudio) = weights + full-context KV + overhead (conservative).")
+    print("Decode ceilings are upper bounds. Where the model does not fit in VRAM, the part in")
+    print("system RAM is read at the RAM bandwidth, so the ceiling is blended by the offloaded share.")
 
     paths = plot_dryrun(df, board, vram_gb, out_dir / "plots")
     print(f"\nWritten to {out_dir}/: {out_file.name}, {DRYRUN_LEADERBOARD}")
@@ -2150,6 +2117,9 @@ def main():
                         help="Folder with the company documents (default: company_docs).")
     parser.add_argument("--docs-limit", type=int, default=None,
                         help="Use only the first N documents (name order).")
+    parser.add_argument("--closed-book", action="store_true",
+                        help="Suite mode: ask the questions without documents (automatic when the "
+                             "suite cites no documents).")
     parser.add_argument("--docs-ids", nargs="+", default=None,
                         help="Use exactly these document file names.")
     parser.add_argument("--results", default=None,
@@ -2158,14 +2128,6 @@ def main():
     parser.add_argument("--plots-only", action="store_true", help="Do not run anything; just (re)generate plots from the existing results CSV.")
     parser.add_argument("--dry-run", "--dryrun", dest="dry_run", action="store_true",
                         help="Print memory and speed estimates and the run plan; load nothing.")
-    parser.add_argument(
-        "--lmstudio",
-        action=argparse.BooleanOptionalAction,
-        default=True,
-        help="Dry-run KV accounting for LM Studio (default: on). Does not pre-allocate the "
-             "full-window KV in total GB; KV grows with use. Use --no-lmstudio to reserve the "
-             "entire context KV in the memory total.",
-    )
     parser.add_argument("--gpu-bandwidth", type=float, default=GPU_BANDWIDTH,
                         help="GPU memory bandwidth in GB/s, used by --dry-run.")
     parser.add_argument("--vram-gb", type=float, default=None,
