@@ -134,7 +134,21 @@ Results are written to CSV. Configurations already present in the **summary** CS
 
 Suite mode asks questions about a set of company documents. Every selected document goes into the prompt, and we score each answer. The suite includes **unanswerable** questions: the correct answer is to say the documents do not contain the information. An invented answer scores zero, which is the most important check for company use.
 
-#### Layout
+#### Commands
+
+Run the suite with LM Studio running:
+
+```bash
+Example of lines:
+{"id":"ctry-01","domain":"countries","type":"short","prompt":"What is the capital of Australia?","accept":["Canberra"],"distractors":["Sydney","Melbourne"]}
+{"id":"ctry-03","domain":"countries","type":"numeric","prompt":"Roughly how large is Iceland, in square kilometres?","gold":103000,"rel_tol":0.05}
+{"id":"co-04","domain":"companies","type":"short","prompt":"Which company acquired LinkedIn in 2016?","accept":["Microsoft"],"distractors":["Google","Oracle"]}
+{"id":"co-01","domain":"companies","type":"numeric","prompt":"In which year was Microsoft founded?","gold":1975}
+
+localbenchmark --benchmark suite --suite general_knowledge.jsonl --models "openai/gpt-oss-20b" --contexts 120000
+```
+
+#### Run with longer/ more detailled answers
 
 - `company_docs/`: the document folder. Any `.txt` or `.md` file can be used.
 - `suites/<name>.jsonl`: one question per line. Each question names its source documents in `context`.
