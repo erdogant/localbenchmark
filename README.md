@@ -140,9 +140,9 @@ Suite mode asks questions about a set of company documents. Every selected docum
 - `suites/<name>.jsonl`: one question per line. Each question names its source documents in `context`.
 
 The demo suite (`northwind_demo`) is fictional: 12 documents for a company called Northwind Analytics and 40 questions, 30 answerable and 10 unanswerable.
-Example of jsonl:
 
 ```bash
+Example of jsonl:
 
 {"id": "nw-01", "domain": "hr", "type": "short", "prompt": "How many days of annual leave do full-time employees get per calendar year?", "accept": ["25"], "context": ["hr_leave_policy.md"]}
 
@@ -153,15 +153,18 @@ Example of jsonl:
 Run the suite with LM Studio running:
 
 ```bash
-localbenchmark --benchmark suite --suite northwind_demo.jsonl \
-    --docs path/to/company_docs --models "openai/gpt-oss-20b" --contexts 50000 120000
+localbenchmark --benchmark suite --suite northwind_demo.jsonl --docs path/to/company_docs \
+    --models "openai/gpt-oss-20b" --contexts 120000
 ```
 
 Use fewer documents:
 
 ```bash
+
+# first 40 files, in name order
 localbenchmark --benchmark suite --suite northwind_demo.jsonl --docs path/to/company_docs \
-    --models "openai/gpt-oss-20b" --docs-limit 40            # first 40 files, in name order
+    --models "openai/gpt-oss-20b" --docs-limit 40
+
 localbenchmark --benchmark suite --suite northwind_demo.jsonl --docs path/to/company_docs \
     --models "openai/gpt-oss-20b" --docs-ids hr_leave_policy.md expense_policy.md
 ```
