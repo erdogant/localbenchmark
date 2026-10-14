@@ -126,9 +126,9 @@ Results are written to CSV. Configurations already present in the **summary** CS
 
 ---
 
-### Company QA suites
+### Custom (Company) QA suites
 
-Suite mode asks questions about a set of company documents. Every selected document goes into the prompt, and each answer is scored without an LLM judge. The suite includes **unanswerable** questions: the correct answer is to say the documents do not contain the information. An invented answer scores zero, which is the most important check for company use.
+Suite mode asks questions about a set of company documents. Every selected document goes into the prompt, and we score each answer. The suite includes **unanswerable** questions: the correct answer is to say the documents do not contain the information. An invented answer scores zero, which is the most important check for company use.
 
 #### Layout
 
@@ -138,10 +138,6 @@ Suite mode asks questions about a set of company documents. Every selected docum
 - `docs.py`: document folder loader and size estimate.
 
 The demo suite (`northwind_demo`) is fictional: 12 documents for a company called Northwind Analytics and 40 questions, 30 answerable and 10 unanswerable.
-
-#### Setup
-
-Copy `suite_scoring.py` and `docs.py` into the **package folder** that contains `localbenchmark.py` and `llm_plots.py`. Without them the other benchmarks still work, and suite mode stops with a message.
 
 #### Commands
 
