@@ -79,7 +79,9 @@ rank  model                         quant   context  total GB  headroom GB  offl
 1     gpt-oss-20b                   Q4_K_M  120k     13.1      4.0          0%         GPU        74
 2     qwen3-coder-30b-a3b-instruct  Q4_K_M  120k     18.5      -1.4         8%         GPU+RAM    21
 
-``` 
+```
+
+---
 
 ### Quick start — coding benchmark
 
@@ -96,6 +98,8 @@ localbenchmark --base-url http://localhost:1234
 localbenchmark --models unsloth/qwen3-coder-30b-a3b-instruct openai/gpt-oss-20b --contexts 50000 80000 100000 --base-url http://localhost:1234
 
 ```
+
+---
 
 Start LM Studio, enable the local server, load a coding model, then:
 
