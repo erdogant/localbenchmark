@@ -130,7 +130,7 @@ Results are written to CSV. Configurations already present in the **summary** CS
 
 ---
 
-### Custom (Company) QA suites
+### Custom (Company) QA
 
 Suite mode asks questions about a set of company documents. Every selected document goes into the prompt, and we score each answer. The suite includes **unanswerable** questions: the correct answer is to say the documents do not contain the information. An invented answer scores zero, which is the most important check for company use.
 
@@ -138,33 +138,31 @@ Suite mode asks questions about a set of company documents. Every selected docum
 
 - `company_docs/`: the document folder. Any `.txt` or `.md` file can be used.
 - `suites/<name>.jsonl`: one question per line. Each question names its source documents in `context`.
-- `suite_scoring.py`: scoring and suite validation.
-- `docs.py`: document folder loader and size estimate.
 
 The demo suite (`northwind_demo`) is fictional: 12 documents for a company called Northwind Analytics and 40 questions, 30 answerable and 10 unanswerable.
-
-#### Commands
-
-Check the suite and the documents before a run:
+Example of jsonl:
 
 ```bash
-python suite_scoring.py suites/northwind_demo.jsonl --docs company_docs
-python docs.py estimate company_docs
+
+{"id": "nw-01", "domain": "hr", "type": "short", "prompt": "How many days of annual leave do full-time employees get per calendar year?", "accept": ["25"], "context": ["hr_leave_policy.md"]}
+
 ```
+
+#### Commands
 
 Run the suite with LM Studio running:
 
 ```bash
-localbenchmark --benchmark suite --suite suites/northwind_demo.jsonl \
+localbenchmark --benchmark suite --suite northwind_demo.jsonl \
     --docs path/to/company_docs --models "openai/gpt-oss-20b" --contexts 50000 120000
 ```
 
 Use fewer documents:
 
 ```bash
-localbenchmark --benchmark suite --suite suites/northwind_demo.jsonl --docs path/to/company_docs \
+localbenchmark --benchmark suite --suite northwind_demo.jsonl --docs path/to/company_docs \
     --models "openai/gpt-oss-20b" --docs-limit 40            # first 40 files, in name order
-localbenchmark --benchmark suite --suite suites/northwind_demo.jsonl --docs path/to/company_docs \
+localbenchmark --benchmark suite --suite northwind_demo.jsonl --docs path/to/company_docs \
     --models "openai/gpt-oss-20b" --docs-ids hr_leave_policy.md expense_policy.md
 ```
 
@@ -173,17 +171,6 @@ localbenchmark --benchmark suite --suite suites/northwind_demo.jsonl --docs path
 - `suite_results_<suite>.csv`: one row per question, with the score (0 to 1), pass/fail, domain, item type, whether the cited documents were included, and an error label (`WRONG_ANSWER`, `INVENTED_ANSWER`, `MISSING_DOC`, `TRUNCATED`, `EMPTY_RESPONSE`, `LLM_ERROR`).
 - `suite_results_<suite>_by_domain.csv`: pass rate and mean score per domain. The console also shows answerable and unanswerable results separately, and the number of invented answers.
 
-#### Tests
-
-The tests live in the `suite/` folder of the repository, not in the package:
-
-```bash
-python -m unittest test_suite_scoring test_docs_and_unanswerable test_suite_pipeline -v
-```
-
-The pipeline tests replace LM Studio with a fake model, so they run without a GPU.
-
----
 
 ### Plots and ranking
 
