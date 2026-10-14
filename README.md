@@ -59,6 +59,28 @@ pip install git+https://github.com/erdogant/localbenchmark
 
 ---
 
+### Quick start — Dry run
+
+Make a dry run. This is ideal for a fast check of model GPU requirements and their theoretical (expected) coding speed.
+
+```bash
+# Run for all models with context window 120K and quantization of Q4_K_M
+
+localbenchmark --dry-run --contexts 120000 --quants Q4_K_M
+localbenchmark --dry-run --contexts 120000 --quants Q4_K_M --models unsloth/qwen3-coder-30b-a3b-instruct openai/gpt-oss-20b
+
+```
+
+Output:
+
+```bash
+rank  model                         quant   context  total GB  headroom GB  offload %  bandwidth  decode ceiling tok/s
+----------------------------------------------------------------------------------------------------------------------
+1     gpt-oss-20b                   Q4_K_M  120k     13.1      4.0          0%         GPU        74
+2     qwen3-coder-30b-a3b-instruct  Q4_K_M  120k     18.5      -1.4         8%         GPU+RAM    21
+
+``` 
+
 ### Quick start — coding benchmark
 
 Start LM Studio, enable the local server, load a coding model, then:
