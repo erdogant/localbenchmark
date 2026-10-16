@@ -1,0 +1,6 @@
+{
+  "name": "general_knowledge",
+  "version": "0.1",
+  "description": "Countries, politics, people, companies and world events. No documents in context.",
+  "notes": "Deterministic scoring. Rubric items are skipped until a judge is added. Public facts can appear in training data; treat scores as a ranking, not as proof of knowledge."
+}

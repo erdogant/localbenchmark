@@ -376,9 +376,12 @@ def prepare_suite(args):
     args.closed_book = closed_book
 
     rubric = [it for it in suite.items if it.get("type") == "rubric"]
-    if rubric:
-        print(f"Skipping {len(rubric)} rubric item(s): they need a judge model, which is not built yet.")
-    items = [it for it in suite.items if it.get("type") != "rubric"]
+    if rubric and not getattr(args, "judge", None):
+        print(f"{len(rubric)} open-ended item(s): answered and saved, not scored. "
+              "Use --judge MODEL to score them.")
+    elif rubric:
+        print(f"{len(rubric)} open-ended item(s) will be scored by the judge {args.judge}.")
+    items = list(suite.items)
 
     if closed_book:
         docs, docs_context = [], ""
@@ -454,7 +457,9 @@ def run_suite_experiment(df, meta, args, results_file, docs_context, force_rerun
         gpu_used, gpu_total = get_gpu_memory()
         passed = bool(result.passed)
 
-        if passed:
+        if result.score is None:          # open-ended: the judge scores it later
+            error_type, passed = "NEEDS_JUDGE", None
+        elif passed:
             error_type = ""
         elif not base["docs_included"]:
             error_type = "MISSING_DOC"
@@ -469,7 +474,8 @@ def run_suite_experiment(df, meta, args, results_file, docs_context, force_rerun
 
         tps = llm["decode_tps"]
         score_text = "-" if result.score is None else f"{result.score:.2f}"
-        print(f"{'PASS' if passed else 'FAIL'}  score {score_text}"
+        status = "ANSWERED" if result.score is None else ("PASS" if passed else "FAIL")
+        print(f"{status}  score {score_text}"
               f"  ({llm['prompt_tokens']} prompt tok, {tps or 0:.1f} tok/s)")
 
         append_row(results_file, SUITE_FIELDS, {
@@ -501,10 +507,133 @@ def run_suite_experiment(df, meta, args, results_file, docs_context, force_rerun
         else:
             slow_streak = 0
 
-    suite_summary(results_file)
+    if args.judge:
+        run_judge_stage(df, args, results_file, experiment_id)
+    suite_summary(results_file, args.judge)
 
 
-def suite_summary(results_file):
+JUDGE_MAX_TOKENS = 1024
+JUDGE_FIELDS = ["timestamp", "judge_model", "experiment_id", "problem_id", "judge_score",
+                "passed", "reason", "error_type", "error", "raw"]
+
+
+def judge_file_for(results_file):
+    return results_file.with_name(results_file.stem + "_judge.csv")
+
+
+def _judged(results_file, judge_model):
+    """Judge rows for this judge model that have a score (failed judgements are retried)."""
+    jf = judge_file_for(results_file)
+    if not jf.exists():
+        return pd.DataFrame(columns=JUDGE_FIELDS)
+    j = pd.read_csv(jf, engine="python", on_bad_lines="skip")
+    if j.empty:
+        return j
+    j = j[(j["judge_model"] == judge_model)
+          & (j["error_type"].isna() | (j["error_type"].astype(str) == ""))]
+    return j.drop_duplicates(["experiment_id", "problem_id"], keep="last")
+
+
+def pending_judgements(results_file, experiment_id, judge_model):
+    """Open-ended answers of this experiment that the judge has not scored yet."""
+    if not results_file.exists():
+        return []
+    r = pd.read_csv(results_file, engine="python", on_bad_lines="skip")
+    if r.empty or "error_type" not in r.columns:
+        return []
+    r = r[(r["experiment_id"] == experiment_id) & (r["error_type"].astype(str) == "NEEDS_JUDGE")]
+    r = r.drop_duplicates("problem_id", keep="last")
+    done = set(zip(_judged(results_file, judge_model)["experiment_id"],
+                   _judged(results_file, judge_model)["problem_id"]))
+    return [rec for rec in r.to_dict("records") if (experiment_id, rec["problem_id"]) not in done]
+
+
+def apply_judgements(df, results_file, judge_model):
+    """Replace NEEDS_JUDGE rows by the judge's score where a judgement exists."""
+    j = _judged(results_file, judge_model)
+    if j.empty:
+        return df
+    j = j.set_index(["experiment_id", "problem_id"])
+    df = df.copy()
+    for idx, row in df.iterrows():
+        if str(row["error_type"]) != "NEEDS_JUDGE":
+            continue
+        key = (row["experiment_id"], row["problem_id"])
+        if key in j.index:
+            jr = j.loc[key]
+            passed = str(jr["passed"]).lower() == "true"
+            df.at[idx, "score"] = float(jr["judge_score"])
+            df.at[idx, "passed"] = passed
+            df.at[idx, "error_type"] = "" if passed else "WRONG_ANSWER"
+    return df
+
+
+def judge_calibration(client, server, items):
+    """Score each reference answer with the judge. The judge must give full marks."""
+    for it in items.values():
+        if it.get("type") != "rubric" or not it.get("reference"):
+            continue
+        llm = solve_problem(client, server, SS.build_judge_prompt(it, it["reference"]), "",
+                            JUDGE_MAX_TOKENS, system=SS.JUDGE_SYSTEM_PROMPT)
+        try:
+            score, _ = SS.parse_judge_reply(llm["raw"])
+        except ValueError:
+            score = None
+        if score is None or score < 1.0:
+            print(f"WARNING: the judge scored the reference answer of {it['id']} at {score}; "
+                  "the judge results may not be reliable.")
+        else:
+            print(f"judge check: reference answer for {it['id']} scored 1.0")
+
+
+def run_judge_stage(df, args, results_file, experiment_id):
+    """Unload the candidate, load the judge, grade the saved open-ended answers, unload."""
+    pending = pending_judgements(results_file, experiment_id, args.judge)
+    if not pending:
+        return
+    items = {row["task_id"]: row_to_item(row) for _, row in df.iterrows()}
+    print(f"\nJudging {len(pending)} open-ended answer(s) with {args.judge} ...")
+    unload_all_models(args.base_url)
+    try:
+        load = load_model(args.base_url, args.judge, args.judge_context, {})
+        server = load.get("instance_id") or args.judge
+        client = OpenAI(base_url=api(args.base_url, "/v1"), api_key="lm-studio",
+                        timeout=REQUEST_TIMEOUT, max_retries=0)
+        judge_calibration(client, server, items)
+        jf = judge_file_for(results_file)
+        for rec in pending:
+            item = items.get(rec["problem_id"])
+            if item is None:
+                continue
+            answer = rec["code"] if isinstance(rec.get("code"), str) else ""
+            base = {"timestamp": timestamp(), "judge_model": args.judge,
+                    "experiment_id": experiment_id, "problem_id": rec["problem_id"]}
+            print(f"  {rec['problem_id']} ... ", end="", flush=True)
+            try:
+                llm = solve_problem(client, server, SS.build_judge_prompt(item, answer), "",
+                                    JUDGE_MAX_TOKENS, system=SS.JUDGE_SYSTEM_PROMPT)
+            except Exception as e:
+                print("JUDGE ERROR")
+                append_row(jf, JUDGE_FIELDS, {**base, "error_type": "JUDGE_ERROR",
+                                              "error": str(e)[:500]})
+                continue
+            try:
+                score, reason = SS.parse_judge_reply(llm["raw"])
+            except ValueError as e:
+                print("NO SCORE IN REPLY")
+                append_row(jf, JUDGE_FIELDS, {**base, "error_type": "PARSE_ERROR",
+                                              "error": str(e), "raw": llm["raw"][:2000]})
+                continue
+            passed = score >= float(item.get("min_score", 1.0)) - 1e-9
+            print(f"score {score:.1f} {'PASS' if passed else 'FAIL'}  {reason[:80]}")
+            append_row(jf, JUDGE_FIELDS, {**base, "judge_score": score, "passed": passed,
+                                          "reason": reason, "error_type": "", "error": "",
+                                          "raw": llm["raw"][:2000]})
+    finally:
+        unload_all_models(args.base_url)
+
+
+def suite_summary(results_file, judge_model=None):
     """Per-domain scores, and separate figures for answerable and unanswerable items."""
     if not results_file.exists():
         return
@@ -513,8 +642,12 @@ def suite_summary(results_file):
         return
     df = df[df["error_type"].astype(str) != "LLM_ERROR"]
     df = df.drop_duplicates(["experiment_id", "problem_id"], keep="last").copy()
-    df["passed"] = df["passed"].astype(str).str.lower().eq("true")
     df["score"] = pd.to_numeric(df["score"], errors="coerce")
+    if judge_model:
+        df = apply_judgements(df, results_file, judge_model)
+    awaiting = int((df["error_type"].astype(str) == "NEEDS_JUDGE").sum())
+    df = df[df["error_type"].astype(str) != "NEEDS_JUDGE"].copy()
+    df["passed"] = df["passed"].astype(str).str.lower().eq("true")
     df["unanswerable"] = df["item_type"].eq("unanswerable")
 
     by_domain = (df.groupby(["model", "context_actual", "domain"], dropna=False)
@@ -542,6 +675,8 @@ def suite_summary(results_file):
     print(overall.round(1).to_string(index=False))
     print()
     print(by_domain.round(1).to_string(index=False))
+    if awaiting:
+        print(f"\nOpen-ended answers waiting for a judge: {awaiting} (use --judge MODEL to score them)")
     print(f"\nPer-domain table saved to: {out}")
 
 
@@ -2117,6 +2252,11 @@ def main():
                         help="Folder with the company documents (default: company_docs).")
     parser.add_argument("--docs-limit", type=int, default=None,
                         help="Use only the first N documents (name order).")
+    parser.add_argument("--judge", default=None, metavar="MODEL",
+                        help="Suite mode: score open-ended answers with this LM Studio model. "
+                             "Default: open-ended answers are saved but not scored.")
+    parser.add_argument("--judge-context", type=int, default=16000,
+                        help="Context length for the judge model (default 16000).")
     parser.add_argument("--closed-book", action="store_true",
                         help="Suite mode: ask the questions without documents (automatic when the "
                              "suite cites no documents).")
@@ -2285,6 +2425,10 @@ def main():
             if done == total:
                 print(f"Already complete ({done}/{total}) "
                       f"-> skipping, model will not be loaded.")
+                if args.benchmark == "suite" and args.judge:
+                    run_judge_stage(df, args, results_file,
+                                    experiment_id_for(model, context, kv["label"], args.fill))
+                    suite_summary(results_file, args.judge)
                 continue
             if force_rerun:
                 print(f"Not listed in summary CSV "

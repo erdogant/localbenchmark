@@ -342,6 +342,42 @@ def check_gold(suite):
     return failures
 
 
+JUDGE_SYSTEM_PROMPT = (
+    "You grade answers strictly against the given criteria. You do not reward length or style. "
+    "You reply with JSON only.")
+
+
+def build_judge_prompt(item, answer):
+    """Prompt for a judge model. The judge sees the question, the criteria and the answer only."""
+    return (
+        f"Question:\n{item['prompt']}\n\n"
+        f"Criteria:\n{item['rubric']}\n\n"
+        f"Answer to grade:\n<<<\n{answer}\n>>>\n\n"
+        "Score the answer:\n"
+        "2 = meets the criteria\n"
+        "1 = partly meets the criteria\n"
+        "0 = does not meet the criteria\n"
+        'Reply with JSON only, for example {"score": 1, "reason": "one short sentence"}.')
+
+
+def parse_judge_reply(text):
+    """(score in {0.0, 0.5, 1.0}, reason). Raises ValueError if the reply has no usable score."""
+    text = strip_think(text)
+    match = re.search(r"\{.*\}", text, re.DOTALL)
+    if match:
+        try:
+            obj = json.loads(match.group(0))
+            score = int(obj["score"])
+            if score in (0, 1, 2):
+                return score / 2, str(obj.get("reason", "")).strip()
+        except (ValueError, KeyError, TypeError):
+            pass
+    fallback = re.search(r'score"?\s*[:=]\s*([012])\b', text)
+    if fallback:
+        return int(fallback.group(1)) / 2, ""
+    raise ValueError("no score in the judge reply")
+
+
 def check_context(suite, folder):
     """(item id, file name) for every 'context' entry that is not in the document folder."""
     folder = Path(folder)
