@@ -4,7 +4,7 @@ import localbenchmark.benchmark_plots as benchmark_plots
 
 __author__ = 'Erdogan Taskesen'
 __email__ = 'erdogant@gmail.com'
-__version__ = '0.1.0'
+__version__ = '1.0.0'
 
 # Setup package-level logger
 _logger = logging.getLogger('localbenchmark')
