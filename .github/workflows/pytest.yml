@@ -1,4 +1,4 @@
-name: tests
+name: pytests
 
 on:
   push:
@@ -27,4 +27,4 @@ jobs:
           pip install pytest
 
       - name: Run tests (network blocked, no LM Studio, no model)
-        run: pytest tests -v
+        run: pytest localbenchmark/tests -v
