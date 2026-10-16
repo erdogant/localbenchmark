@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Results, resume, and summary &mdash; localbenchmark localbenchmark documentation</title>
+  <title>Results, folders, and resume &mdash; localbenchmark localbenchmark documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=e0179649" />
@@ -20,8 +20,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Quickstart — coding benchmark" href="Examples.html" />
-    <link rel="prev" title="Installation" href="Installation.html" /> 
+    <link rel="next" title="Sponsor" href="Documentation.html" />
+    <link rel="prev" title="Plots &amp; ranking" href="Plots.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -47,31 +47,26 @@
               <p class="caption" role="heading"><span class="caption-text">Background</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="Abstract.html">Background</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Abstract.html#schematic-overview">Schematic overview</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Installation</span></p>
-<ul>
+<li class="toctree-l1"><a class="reference internal" href="Quickstart.html">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Installation.html#uninstalling">Uninstalling</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Results</span></p>
+<p class="caption" role="heading"><span class="caption-text">Benchmarks</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Results, resume, and summary</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#results-csv">Results CSV</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#summary-csv">Summary CSV</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Dry_Run.html">Dry run</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Coding.html">Coding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Knowledge_Suites.html">Knowledge suite</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Plots.html">Plots &amp; ranking</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Results, folders, and resume</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#output-folders">Output folders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#results-file">Results file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#summary-file">Summary file</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#resume-behaviour">Resume behaviour</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#judge-and-diagnostics-files">Judge and diagnostics files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#speed-probe-file">Speed probe file</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#plots-input">Plots input</a></li>
 </ul>
 </li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Examples</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="Examples.html">Quickstart — coding benchmark</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Examples.html#speed-probe">Speed probe</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Examples.html#plots-and-ranking">Plots and ranking</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Examples.html#useful-cli-flags">Useful CLI flags</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Examples.html#what-is-ranked">What is ranked</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
 <ul>
@@ -80,7 +75,6 @@
 <li class="toctree-l1"><a class="reference internal" href="Documentation.html#github">Github</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Documentation.html#colab-notebook">Colab Notebook</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Documentation.html#citing">Citing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Coding%20quality.html">Coding quality</a></li>
 <li class="toctree-l1"><a class="reference internal" href="localbenchmark.localbenchmark.html">API References</a></li>
 </ul>
 
@@ -100,7 +94,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Results, resume, and summary</li>
+      <li class="breadcrumb-item active">Results, folders, and resume</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/Save and Load.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -110,43 +104,61 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="results-resume-and-summary">
-<h1>Results, resume, and summary<a class="headerlink" href="#results-resume-and-summary" title="Link to this heading"></a></h1>
-<p>Learning a full model×context grid can take many hours. <strong>localbenchmark</strong> writes every
-finished problem to CSV immediately so a crash does not lose progress.</p>
-<section id="results-csv">
-<h2>Results CSV<a class="headerlink" href="#results-csv" title="Link to this heading"></a></h2>
-<p>Default path: <code class="docutils literal notranslate"><span class="pre">coding_benchmark_results.csv</span></code>.</p>
-<p>Each row is one problem for one configuration (model, context, fill ratio, cache label).
-Fields include pass/fail, error type, TTFT, decode speed, token counts, GPU memory, and the generated code.</p>
+  <section id="results-folders-and-resume">
+<h1>Results, folders, and resume<a class="headerlink" href="#results-folders-and-resume" title="Link to this heading"></a></h1>
+<p>Long runs can take many hours. localbenchmark writes every finished item to CSV immediately, so a crash or Ctrl-C does not lose progress.</p>
+<section id="output-folders">
+<h2>Output folders<a class="headerlink" href="#output-folders" title="Link to this heading"></a></h2>
+<p>Each job writes to a folder named after its benchmark, in the current directory:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">humaneval/</span></code>: HumanEval results</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mbpp/</span></code>: MBPP results</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">swebench/</span></code>: SWE-bench results</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">suite/</span></code>: suite results (named after the suite)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dryrun/</span></code>: dry-run estimates</p></li>
+</ul>
+<p>Each folder also has a <code class="docutils literal notranslate"><span class="pre">plots</span></code> subfolder with the figures for that run.</p>
 </section>
-<section id="summary-csv">
-<h2>Summary CSV<a class="headerlink" href="#summary-csv" title="Link to this heading"></a></h2>
-<p>After each configuration (and at the end of a run), a summary file is written:</p>
-<p><code class="docutils literal notranslate"><span class="pre">coding_benchmark_results_summary.csv</span></code></p>
-<p>Configurations present in the summary are treated as finished on the next launch
-and are <strong>not</strong> reloaded. Configurations missing from the summary are run again
-(including early aborts that were recorded).</p>
+<section id="results-file">
+<h2>Results file<a class="headerlink" href="#results-file" title="Link to this heading"></a></h2>
+<p>The results file holds one row per item for one configuration (model, context, cache label). The file names are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">humaneval/coding_benchmark_results.csv</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mbpp/coding_benchmark_results_mbpp.csv</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">swebench/coding_benchmark_results_swebench.csv</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">suite/suite_results_&lt;name&gt;.csv</span></code></p></li>
+</ul>
+<p>Each row has the pass or fail result, the error label, timings, token counts, GPU memory, and the generated code or answer.</p>
+</section>
+<section id="summary-file">
+<h2>Summary file<a class="headerlink" href="#summary-file" title="Link to this heading"></a></h2>
+<p>After each configuration, a summary file is written next to the results, for example <code class="docutils literal notranslate"><span class="pre">coding_benchmark_results_summary.csv</span></code>. A configuration in the summary counts as finished. On the next run it is not loaded again. A configuration missing from the summary is run again.</p>
 </section>
 <section id="resume-behaviour">
 <h2>Resume behaviour<a class="headerlink" href="#resume-behaviour" title="Link to this heading"></a></h2>
 <ul class="simple">
-<li><p>Re-run the <strong>same command</strong> to continue where you left off</p></li>
+<li><p>Run the <strong>same command</strong> again to continue where you stopped</p></li>
+<li><p>The program first looks for the results file in the current folder, as older versions did. If it is not there, it looks in the benchmark folder. If neither has it, a new file is created in the benchmark folder.</p></li>
 <li><p>Rows with <code class="docutils literal notranslate"><span class="pre">error_type</span> <span class="pre">==</span> <span class="pre">LLM_ERROR</span></code> are retried</p></li>
-<li><p>Other outcomes (pass, test failure, truncation, …) stay on disk</p></li>
-<li><p>Slow configs that hit the minimum tok/s abort are still listed in the summary
-so they are skipped on restart</p></li>
+<li><p>Other outcomes (pass, test failure, truncation, and so on) stay on disk</p></li>
+<li><p>Configurations that stopped on the minimum speed are still listed in the summary, so they are skipped on restart</p></li>
+<li><p>A finished configuration is not reloaded, but its open-ended answers are still judged if a judge is given</p></li>
+</ul>
+</section>
+<section id="judge-and-diagnostics-files">
+<h2>Judge and diagnostics files<a class="headerlink" href="#judge-and-diagnostics-files" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>With <code class="docutils literal notranslate"><span class="pre">--judge</span></code>, the judge’s scores are in <code class="docutils literal notranslate"><span class="pre">&lt;results&gt;_judge.csv</span></code>, one row per judged answer. A judge can be run again later with another model, and each judge’s rows are kept separately.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;results&gt;_diagnostics.jsonl</span></code> records the settings LM Studio reported for each model load.</p></li>
 </ul>
 </section>
 <section id="speed-probe-file">
 <h2>Speed probe file<a class="headerlink" href="#speed-probe-file" title="Link to this heading"></a></h2>
-<p>With <code class="docutils literal notranslate"><span class="pre">--probe</span></code>, measurements go to <code class="docutils literal notranslate"><span class="pre">speed_probe.csv</span></code> (prefill/decode tok/s at
-chosen tokens-in-cache levels).</p>
+<p>With <code class="docutils literal notranslate"><span class="pre">--probe</span></code>, measurements go to <code class="docutils literal notranslate"><span class="pre">speed_probe.csv</span></code> in the benchmark folder (prefill and decode tokens/s at chosen tokens-in-cache levels).</p>
 </section>
 <section id="plots-input">
 <h2>Plots input<a class="headerlink" href="#plots-input" title="Link to this heading"></a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">plot_results</span></code> reads the results CSV (and optional probe CSV) and writes figures
-under <code class="docutils literal notranslate"><span class="pre">--out</span></code> (default <code class="docutils literal notranslate"><span class="pre">plots/</span></code>), including rank-sum tables as CSV.</p>
+<p><code class="docutils literal notranslate"><span class="pre">localbenchmarkplot</span></code> reads every per-problem results CSV in the current folder and its subfolders. It writes the figures and rank tables to a <code class="docutils literal notranslate"><span class="pre">plots</span></code> folder next to each file.</p>
 <hr>
 <center>
         <script async src="https://media.ethicalads.io/media/client/ethicalads.min.js"></script>
@@ -161,8 +173,8 @@ under <code class="docutils literal notranslate"><span class="pre">--out</span><
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="Installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="Examples.html" class="btn btn-neutral float-right" title="Quickstart — coding benchmark" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="Plots.html" class="btn btn-neutral float-left" title="Plots &amp; ranking" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Documentation.html" class="btn btn-neutral float-right" title="Sponsor" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

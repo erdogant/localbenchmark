@@ -1,0 +1,233 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Coding &mdash; localbenchmark localbenchmark documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=e0179649" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=f434bc13"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Knowledge suite" href="Knowledge_Suites.html" />
+    <link rel="prev" title="Dry run" href="Dry_Run.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            localbenchmark
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Background</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Abstract.html">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Installation.html#uninstalling">Uninstalling</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Benchmarks</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Dry_Run.html">Dry run</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Coding</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#running-a-benchmark">Running a benchmark</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#humaneval">HumanEval</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mbpp">MBPP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#swe-bench-verified">SWE-bench Verified</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#models-and-contexts">Models and contexts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#smoke-test">Smoke test</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#results-and-resume">Results and resume</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#options">Options</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Knowledge_Suites.html">Knowledge suite</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Plots.html">Plots &amp; ranking</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Save%20and%20Load.html">Results, folders, and resume</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Documentation.html">Sponsor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Documentation.html#medium-blog">Medium Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Documentation.html#github">Github</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Documentation.html#colab-notebook">Colab Notebook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Documentation.html#citing">Citing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="localbenchmark.localbenchmark.html">API References</a></li>
+</ul>
+
+    <a href= "genindex.html">Index</a>
+  
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">localbenchmark</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Coding</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/Coding.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="coding">
+<h1>Coding<a class="headerlink" href="#coding" title="Link to this heading"></a></h1>
+<p>Coding benchmarks run a model on programming problems through LM Studio. The generated code is executed against each problem’s tests, and the results record pass rate, speed and memory.</p>
+<section id="running-a-benchmark">
+<h2>Running a benchmark<a class="headerlink" href="#running-a-benchmark" title="Link to this heading"></a></h2>
+<p>Start LM Studio, enable its local server, and load a model. Then choose a benchmark with <code class="docutils literal notranslate"><span class="pre">--benchmark</span></code>.</p>
+<section id="humaneval">
+<h3>HumanEval<a class="headerlink" href="#humaneval" title="Link to this heading"></a></h3>
+<p>HumanEval is the default benchmark: 164 Python functions, each checked by hidden tests.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">localbenchmark --benchmark humaneval --models &quot;openai/gpt-oss-20b&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="mbpp">
+<h3>MBPP<a class="headerlink" href="#mbpp" title="Link to this heading"></a></h3>
+<p>MBPP (Mostly Basic Python Problems) has 500 short Python tasks. The prompt shows each task together with its visible tests.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">localbenchmark --benchmark mbpp --models &quot;openai/gpt-oss-20b&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="swe-bench-verified">
+<h3>SWE-bench Verified<a class="headerlink" href="#swe-bench-verified" title="Link to this heading"></a></h3>
+<p>SWE-bench Verified asks the model to fix real issues in real repositories, by writing a patch. Scoring runs the official harness, which needs the <code class="docutils literal notranslate"><span class="pre">swebench</span></code> package and Docker.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">localbenchmark --benchmark swebench --models &quot;openai/gpt-oss-20b&quot; --contexts 80000 150000</span>
+</pre></div>
+</div>
+</section>
+<section id="models-and-contexts">
+<h3>Models and contexts<a class="headerlink" href="#models-and-contexts" title="Link to this heading"></a></h3>
+<p>Without <code class="docutils literal notranslate"><span class="pre">--models</span></code>, every local model is used. Without <code class="docutils literal notranslate"><span class="pre">--contexts</span></code>, the contexts are 50k, 80k, 100k, 120k, 150k and 180k tokens.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>Chosen<span class="w"> </span>contexts
+<span class="go">localbenchmark --benchmark humaneval --models &quot;openai/gpt-oss-20b&quot; --contexts 50000 80000</span>
+
+<span class="gp"># </span>Every<span class="w"> </span><span class="nb">local</span><span class="w"> </span>model
+<span class="go">localbenchmark --benchmark humaneval</span>
+</pre></div>
+</div>
+</section>
+<section id="smoke-test">
+<h3>Smoke test<a class="headerlink" href="#smoke-test" title="Link to this heading"></a></h3>
+<p>Run only the first problems, to check the setup:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">localbenchmark --benchmark humaneval --models &quot;openai/gpt-oss-20b&quot; --contexts 50000 80000 --limit 20</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="results-and-resume">
+<h2>Results and resume<a class="headerlink" href="#results-and-resume" title="Link to this heading"></a></h2>
+<p>Each benchmark writes to its own folder: <code class="docutils literal notranslate"><span class="pre">humaneval/</span></code>, <code class="docutils literal notranslate"><span class="pre">mbpp/</span></code> or <code class="docutils literal notranslate"><span class="pre">swebench/</span></code>. Each row of the results CSV is one problem for one configuration. Run the same command again after an interruption to continue where you stopped. See <a class="reference internal" href="Save%20and%20Load.html"><span class="doc">Results, folders, and resume</span></a>.</p>
+</section>
+<section id="options">
+<h2>Options<a class="headerlink" href="#options" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Option</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--benchmark</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">humaneval</span></code> (default), <code class="docutils literal notranslate"><span class="pre">mbpp</span></code> or <code class="docutils literal notranslate"><span class="pre">swebench</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--models</span></code></p></td>
+<td><p>LM Studio model keys. Default: all local models.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--contexts</span></code></p></td>
+<td><p>Context window sizes in tokens. Default: 50k to 180k.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--limit</span></code></p></td>
+<td><p>Run only the first N problems.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--results</span></code></p></td>
+<td><p>Results CSV path. Default: a file in the benchmark’s folder.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--base-url</span></code></p></td>
+<td><p>LM Studio server. Default <code class="docutils literal notranslate"><span class="pre">http://localhost:1234</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--plots-only</span></code></p></td>
+<td><p>Only regenerate the plots from existing results.</p></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<center>
+        <script async src="https://media.ethicalads.io/media/client/ethicalads.min.js"></script>
+        <!-- Show an image ad -->
+        <!-- <div data-ea-publisher="erdogantgithubio" data-ea-type="image"></div> -->
+        <div data-ea-publisher="erdogantgithubio" data-ea-type="image" data-ea-style="stickybox"></div>
+</center>
+<hr></section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Dry_Run.html" class="btn btn-neutral float-left" title="Dry run" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Knowledge_Suites.html" class="btn btn-neutral float-right" title="Knowledge suite" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022-2026, Erdogan Taskesen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

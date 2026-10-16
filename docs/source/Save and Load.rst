@@ -1,49 +1,63 @@
 
-Results, resume, and summary
+Results, folders, and resume
 ''''''''''''''''''''''''''''''
 
-Learning a full model×context grid can take many hours. **localbenchmark** writes every
-finished problem to CSV immediately so a crash does not lose progress.
+Long runs can take many hours. localbenchmark writes every finished item to CSV immediately, so a crash or Ctrl-C does not lose progress.
 
-Results CSV
-----------------
+Output folders
+--------------
 
-Default path: ``coding_benchmark_results.csv``.
+Each job writes to a folder named after its benchmark, in the current directory:
 
-Each row is one problem for one configuration (model, context, fill ratio, cache label).
-Fields include pass/fail, error type, TTFT, decode speed, token counts, GPU memory, and the generated code.
+* ``humaneval/``: HumanEval results
+* ``mbpp/``: MBPP results
+* ``swebench/``: SWE-bench results
+* ``suite/``: suite results (named after the suite)
+* ``dryrun/``: dry-run estimates
 
-Summary CSV
-----------------
+Each folder also has a ``plots`` subfolder with the figures for that run.
 
-After each configuration (and at the end of a run), a summary file is written:
+Results file
+------------
 
-``coding_benchmark_results_summary.csv``
+The results file holds one row per item for one configuration (model, context, cache label). The file names are:
 
-Configurations present in the summary are treated as finished on the next launch
-and are **not** reloaded. Configurations missing from the summary are run again
-(including early aborts that were recorded).
+* ``humaneval/coding_benchmark_results.csv``
+* ``mbpp/coding_benchmark_results_mbpp.csv``
+* ``swebench/coding_benchmark_results_swebench.csv``
+* ``suite/suite_results_<name>.csv``
+
+Each row has the pass or fail result, the error label, timings, token counts, GPU memory, and the generated code or answer.
+
+Summary file
+------------
+
+After each configuration, a summary file is written next to the results, for example ``coding_benchmark_results_summary.csv``. A configuration in the summary counts as finished. On the next run it is not loaded again. A configuration missing from the summary is run again.
 
 Resume behaviour
 ----------------
 
-* Re-run the **same command** to continue where you left off
+* Run the **same command** again to continue where you stopped
+* The program first looks for the results file in the current folder, as older versions did. If it is not there, it looks in the benchmark folder. If neither has it, a new file is created in the benchmark folder.
 * Rows with ``error_type == LLM_ERROR`` are retried
-* Other outcomes (pass, test failure, truncation, …) stay on disk
-* Slow configs that hit the minimum tok/s abort are still listed in the summary
-  so they are skipped on restart
+* Other outcomes (pass, test failure, truncation, and so on) stay on disk
+* Configurations that stopped on the minimum speed are still listed in the summary, so they are skipped on restart
+* A finished configuration is not reloaded, but its open-ended answers are still judged if a judge is given
+
+Judge and diagnostics files
+---------------------------
+
+* With ``--judge``, the judge's scores are in ``<results>_judge.csv``, one row per judged answer. A judge can be run again later with another model, and each judge's rows are kept separately.
+* ``<results>_diagnostics.jsonl`` records the settings LM Studio reported for each model load.
 
 Speed probe file
 ----------------
 
-With ``--probe``, measurements go to ``speed_probe.csv`` (prefill/decode tok/s at
-chosen tokens-in-cache levels).
+With ``--probe``, measurements go to ``speed_probe.csv`` in the benchmark folder (prefill and decode tokens/s at chosen tokens-in-cache levels).
 
 Plots input
-----------------
+-----------
 
-``plot_results`` reads the results CSV (and optional probe CSV) and writes figures
-under ``--out`` (default ``plots/``), including rank-sum tables as CSV.
-
+``localbenchmarkplot`` reads every per-problem results CSV in the current folder and its subfolders. It writes the figures and rank tables to a ``plots`` folder next to each file.
 
 .. include:: add_bottom.add

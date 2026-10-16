@@ -20,7 +20,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="Coding quality" href="Coding%20quality.html" /> 
+    <link rel="prev" title="Sponsor" href="Documentation.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -46,24 +46,17 @@
               <p class="caption" role="heading"><span class="caption-text">Background</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="Abstract.html">Background</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Abstract.html#schematic-overview">Schematic overview</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Installation</span></p>
-<ul>
+<li class="toctree-l1"><a class="reference internal" href="Quickstart.html">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Installation.html#uninstalling">Uninstalling</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Results</span></p>
+<p class="caption" role="heading"><span class="caption-text">Benchmarks</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="Save%20and%20Load.html">Results, resume, and summary</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Examples</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="Examples.html">Quickstart — coding benchmark</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Examples.html#speed-probe">Speed probe</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Examples.html#plots-and-ranking">Plots and ranking</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Examples.html#useful-cli-flags">Useful CLI flags</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Examples.html#what-is-ranked">What is ranked</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Dry_Run.html">Dry run</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Coding.html">Coding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Knowledge_Suites.html">Knowledge suite</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Plots.html">Plots &amp; ranking</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Save%20and%20Load.html">Results, folders, and resume</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
 <ul class="current">
@@ -72,42 +65,164 @@
 <li class="toctree-l1"><a class="reference internal" href="Documentation.html#github">Github</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Documentation.html#colab-notebook">Colab Notebook</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Documentation.html#citing">Citing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Coding%20quality.html">Coding quality</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">API References</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.api"><code class="docutils literal notranslate"><span class="pre">api()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.append_result"><code class="docutils literal notranslate"><span class="pre">append_result()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.append_row"><code class="docutils literal notranslate"><span class="pre">append_row()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.apply_judgements"><code class="docutils literal notranslate"><span class="pre">apply_judgements()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.build_program"><code class="docutils literal notranslate"><span class="pre">build_program()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.build_program_mbpp"><code class="docutils literal notranslate"><span class="pre">build_program_mbpp()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.build_suite_prompt"><code class="docutils literal notranslate"><span class="pre">build_suite_prompt()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.build_swe_prompt"><code class="docutils literal notranslate"><span class="pre">build_swe_prompt()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.check_lm_studio"><code class="docutils literal notranslate"><span class="pre">check_lm_studio()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.check_results_schema"><code class="docutils literal notranslate"><span class="pre">check_results_schema()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.checkout_base"><code class="docutils literal notranslate"><span class="pre">checkout_base()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.create_summary"><code class="docutils literal notranslate"><span class="pre">create_summary()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.determine_model_contexts"><code class="docutils literal notranslate"><span class="pre">determine_model_contexts()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.discover_models"><code class="docutils literal notranslate"><span class="pre">discover_models()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.dryrun_console"><code class="docutils literal notranslate"><span class="pre">dryrun_console()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.dryrun_leaderboard"><code class="docutils literal notranslate"><span class="pre">dryrun_leaderboard()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.dryrun_plan"><code class="docutils literal notranslate"><span class="pre">dryrun_plan()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.dryrun_report"><code class="docutils literal notranslate"><span class="pre">dryrun_report()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.dryrun_rows"><code class="docutils literal notranslate"><span class="pre">dryrun_rows()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.ensure_repo"><code class="docutils literal notranslate"><span class="pre">ensure_repo()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.execute_program"><code class="docutils literal notranslate"><span class="pre">execute_program()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.experiment_id_for"><code class="docutils literal notranslate"><span class="pre">experiment_id_for()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.extract_code"><code class="docutils literal notranslate"><span class="pre">extract_code()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.extract_diff"><code class="docutils literal notranslate"><span class="pre">extract_diff()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.find_gguf"><code class="docutils literal notranslate"><span class="pre">find_gguf()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.get_actual_context"><code class="docutils literal notranslate"><span class="pre">get_actual_context()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.get_corpus"><code class="docutils literal notranslate"><span class="pre">get_corpus()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.get_gpu_memory"><code class="docutils literal notranslate"><span class="pre">get_gpu_memory()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.get_lm_models"><code class="docutils literal notranslate"><span class="pre">get_lm_models()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.gguf_kv"><code class="docutils literal notranslate"><span class="pre">gguf_kv()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.item_question"><code class="docutils literal notranslate"><span class="pre">item_question()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.judge_calibration"><code class="docutils literal notranslate"><span class="pre">judge_calibration()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.judge_file_for"><code class="docutils literal notranslate"><span class="pre">judge_file_for()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.kv_explanation"><code class="docutils literal notranslate"><span class="pre">kv_explanation()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.kv_profile"><code class="docutils literal notranslate"><span class="pre">kv_profile()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.load_benchmark"><code class="docutils literal notranslate"><span class="pre">load_benchmark()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.load_completed"><code class="docutils literal notranslate"><span class="pre">load_completed()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.load_humaneval"><code class="docutils literal notranslate"><span class="pre">load_humaneval()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.load_mbpp"><code class="docutils literal notranslate"><span class="pre">load_mbpp()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.load_model"><code class="docutils literal notranslate"><span class="pre">load_model()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.load_probe_done"><code class="docutils literal notranslate"><span class="pre">load_probe_done()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.load_summary_configs"><code class="docutils literal notranslate"><span class="pre">load_summary_configs()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.load_swe_done"><code class="docutils literal notranslate"><span class="pre">load_swe_done()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.load_swebench"><code class="docutils literal notranslate"><span class="pre">load_swebench()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.lookup_model"><code class="docutils literal notranslate"><span class="pre">lookup_model()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.make_filler"><code class="docutils literal notranslate"><span class="pre">make_filler()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.make_program"><code class="docutils literal notranslate"><span class="pre">make_program()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.model_kv_profile"><code class="docutils literal notranslate"><span class="pre">model_kv_profile()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.model_params"><code class="docutils literal notranslate"><span class="pre">model_params()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.patch_applies"><code class="docutils literal notranslate"><span class="pre">patch_applies()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.pending_judgements"><code class="docutils literal notranslate"><span class="pre">pending_judgements()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.plot_dryrun"><code class="docutils literal notranslate"><span class="pre">plot_dryrun()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.prepare_suite"><code class="docutils literal notranslate"><span class="pre">prepare_suite()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.print_table"><code class="docutils literal notranslate"><span class="pre">print_table()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.probe_progress"><code class="docutils literal notranslate"><span class="pre">probe_progress()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.probe_targets_for"><code class="docutils literal notranslate"><span class="pre">probe_targets_for()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.read_gguf_metadata"><code class="docutils literal notranslate"><span class="pre">read_gguf_metadata()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.repair_results_file"><code class="docutils literal notranslate"><span class="pre">repair_results_file()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.resolve_output"><code class="docutils literal notranslate"><span class="pre">resolve_output()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.resolve_vram"><code class="docutils literal notranslate"><span class="pre">resolve_vram()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.row_to_item"><code class="docutils literal notranslate"><span class="pre">row_to_item()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.run_experiment"><code class="docutils literal notranslate"><span class="pre">run_experiment()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.run_git"><code class="docutils literal notranslate"><span class="pre">run_git()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.run_judge_stage"><code class="docutils literal notranslate"><span class="pre">run_judge_stage()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.run_plots"><code class="docutils literal notranslate"><span class="pre">run_plots()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.run_probe"><code class="docutils literal notranslate"><span class="pre">run_probe()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.run_suite_experiment"><code class="docutils literal notranslate"><span class="pre">run_suite_experiment()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.run_swe_harness"><code class="docutils literal notranslate"><span class="pre">run_swe_harness()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.run_swebench_eval"><code class="docutils literal notranslate"><span class="pre">run_swebench_eval()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.run_swebench_experiment"><code class="docutils literal notranslate"><span class="pre">run_swebench_experiment()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.run_swebench_generation"><code class="docutils literal notranslate"><span class="pre">run_swebench_generation()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.safe_name"><code class="docutils literal notranslate"><span class="pre">safe_name()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.scan_gguf_index"><code class="docutils literal notranslate"><span class="pre">scan_gguf_index()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.select_context_files"><code class="docutils literal notranslate"><span class="pre">select_context_files()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.solve_problem"><code class="docutils literal notranslate"><span class="pre">solve_problem()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.suite_summary"><code class="docutils literal notranslate"><span class="pre">suite_summary()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.swe_gen_file"><code class="docutils literal notranslate"><span class="pre">swe_gen_file()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.timestamp"><code class="docutils literal notranslate"><span class="pre">timestamp()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.unload_all_models"><code class="docutils literal notranslate"><span class="pre">unload_all_models()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.vram_estimate"><code class="docutils literal notranslate"><span class="pre">vram_estimate()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.wilson"><code class="docutils literal notranslate"><span class="pre">wilson()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#localbenchmark.localbenchmark.write_diagnostics"><code class="docutils literal notranslate"><span class="pre">write_diagnostics()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.suite_scoring.ScoreResult"><code class="docutils literal notranslate"><span class="pre">ScoreResult</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#localbenchmark.suite_scoring.ScoreResult.detail"><code class="docutils literal notranslate"><span class="pre">ScoreResult.detail</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#localbenchmark.suite_scoring.ScoreResult.method"><code class="docutils literal notranslate"><span class="pre">ScoreResult.method</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#localbenchmark.suite_scoring.ScoreResult.passed"><code class="docutils literal notranslate"><span class="pre">ScoreResult.passed</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#localbenchmark.suite_scoring.ScoreResult.score"><code class="docutils literal notranslate"><span class="pre">ScoreResult.score</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.suite_scoring.Suite"><code class="docutils literal notranslate"><span class="pre">Suite</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#localbenchmark.suite_scoring.Suite.items"><code class="docutils literal notranslate"><span class="pre">Suite.items</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#localbenchmark.suite_scoring.Suite.name"><code class="docutils literal notranslate"><span class="pre">Suite.name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#localbenchmark.suite_scoring.Suite.path"><code class="docutils literal notranslate"><span class="pre">Suite.path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#localbenchmark.suite_scoring.Suite.sha256"><code class="docutils literal notranslate"><span class="pre">Suite.sha256</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#localbenchmark.suite_scoring.Suite.version"><code class="docutils literal notranslate"><span class="pre">Suite.version</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.suite_scoring.build_judge_prompt"><code class="docutils literal notranslate"><span class="pre">build_judge_prompt()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.suite_scoring.check_context"><code class="docutils literal notranslate"><span class="pre">check_context()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.suite_scoring.check_gold"><code class="docutils literal notranslate"><span class="pre">check_gold()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.suite_scoring.gold_answer"><code class="docutils literal notranslate"><span class="pre">gold_answer()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.suite_scoring.load_suite"><code class="docutils literal notranslate"><span class="pre">load_suite()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.suite_scoring.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.suite_scoring.parse_judge_reply"><code class="docutils literal notranslate"><span class="pre">parse_judge_reply()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.suite_scoring.parse_numbers"><code class="docutils literal notranslate"><span class="pre">parse_numbers()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.suite_scoring.score_item"><code class="docutils literal notranslate"><span class="pre">score_item()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.suite_scoring.score_keywords"><code class="docutils literal notranslate"><span class="pre">score_keywords()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.suite_scoring.score_mc"><code class="docutils literal notranslate"><span class="pre">score_mc()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.suite_scoring.score_numeric"><code class="docutils literal notranslate"><span class="pre">score_numeric()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.suite_scoring.score_short"><code class="docutils literal notranslate"><span class="pre">score_short()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.suite_scoring.score_unanswerable"><code class="docutils literal notranslate"><span class="pre">score_unanswerable()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.suite_scoring.strip_think"><code class="docutils literal notranslate"><span class="pre">strip_think()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.suite_scoring.tokens"><code class="docutils literal notranslate"><span class="pre">tokens()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.docs.Doc"><code class="docutils literal notranslate"><span class="pre">Doc</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#localbenchmark.docs.Doc.est_tokens"><code class="docutils literal notranslate"><span class="pre">Doc.est_tokens</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#localbenchmark.docs.Doc.id"><code class="docutils literal notranslate"><span class="pre">Doc.id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#localbenchmark.docs.Doc.text"><code class="docutils literal notranslate"><span class="pre">Doc.text</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#localbenchmark.docs.Doc.words"><code class="docutils literal notranslate"><span class="pre">Doc.words</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.docs.build_context"><code class="docutils literal notranslate"><span class="pre">build_context()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.docs.estimate_tokens"><code class="docutils literal notranslate"><span class="pre">estimate_tokens()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.docs.fit_report"><code class="docutils literal notranslate"><span class="pre">fit_report()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.docs.load_docs"><code class="docutils literal notranslate"><span class="pre">load_docs()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.docs.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.llm_plots.agg_by_context"><code class="docutils literal notranslate"><span class="pre">agg_by_context()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.llm_plots.discover_context_bins"><code class="docutils literal notranslate"><span class="pre">discover_context_bins()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.llm_plots.find_raw_results"><code class="docutils literal notranslate"><span class="pre">find_raw_results()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.llm_plots.is_raw_results"><code class="docutils literal notranslate"><span class="pre">is_raw_results()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.llm_plots.leaderboard"><code class="docutils literal notranslate"><span class="pre">leaderboard()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.llm_plots.legend_outside"><code class="docutils literal notranslate"><span class="pre">legend_outside()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.llm_plots.load_results"><code class="docutils literal notranslate"><span class="pre">load_results()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.llm_plots.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.llm_plots.make_all"><code class="docutils literal notranslate"><span class="pre">make_all()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.llm_plots.make_plots_for"><code class="docutils literal notranslate"><span class="pre">make_plots_for()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.llm_plots.pareto_front"><code class="docutils literal notranslate"><span class="pre">pareto_front()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.llm_plots.plot_gpu_vs_context"><code class="docutils literal notranslate"><span class="pre">plot_gpu_vs_context()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.llm_plots.plot_heatmap"><code class="docutils literal notranslate"><span class="pre">plot_heatmap()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.llm_plots.plot_pass_vs_context"><code class="docutils literal notranslate"><span class="pre">plot_pass_vs_context()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.llm_plots.plot_rank_sum"><code class="docutils literal notranslate"><span class="pre">plot_rank_sum()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.llm_plots.plot_rank_sum_per_model"><code class="docutils literal notranslate"><span class="pre">plot_rank_sum_per_model()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.llm_plots.plot_ranking"><code class="docutils literal notranslate"><span class="pre">plot_ranking()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.llm_plots.plot_tps_retention"><code class="docutils literal notranslate"><span class="pre">plot_tps_retention()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.llm_plots.plot_tps_vs_context"><code class="docutils literal notranslate"><span class="pre">plot_tps_vs_context()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.llm_plots.plot_tradeoff"><code class="docutils literal notranslate"><span class="pre">plot_tradeoff()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.llm_plots.plot_ttft_vs_context"><code class="docutils literal notranslate"><span class="pre">plot_ttft_vs_context()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.llm_plots.rank_sum_per_model"><code class="docutils literal notranslate"><span class="pre">rank_sum_per_model()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.llm_plots.rank_sum_table"><code class="docutils literal notranslate"><span class="pre">rank_sum_table()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.llm_plots.resolve_inputs"><code class="docutils literal notranslate"><span class="pre">resolve_inputs()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.llm_plots.save"><code class="docutils literal notranslate"><span class="pre">save()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.llm_plots.set_ctx_axis"><code class="docutils literal notranslate"><span class="pre">set_ctx_axis()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.llm_plots.snap_context"><code class="docutils literal notranslate"><span class="pre">snap_context()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.llm_plots.style_map"><code class="docutils literal notranslate"><span class="pre">style_map()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.llm_plots.trend_table"><code class="docutils literal notranslate"><span class="pre">trend_table()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.llm_plots.weighted_tps"><code class="docutils literal notranslate"><span class="pre">weighted_tps()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#localbenchmark.llm_plots.wilson"><code class="docutils literal notranslate"><span class="pre">wilson()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -157,6 +272,12 @@
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.localbenchmark.apply_judgements">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.localbenchmark.</span></span><span class="sig-name descname"><span class="pre">apply_judgements</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">results_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">judge_model</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.localbenchmark.apply_judgements" title="Link to this definition"></a></dt>
+<dd><p>Replace NEEDS_JUDGE rows by the judge’s score where a judgement exists.</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="localbenchmark.localbenchmark.build_program">
 <span class="sig-prename descclassname"><span class="pre">localbenchmark.localbenchmark.</span></span><span class="sig-name descname"><span class="pre">build_program</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">row</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.localbenchmark.build_program" title="Link to this definition"></a></dt>
 <dd><p>Build the file to execute.</p>
@@ -165,6 +286,22 @@ functions from the prompt exist, then the model’s code redefines the
 entry point. If the model returned only a function body, it is attached
 to the prompt’s signature instead.</p>
 </dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.localbenchmark.build_program_mbpp">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.localbenchmark.</span></span><span class="sig-name descname"><span class="pre">build_program_mbpp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">row</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.localbenchmark.build_program_mbpp" title="Link to this definition"></a></dt>
+<dd><p>Setup code, the model’s code, then the asserts, run as one script.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.localbenchmark.build_suite_prompt">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.localbenchmark.</span></span><span class="sig-name descname"><span class="pre">build_suite_prompt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">docs_context</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">item</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.localbenchmark.build_suite_prompt" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.localbenchmark.build_swe_prompt">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.localbenchmark.</span></span><span class="sig-name descname"><span class="pre">build_swe_prompt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">row</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context_chars</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.localbenchmark.build_swe_prompt" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="localbenchmark.localbenchmark.check_lm_studio">
@@ -177,6 +314,11 @@ to the prompt’s signature instead.</p>
 <dd></dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.localbenchmark.checkout_base">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.localbenchmark.</span></span><span class="sig-name descname"><span class="pre">checkout_base</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">commit</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.localbenchmark.checkout_base" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="localbenchmark.localbenchmark.create_summary">
 <span class="sig-prename descclassname"><span class="pre">localbenchmark.localbenchmark.</span></span><span class="sig-name descname"><span class="pre">create_summary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">results_file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.localbenchmark.create_summary" title="Link to this definition"></a></dt>
 <dd></dd></dl>
@@ -186,6 +328,44 @@ to the prompt’s signature instead.</p>
 <span class="sig-prename descclassname"><span class="pre">localbenchmark.localbenchmark.</span></span><span class="sig-name descname"><span class="pre">determine_model_contexts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">requested</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.localbenchmark.determine_model_contexts" title="Link to this definition"></a></dt>
 <dd><p>Clamp requested contexts to the model’s maximum (max tested once).</p>
 </dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.localbenchmark.discover_models">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.localbenchmark.</span></span><span class="sig-name descname"><span class="pre">discover_models</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_url</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.localbenchmark.discover_models" title="Link to this definition"></a></dt>
+<dd><p>All local models: from the LM Studio server if it runs, otherwise from the model folders.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.localbenchmark.dryrun_console">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.localbenchmark.</span></span><span class="sig-name descname"><span class="pre">dryrun_console</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">models</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contexts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quants</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.localbenchmark.dryrun_console" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.localbenchmark.dryrun_leaderboard">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.localbenchmark.</span></span><span class="sig-name descname"><span class="pre">dryrun_leaderboard</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.localbenchmark.dryrun_leaderboard" title="Link to this definition"></a></dt>
+<dd><p>Rank-sum over decode-speed ceiling and memory headroom, for every model x quantization x
+context. Lower rank is better. Unknown sizes stay nan and are not ranked.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.localbenchmark.dryrun_plan">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.localbenchmark.</span></span><span class="sig-name descname"><span class="pre">dryrun_plan</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">models</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contexts</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.localbenchmark.dryrun_plan" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.localbenchmark.dryrun_report">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.localbenchmark.</span></span><span class="sig-name descname"><span class="pre">dryrun_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">models</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contexts</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.localbenchmark.dryrun_report" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.localbenchmark.dryrun_rows">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.localbenchmark.</span></span><span class="sig-name descname"><span class="pre">dryrun_rows</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">models</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contexts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vram_gb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gpu_bw</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ram_bw</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quants</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kv_default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">55000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overhead_gb</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.localbenchmark.dryrun_rows" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.localbenchmark.ensure_repo">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.localbenchmark.</span></span><span class="sig-name descname"><span class="pre">ensure_repo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">repo</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.localbenchmark.ensure_repo" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="localbenchmark.localbenchmark.execute_program">
@@ -205,6 +385,17 @@ finished configuration can be skipped without a slow model load.</p>
 <dt class="sig sig-object py" id="localbenchmark.localbenchmark.extract_code">
 <span class="sig-prename descclassname"><span class="pre">localbenchmark.localbenchmark.</span></span><span class="sig-name descname"><span class="pre">extract_code</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">response</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.localbenchmark.extract_code" title="Link to this definition"></a></dt>
 <dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.localbenchmark.extract_diff">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.localbenchmark.</span></span><span class="sig-name descname"><span class="pre">extract_diff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.localbenchmark.extract_diff" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.localbenchmark.find_gguf">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.localbenchmark.</span></span><span class="sig-name descname"><span class="pre">find_gguf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quant</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.localbenchmark.find_gguf" title="Link to this definition"></a></dt>
+<dd><p>The GGUF file of this model and quantization, or None.</p>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="localbenchmark.localbenchmark.get_actual_context">
@@ -229,6 +420,46 @@ finished configuration can be skipped without a slow model load.</p>
 <dd></dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.localbenchmark.gguf_kv">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.localbenchmark.</span></span><span class="sig-name descname"><span class="pre">gguf_kv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.localbenchmark.gguf_kv" title="Link to this definition"></a></dt>
+<dd><p>KV profile of a GGUF file, cached. None if the file cannot be read.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.localbenchmark.item_question">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.localbenchmark.</span></span><span class="sig-name descname"><span class="pre">item_question</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.localbenchmark.item_question" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.localbenchmark.judge_calibration">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.localbenchmark.</span></span><span class="sig-name descname"><span class="pre">judge_calibration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">server</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">items</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.localbenchmark.judge_calibration" title="Link to this definition"></a></dt>
+<dd><p>Score each reference answer with the judge. The judge must give full marks.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.localbenchmark.judge_file_for">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.localbenchmark.</span></span><span class="sig-name descname"><span class="pre">judge_file_for</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">results_file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.localbenchmark.judge_file_for" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.localbenchmark.kv_explanation">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.localbenchmark.</span></span><span class="sig-name descname"><span class="pre">kv_explanation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">profile</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.localbenchmark.kv_explanation" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.localbenchmark.kv_profile">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.localbenchmark.</span></span><span class="sig-name descname"><span class="pre">kv_profile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">meta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">elem_bytes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.localbenchmark.kv_profile" title="Link to this definition"></a></dt>
+<dd><p>KV-cache bytes per token of context, from the model’s architecture.
+Only attention layers keep a KV cache. Hybrid models (recurrent layers mixed with
+attention) have a full-attention interval, e.g. 4 = every fourth layer is attention.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.localbenchmark.load_benchmark">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.localbenchmark.</span></span><span class="sig-name descname"><span class="pre">load_benchmark</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.localbenchmark.load_benchmark" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="localbenchmark.localbenchmark.load_completed">
 <span class="sig-prename descclassname"><span class="pre">localbenchmark.localbenchmark.</span></span><span class="sig-name descname"><span class="pre">load_completed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">results_file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.localbenchmark.load_completed" title="Link to this definition"></a></dt>
 <dd><p>Set of (experiment_id, problem_id) that are DONE.
@@ -239,6 +470,11 @@ considered done, so they are retried on the next run.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="localbenchmark.localbenchmark.load_humaneval">
 <span class="sig-prename descclassname"><span class="pre">localbenchmark.localbenchmark.</span></span><span class="sig-name descname"><span class="pre">load_humaneval</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.localbenchmark.load_humaneval" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.localbenchmark.load_mbpp">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.localbenchmark.</span></span><span class="sig-name descname"><span class="pre">load_mbpp</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.localbenchmark.load_mbpp" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
@@ -261,6 +497,22 @@ some individual problem rows exist in the detailed results file.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.localbenchmark.load_swe_done">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.localbenchmark.</span></span><span class="sig-name descname"><span class="pre">load_swe_done</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gen_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">experiment_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.localbenchmark.load_swe_done" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.localbenchmark.load_swebench">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.localbenchmark.</span></span><span class="sig-name descname"><span class="pre">load_swebench</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.localbenchmark.load_swebench" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.localbenchmark.lookup_model">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.localbenchmark.</span></span><span class="sig-name descname"><span class="pre">lookup_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.localbenchmark.lookup_model" title="Link to this definition"></a></dt>
+<dd><p>Entry from MODEL_SIZE_LOOKUP for this model, or None. Matches the last part of the key.</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="localbenchmark.localbenchmark.main">
 <span class="sig-prename descclassname"><span class="pre">localbenchmark.localbenchmark.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.localbenchmark.main" title="Link to this definition"></a></dt>
 <dd></dd></dl>
@@ -268,6 +520,52 @@ some individual problem rows exist in the detailed results file.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="localbenchmark.localbenchmark.make_filler">
 <span class="sig-prename descclassname"><span class="pre">localbenchmark.localbenchmark.</span></span><span class="sig-name descname"><span class="pre">make_filler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chars</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.localbenchmark.make_filler" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.localbenchmark.make_program">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.localbenchmark.</span></span><span class="sig-name descname"><span class="pre">make_program</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">benchmark</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">row</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.localbenchmark.make_program" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.localbenchmark.model_kv_profile">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.localbenchmark.</span></span><span class="sig-name descname"><span class="pre">model_kv_profile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.localbenchmark.model_kv_profile" title="Link to this definition"></a></dt>
+<dd><p>KV profile from any GGUF file of this model (the architecture does not depend on quant).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.localbenchmark.model_params">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.localbenchmark.</span></span><span class="sig-name descname"><span class="pre">model_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.localbenchmark.model_params" title="Link to this definition"></a></dt>
+<dd><p>(total_b, active_b, source). Lookup first, then the name. Unknown sizes are nan.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.localbenchmark.patch_applies">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.localbenchmark.</span></span><span class="sig-name descname"><span class="pre">patch_applies</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">diff</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.localbenchmark.patch_applies" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.localbenchmark.pending_judgements">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.localbenchmark.</span></span><span class="sig-name descname"><span class="pre">pending_judgements</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">results_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">experiment_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">judge_model</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.localbenchmark.pending_judgements" title="Link to this definition"></a></dt>
+<dd><p>Open-ended answers of this experiment that the judge has not scored yet.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.localbenchmark.plot_dryrun">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.localbenchmark.</span></span><span class="sig-name descname"><span class="pre">plot_dryrun</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">board</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vram_gb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plots_dir</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.localbenchmark.plot_dryrun" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.localbenchmark.prepare_suite">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.localbenchmark.</span></span><span class="sig-name descname"><span class="pre">prepare_suite</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.localbenchmark.prepare_suite" title="Link to this definition"></a></dt>
+<dd><p>Load the suite and, if it cites documents, the document folder.
+A suite without any ‘context’ is a closed-book test: no documents, the model answers
+from its own knowledge. Returns (suite, df, docs, docs_context).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.localbenchmark.print_table">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.localbenchmark.</span></span><span class="sig-name descname"><span class="pre">print_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">headers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rows</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.localbenchmark.print_table" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
@@ -282,6 +580,12 @@ some individual problem rows exist in the detailed results file.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.localbenchmark.read_gguf_metadata">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.localbenchmark.</span></span><span class="sig-name descname"><span class="pre">read_gguf_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.localbenchmark.read_gguf_metadata" title="Link to this definition"></a></dt>
+<dd><p>Key-value header of a GGUF file. Reads metadata only, never the tensors.</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="localbenchmark.localbenchmark.repair_results_file">
 <span class="sig-prename descclassname"><span class="pre">localbenchmark.localbenchmark.</span></span><span class="sig-name descname"><span class="pre">repair_results_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">results_file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.localbenchmark.repair_results_file" title="Link to this definition"></a></dt>
 <dd><p>If a previous run was killed while writing a row, the CSV can end with a
@@ -290,9 +594,39 @@ rewrite it without the damaged record so appending/resuming is safe.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.localbenchmark.resolve_output">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.localbenchmark.</span></span><span class="sig-name descname"><span class="pre">resolve_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">explicit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bench_dir</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.localbenchmark.resolve_output" title="Link to this definition"></a></dt>
+<dd><p>Output file for a job. A file found in the current folder is resumed first (as
+before); otherwise the benchmark folder is used. If neither has the file, it is
+created in the benchmark folder.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.localbenchmark.resolve_vram">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.localbenchmark.</span></span><span class="sig-name descname"><span class="pre">resolve_vram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">given_gb</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.localbenchmark.resolve_vram" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.localbenchmark.row_to_item">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.localbenchmark.</span></span><span class="sig-name descname"><span class="pre">row_to_item</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">row</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.localbenchmark.row_to_item" title="Link to this definition"></a></dt>
+<dd><p>A DataFrame row back to a suite item, without the NaN that pandas adds for missing keys.</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="localbenchmark.localbenchmark.run_experiment">
 <span class="sig-prename descclassname"><span class="pre">localbenchmark.localbenchmark.</span></span><span class="sig-name descname"><span class="pre">run_experiment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">results_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_rerun</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.localbenchmark.run_experiment" title="Link to this definition"></a></dt>
 <dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.localbenchmark.run_git">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.localbenchmark.</span></span><span class="sig-name descname"><span class="pre">run_git</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cwd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">600</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.localbenchmark.run_git" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.localbenchmark.run_judge_stage">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.localbenchmark.</span></span><span class="sig-name descname"><span class="pre">run_judge_stage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">results_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">experiment_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.localbenchmark.run_judge_stage" title="Link to this definition"></a></dt>
+<dd><p>Unload the candidate, load the judge, grade the saved open-ended answers, unload.</p>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="localbenchmark.localbenchmark.run_plots">
@@ -309,13 +643,63 @@ the prefill cost.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.localbenchmark.run_suite_experiment">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.localbenchmark.</span></span><span class="sig-name descname"><span class="pre">run_suite_experiment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">results_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">docs_context</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_rerun</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.localbenchmark.run_suite_experiment" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.localbenchmark.run_swe_harness">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.localbenchmark.</span></span><span class="sig-name descname"><span class="pre">run_swe_harness</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">meta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">experiment_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">real</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.localbenchmark.run_swe_harness" title="Link to this definition"></a></dt>
+<dd><p>Run the official harness. Returns the set of resolved instance ids, or None.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.localbenchmark.run_swebench_eval">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.localbenchmark.</span></span><span class="sig-name descname"><span class="pre">run_swebench_eval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">meta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">experiment_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gen_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">results_file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.localbenchmark.run_swebench_eval" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.localbenchmark.run_swebench_experiment">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.localbenchmark.</span></span><span class="sig-name descname"><span class="pre">run_swebench_experiment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">results_file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.localbenchmark.run_swebench_experiment" title="Link to this definition"></a></dt>
+<dd><p>Generate patches (resumable), then score the ones that are not scored yet.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.localbenchmark.run_swebench_generation">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.localbenchmark.</span></span><span class="sig-name descname"><span class="pre">run_swebench_generation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gen_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">experiment_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.localbenchmark.run_swebench_generation" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="localbenchmark.localbenchmark.safe_name">
 <span class="sig-prename descclassname"><span class="pre">localbenchmark.localbenchmark.</span></span><span class="sig-name descname"><span class="pre">safe_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.localbenchmark.safe_name" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.localbenchmark.scan_gguf_index">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.localbenchmark.</span></span><span class="sig-name descname"><span class="pre">scan_gguf_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">roots</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.localbenchmark.scan_gguf_index" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.localbenchmark.select_context_files">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.localbenchmark.</span></span><span class="sig-name descname"><span class="pre">select_context_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">issue</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.localbenchmark.select_context_files" title="Link to this definition"></a></dt>
+<dd><p>Files the issue points at: explicit .py paths first, then files that
+contain identifiers quoted in the issue. Test files count for less.</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="localbenchmark.localbenchmark.solve_problem">
-<span class="sig-prename descclassname"><span class="pre">localbenchmark.localbenchmark.</span></span><span class="sig-name descname"><span class="pre">solve_problem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prompt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filler</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_tokens</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.localbenchmark.solve_problem" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.localbenchmark.</span></span><span class="sig-name descname"><span class="pre">solve_problem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prompt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filler</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_tokens</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">system</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.localbenchmark.solve_problem" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.localbenchmark.suite_summary">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.localbenchmark.</span></span><span class="sig-name descname"><span class="pre">suite_summary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">results_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">judge_model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.localbenchmark.suite_summary" title="Link to this definition"></a></dt>
+<dd><p>Per-domain scores, and separate figures for answerable and unanswerable items.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.localbenchmark.swe_gen_file">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.localbenchmark.</span></span><span class="sig-name descname"><span class="pre">swe_gen_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">results_file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.localbenchmark.swe_gen_file" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
@@ -329,6 +713,11 @@ the prefill cost.</p>
 <dd></dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.localbenchmark.vram_estimate">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.localbenchmark.</span></span><span class="sig-name descname"><span class="pre">vram_estimate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">total_b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bits</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kv_bytes</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.localbenchmark.vram_estimate" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="localbenchmark.localbenchmark.wilson">
 <span class="sig-prename descclassname"><span class="pre">localbenchmark.localbenchmark.</span></span><span class="sig-name descname"><span class="pre">wilson</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">passes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.96</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.localbenchmark.wilson" title="Link to this definition"></a></dt>
 <dd></dd></dl>
@@ -339,13 +728,433 @@ the prefill cost.</p>
 <dd><p>One JSON line per model load: LM Studio’s actual config + VRAM after load.</p>
 </dd></dl>
 
+<p id="module-localbenchmark.suite_scoring">Scoring for non-coding test suites (countries, politics, people, companies, world events).</p>
+<p>No LLM judge. Answers are scored with normalized, fuzzy and negation-aware
+matching. Every score comes with a <cite>detail</cite> dict, so each result can be audited.</p>
+<dl class="simple">
+<dt>Item types</dt><dd><p>mc        multiple choice: a letter, “(B) text”, “answer is B”, or the option text
+numeric   a number within a relative or absolute tolerance, with partial credit
+short     a short fact: any accepted answer; distractors halve the score if also named
+keywords  weighted concept groups, each with aliases; partial credit per group
+rubric    open answer: reserved for a judge model, not scored here
+unanswerable  company QA: the documents do not contain the answer; the model must say so</p>
+</dd>
+</dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="localbenchmark.suite_scoring.ScoreResult">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">localbenchmark.suite_scoring.</span></span><span class="sig-name descname"><span class="pre">ScoreResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">score:</span> <span class="pre">Optional[float],</span> <span class="pre">passed:</span> <span class="pre">Optional[bool],</span> <span class="pre">method:</span> <span class="pre">str,</span> <span class="pre">detail:</span> <span class="pre">dict</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.suite_scoring.ScoreResult" title="Link to this definition"></a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="localbenchmark.suite_scoring.ScoreResult.detail">
+<span class="sig-name descname"><span class="pre">detail</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span></span><a class="headerlink" href="#localbenchmark.suite_scoring.ScoreResult.detail" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="localbenchmark.suite_scoring.ScoreResult.method">
+<span class="sig-name descname"><span class="pre">method</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#localbenchmark.suite_scoring.ScoreResult.method" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="localbenchmark.suite_scoring.ScoreResult.passed">
+<span class="sig-name descname"><span class="pre">passed</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#localbenchmark.suite_scoring.ScoreResult.passed" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="localbenchmark.suite_scoring.ScoreResult.score">
+<span class="sig-name descname"><span class="pre">score</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#localbenchmark.suite_scoring.ScoreResult.score" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="localbenchmark.suite_scoring.Suite">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">localbenchmark.suite_scoring.</span></span><span class="sig-name descname"><span class="pre">Suite</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sha256</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">items</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.suite_scoring.Suite" title="Link to this definition"></a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="localbenchmark.suite_scoring.Suite.items">
+<span class="sig-name descname"><span class="pre">items</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span></span><a class="headerlink" href="#localbenchmark.suite_scoring.Suite.items" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="localbenchmark.suite_scoring.Suite.name">
+<span class="sig-name descname"><span class="pre">name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#localbenchmark.suite_scoring.Suite.name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="localbenchmark.suite_scoring.Suite.path">
+<span class="sig-name descname"><span class="pre">path</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#localbenchmark.suite_scoring.Suite.path" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="localbenchmark.suite_scoring.Suite.sha256">
+<span class="sig-name descname"><span class="pre">sha256</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#localbenchmark.suite_scoring.Suite.sha256" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="localbenchmark.suite_scoring.Suite.version">
+<span class="sig-name descname"><span class="pre">version</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#localbenchmark.suite_scoring.Suite.version" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.suite_scoring.build_judge_prompt">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.suite_scoring.</span></span><span class="sig-name descname"><span class="pre">build_judge_prompt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">answer</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.suite_scoring.build_judge_prompt" title="Link to this definition"></a></dt>
+<dd><p>Prompt for a judge model. The judge sees the question, the criteria and the answer only.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.suite_scoring.check_context">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.suite_scoring.</span></span><span class="sig-name descname"><span class="pre">check_context</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">suite</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">folder</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.suite_scoring.check_context" title="Link to this definition"></a></dt>
+<dd><p>(item id, file name) for every ‘context’ entry that is not in the document folder.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.suite_scoring.check_gold">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.suite_scoring.</span></span><span class="sig-name descname"><span class="pre">check_gold</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">suite</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.suite_scoring.check_gold" title="Link to this definition"></a></dt>
+<dd><p>Every item must pass when given its own gold answer. Returns the failures.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.suite_scoring.gold_answer">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.suite_scoring.</span></span><span class="sig-name descname"><span class="pre">gold_answer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.suite_scoring.gold_answer" title="Link to this definition"></a></dt>
+<dd><p>A correct answer written the way a model would write it.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.suite_scoring.load_suite">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.suite_scoring.</span></span><span class="sig-name descname"><span class="pre">load_suite</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.suite_scoring.load_suite" title="Link to this definition"></a></dt>
+<dd><p>Load a .jsonl suite. Raises ValueError listing every invalid line.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.suite_scoring.main">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.suite_scoring.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.suite_scoring.main" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.suite_scoring.parse_judge_reply">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.suite_scoring.</span></span><span class="sig-name descname"><span class="pre">parse_judge_reply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.suite_scoring.parse_judge_reply" title="Link to this definition"></a></dt>
+<dd><p>(score in {0.0, 0.5, 1.0}, reason). Raises ValueError if the reply has no usable score.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.suite_scoring.parse_numbers">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.suite_scoring.</span></span><span class="sig-name descname"><span class="pre">parse_numbers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.suite_scoring.parse_numbers" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.suite_scoring.score_item">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.suite_scoring.</span></span><span class="sig-name descname"><span class="pre">score_item</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raw_answer</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.suite_scoring.score_item" title="Link to this definition"></a></dt>
+<dd><p>Score one answer. Returns a ScoreResult; <cite>passed</cite> uses the item’s min_score.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.suite_scoring.score_keywords">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.suite_scoring.</span></span><span class="sig-name descname"><span class="pre">score_keywords</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">answer</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.suite_scoring.score_keywords" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.suite_scoring.score_mc">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.suite_scoring.</span></span><span class="sig-name descname"><span class="pre">score_mc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">answer</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.suite_scoring.score_mc" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.suite_scoring.score_numeric">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.suite_scoring.</span></span><span class="sig-name descname"><span class="pre">score_numeric</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">answer</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.suite_scoring.score_numeric" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.suite_scoring.score_short">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.suite_scoring.</span></span><span class="sig-name descname"><span class="pre">score_short</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">answer</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.suite_scoring.score_short" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.suite_scoring.score_unanswerable">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.suite_scoring.</span></span><span class="sig-name descname"><span class="pre">score_unanswerable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">answer</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.suite_scoring.score_unanswerable" title="Link to this definition"></a></dt>
+<dd><p>Full marks only if the model says the documents do not contain the answer.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.suite_scoring.strip_think">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.suite_scoring.</span></span><span class="sig-name descname"><span class="pre">strip_think</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.suite_scoring.strip_think" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.suite_scoring.tokens">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.suite_scoring.</span></span><span class="sig-name descname"><span class="pre">tokens</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.suite_scoring.tokens" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p id="module-localbenchmark.docs">Company documents for QA suites.</p>
+<p>Put every document in one folder (default: company_docs/). Files are used in
+name order, so –limit 40 uses the first 40. Use –ids to choose exact files.
+Suite items name the documents that contain their answer in “context”, using
+file names relative to the folder.</p>
+<p>Token counts are estimates (words x 1.35). The real count is the prompt_tokens
+value in the results after a run.</p>
+<blockquote>
+<div><p>python docs.py estimate company_docs/            # size and window fit
+python docs.py estimate company_docs/ –limit 40</p>
+</div></blockquote>
+<dl class="py class">
+<dt class="sig sig-object py" id="localbenchmark.docs.Doc">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">localbenchmark.docs.</span></span><span class="sig-name descname"><span class="pre">Doc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">words</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">est_tokens</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.docs.Doc" title="Link to this definition"></a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="localbenchmark.docs.Doc.est_tokens">
+<span class="sig-name descname"><span class="pre">est_tokens</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></span><a class="headerlink" href="#localbenchmark.docs.Doc.est_tokens" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="localbenchmark.docs.Doc.id">
+<span class="sig-name descname"><span class="pre">id</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#localbenchmark.docs.Doc.id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="localbenchmark.docs.Doc.text">
+<span class="sig-name descname"><span class="pre">text</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#localbenchmark.docs.Doc.text" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="localbenchmark.docs.Doc.words">
+<span class="sig-name descname"><span class="pre">words</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></span><a class="headerlink" href="#localbenchmark.docs.Doc.words" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.docs.build_context">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.docs.</span></span><span class="sig-name descname"><span class="pre">build_context</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">docs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.docs.build_context" title="Link to this definition"></a></dt>
+<dd><p>The text that goes into the prompt, one labelled block per document.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.docs.estimate_tokens">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.docs.</span></span><span class="sig-name descname"><span class="pre">estimate_tokens</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.docs.estimate_tokens" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.docs.fit_report">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.docs.</span></span><span class="sig-name descname"><span class="pre">fit_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">docs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.docs.fit_report" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.docs.load_docs">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.docs.</span></span><span class="sig-name descname"><span class="pre">load_docs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'company_docs'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.docs.load_docs" title="Link to this definition"></a></dt>
+<dd><p>Load documents in name order. <cite>ids</cite> selects exact files (kept in the order given).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.docs.main">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.docs.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.docs.main" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<p id="module-localbenchmark.llm_plots">Plots for llm_coding_benchmark.py results.</p>
+<dl class="simple">
+<dt>Standalone:</dt><dd><p>python plot_results.py –results coding_benchmark_results.csv –out plots</p>
+</dd>
+</dl>
+<p>Also called automatically at the end of the benchmark (disable with –no-plots).
+If the CSV contains several –fill ratios, one sub-folder is written per ratio,
+because runs with different fill are not comparable with each other.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.llm_plots.agg_by_context">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.llm_plots.</span></span><span class="sig-name descname"><span class="pre">agg_by_context</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.llm_plots.agg_by_context" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.llm_plots.discover_context_bins">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.llm_plots.</span></span><span class="sig-name descname"><span class="pre">discover_context_bins</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">contexts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extras</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.llm_plots.discover_context_bins" title="Link to this definition"></a></dt>
+<dd><p>Build snap targets from observed context sizes + known planned windows.</p>
+<p>Each observed size is rounded to the nearest 1k so tiny server differences
+(49992 vs 50000) collapse, while distinct windows like 50k and 80k stay apart.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.llm_plots.find_raw_results">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.llm_plots.</span></span><span class="sig-name descname"><span class="pre">find_raw_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.llm_plots.find_raw_results" title="Link to this definition"></a></dt>
+<dd><p>Every per-problem results CSV in a folder and in its benchmark sub-folders
+(humaneval/, mbpp/, swebench/, suite/, dryrun/), whatever the file name.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.llm_plots.is_raw_results">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.llm_plots.</span></span><span class="sig-name descname"><span class="pre">is_raw_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.llm_plots.is_raw_results" title="Link to this definition"></a></dt>
+<dd><p>True for a per-problem results CSV; False for summaries and other tables.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.llm_plots.leaderboard">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.llm_plots.</span></span><span class="sig-name descname"><span class="pre">leaderboard</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.llm_plots.leaderboard" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.llm_plots.legend_outside">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.llm_plots.</span></span><span class="sig-name descname"><span class="pre">legend_outside</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.llm_plots.legend_outside" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.llm_plots.load_results">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.llm_plots.</span></span><span class="sig-name descname"><span class="pre">load_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.llm_plots.load_results" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.llm_plots.main">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.llm_plots.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.llm_plots.main" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.llm_plots.make_all">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.llm_plots.</span></span><span class="sig-name descname"><span class="pre">make_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">results_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rank_agg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'sum'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.llm_plots.make_all" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.llm_plots.make_plots_for">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.llm_plots.</span></span><span class="sig-name descname"><span class="pre">make_plots_for</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rank_agg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'sum'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.llm_plots.make_plots_for" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.llm_plots.pareto_front">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.llm_plots.</span></span><span class="sig-name descname"><span class="pre">pareto_front</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.llm_plots.pareto_front" title="Link to this definition"></a></dt>
+<dd><p>Non-dominated points when maximising both coordinates.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.llm_plots.plot_gpu_vs_context">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.llm_plots.</span></span><span class="sig-name descname"><span class="pre">plot_gpu_vs_context</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">agg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">styles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_dir</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.llm_plots.plot_gpu_vs_context" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.llm_plots.plot_heatmap">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.llm_plots.</span></span><span class="sig-name descname"><span class="pre">plot_heatmap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">agg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_dir</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.llm_plots.plot_heatmap" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.llm_plots.plot_pass_vs_context">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.llm_plots.</span></span><span class="sig-name descname"><span class="pre">plot_pass_vs_context</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">agg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">styles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_dir</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.llm_plots.plot_pass_vs_context" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.llm_plots.plot_rank_sum">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.llm_plots.</span></span><span class="sig-name descname"><span class="pre">plot_rank_sum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ranks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rank_agg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'sum'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.llm_plots.plot_rank_sum" title="Link to this definition"></a></dt>
+<dd><p>Rank figure for each model × context.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.llm_plots.plot_rank_sum_per_model">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.llm_plots.</span></span><span class="sig-name descname"><span class="pre">plot_rank_sum_per_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ranks_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rank_agg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'sum'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.llm_plots.plot_rank_sum_per_model" title="Link to this definition"></a></dt>
+<dd><p>Rank figure per model (metrics averaged across context windows).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.llm_plots.plot_ranking">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.llm_plots.</span></span><span class="sig-name descname"><span class="pre">plot_ranking</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_dir</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.llm_plots.plot_ranking" title="Link to this definition"></a></dt>
+<dd><p>Overall score per model (all contexts pooled), with CI and speed.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.llm_plots.plot_tps_retention">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.llm_plots.</span></span><span class="sig-name descname"><span class="pre">plot_tps_retention</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">agg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trend</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">styles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_dir</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.llm_plots.plot_tps_retention" title="Link to this definition"></a></dt>
+<dd><p>Speed relative to each model’s smallest context: shows the slowdown.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.llm_plots.plot_tps_vs_context">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.llm_plots.</span></span><span class="sig-name descname"><span class="pre">plot_tps_vs_context</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">agg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">styles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_dir</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.llm_plots.plot_tps_vs_context" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.llm_plots.plot_tradeoff">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.llm_plots.</span></span><span class="sig-name descname"><span class="pre">plot_tradeoff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">agg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">styles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_dir</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.llm_plots.plot_tradeoff" title="Link to this definition"></a></dt>
+<dd><p>Score vs speed. Top-right is best; black line is the Pareto front.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.llm_plots.plot_ttft_vs_context">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.llm_plots.</span></span><span class="sig-name descname"><span class="pre">plot_ttft_vs_context</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">agg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">styles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_dir</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.llm_plots.plot_ttft_vs_context" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.llm_plots.rank_sum_per_model">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.llm_plots.</span></span><span class="sig-name descname"><span class="pre">rank_sum_per_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ranks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rank_agg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'sum'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.llm_plots.rank_sum_per_model" title="Link to this definition"></a></dt>
+<dd><p>Average metric scores across context windows per model, then rank.</p>
+<p>Context capability = max planned context size completed, with fixed ranks
+(180k→1 … 50k→5, &lt;35k→6). Models with NaN decode speed or TTFT go to the bottom.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.llm_plots.rank_sum_table">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.llm_plots.</span></span><span class="sig-name descname"><span class="pre">rank_sum_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">agg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rank_agg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'sum'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.llm_plots.rank_sum_table" title="Link to this definition"></a></dt>
+<dd><p>Rank each (series, context) on five metrics and combine the ranks.</p>
+<p>Rank 1 = best. Lower combined score is better overall.</p>
+<dl class="simple">
+<dt>Metrics (direction):</dt><dd><p>pass_rate_adj  higher better  — aborted runs: unrun problems count as fail
+tps            higher better
+ttft           lower better
+gpu_mb         lower better
+context        higher better  — larger context <em>size</em> is better</p>
+</dd>
+</dl>
+<p>rank_agg: “sum” | “mean” | “median” — how ranks are combined.</p>
+<p>Rows with NaN decode speed or TTFT are excluded from ranking and
+placed at the bottom.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.llm_plots.resolve_inputs">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.llm_plots.</span></span><span class="sig-name descname"><span class="pre">resolve_inputs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">results</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.llm_plots.resolve_inputs" title="Link to this definition"></a></dt>
+<dd><p>Return a list of (per_problem_csv, subfolder_name_or_None).</p>
+<ul class="simple">
+<li><p>No –results: every per-problem CSV in the folder, one subfolder each.</p></li>
+<li><p>–results &lt;raw file&gt;: that file, written straight into –out.</p></li>
+<li><p>–results &lt;name&gt;_summary.csv: its per-problem sibling &lt;name&gt;.csv.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.llm_plots.save">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.llm_plots.</span></span><span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.llm_plots.save" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.llm_plots.set_ctx_axis">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.llm_plots.</span></span><span class="sig-name descname"><span class="pre">set_ctx_axis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contexts</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.llm_plots.set_ctx_axis" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.llm_plots.snap_context">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.llm_plots.</span></span><span class="sig-name descname"><span class="pre">snap_context</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">planned</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.llm_plots.snap_context" title="Link to this definition"></a></dt>
+<dd><p>Map an actual context size to the nearest known window (or LOW_CONTEXT_BIN).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.llm_plots.style_map">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.llm_plots.</span></span><span class="sig-name descname"><span class="pre">style_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">series_list</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.llm_plots.style_map" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.llm_plots.trend_table">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.llm_plots.</span></span><span class="sig-name descname"><span class="pre">trend_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">agg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.llm_plots.trend_table" title="Link to this definition"></a></dt>
+<dd><p>Linear trend of tps / pass rate / ttft against context size.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.llm_plots.weighted_tps">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.llm_plots.</span></span><span class="sig-name descname"><span class="pre">weighted_tps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">g</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.llm_plots.weighted_tps" title="Link to this definition"></a></dt>
+<dd><p>Total tokens / total decode time (not the mean of per-problem ratios).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="localbenchmark.llm_plots.wilson">
+<span class="sig-prename descclassname"><span class="pre">localbenchmark.llm_plots.</span></span><span class="sig-name descname"><span class="pre">wilson</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">passes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.96</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#localbenchmark.llm_plots.wilson" title="Link to this definition"></a></dt>
+<dd><p>95% Wilson interval, in percent.</p>
+</dd></dl>
+
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Core evaluation entry points are also available as modules:</p>
+<p>The package modules are:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">localbenchmark.llm_coding_benchmark</span></code> — HumanEval / speed-probe CLI</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">localbenchmark.plot_results</span></code> — ranking and trend plots</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">localbenchmark.analyze_slowdown</span></code> — context vs speed analysis</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">localbenchmark.localbenchmark</span></code>: the <code class="docutils literal notranslate"><span class="pre">localbenchmark</span></code> command (benchmarks, suites, dry run)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">localbenchmark.suite_scoring</span></code>: suite loading, question types and scoring</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">localbenchmark.docs</span></code>: the document folder for company QA</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">localbenchmark.llm_plots</span></code>: the <code class="docutils literal notranslate"><span class="pre">localbenchmarkplot</span></code> command</p></li>
 </ul>
 </div>
 <hr>
@@ -361,7 +1170,7 @@ the prefill cost.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="Coding%20quality.html" class="btn btn-neutral float-left" title="Coding quality" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Documentation.html" class="btn btn-neutral float-left" title="Sponsor" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

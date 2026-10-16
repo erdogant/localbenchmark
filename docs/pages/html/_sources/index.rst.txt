@@ -1,4 +1,4 @@
-localbenchmark's documentation!
+localbenchmark
 ===================================
 
 |python| |pypi| |docs| |stars| |LOC| |downloads_month| |downloads_total| |license| |forks| |open issues| |project status| |medium| |colab| |DOI| |repo-size| |donate|
@@ -33,11 +33,12 @@ localbenchmark's documentation!
 
 **Key Features:**
 
-    - **Coding benchmark**: HumanEval-style tasks via LM Studio (temperature 0)
-    - **Long context**: Fixed windows (e.g. 50k–180k); optional context *fill*
-    - **Speed probe**: Prefill / decode tok/s at controlled tokens-in-cache levels
-    - **Resume-safe CSVs**: Skip finished configs; retry LLM errors
-    - **Slow-model abort**: Stop configs that stay below a minimum tok/s
+    - **Dry run**: Estimate memory, quantization and decode speed before loading a model
+    - **Coding benchmarks**: HumanEval, MBPP and SWE-bench via LM Studio (temperature 0)
+    - **Knowledge suites**: Closed-book questions, scored deterministically, with an optional judge model for open-ended answers
+    - **Company QA**: Questions answered from your own documents, with unanswerable questions that must be declined
+    - **Long context**: Fixed windows (e.g. 50k–180k) to test how speed and memory change
+    - **Resume-safe CSVs**: Skip finished configurations; retry LLM errors
     - **Rank-sum plots**: Pass rate, speed, TTFT, GPU, context — weighted ranking
 
 -----------------------------------
@@ -60,7 +61,7 @@ Support
 -----------------------------------
 
 .. tip::
-	`Medium Blog: Step 2 — Build One Benchmark That Tests It All. <https://erdogant.medium.com>`_
+	`One Benchmark That Tests It All. <https://erdogant.medium.com>`_
 
 
 Installation
@@ -81,36 +82,27 @@ Content
    :caption: Background
 
    Abstract
-
-
-.. toctree::
-   :maxdepth: 1
-   :caption: Installation
-
+   Quickstart
    Installation
 
 
 .. toctree::
-  :maxdepth: 1
-  :caption: Results
+   :maxdepth: 2
+   :caption: Benchmarks
 
-  Save and Load
-
-
-.. toctree::
-  :maxdepth: 1
-  :caption: Examples
-
-  Examples
+   Dry_Run
+   Coding
+   Knowledge_Suites
+   Plots
+   Save and Load
 
 
 .. toctree::
-  :maxdepth: 1
-  :caption: Documentation
+   :maxdepth: 1
+   :caption: Documentation
 
-  Documentation
-  Coding quality
-  localbenchmark.localbenchmark
+   Documentation
+   localbenchmark.localbenchmark
 
 
 

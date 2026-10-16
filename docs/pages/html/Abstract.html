@@ -20,8 +20,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Installation" href="Installation.html" />
-    <link rel="prev" title="localbenchmark’s documentation!" href="index.html" /> 
+    <link rel="next" title="Quickstart" href="Quickstart.html" />
+    <link rel="prev" title="localbenchmark" href="index.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -51,24 +51,17 @@
 <li class="toctree-l2"><a class="reference internal" href="#results">Results</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="#schematic-overview">Schematic overview</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Installation</span></p>
-<ul>
+<li class="toctree-l1"><a class="reference internal" href="Quickstart.html">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Installation.html#uninstalling">Uninstalling</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Results</span></p>
+<p class="caption" role="heading"><span class="caption-text">Benchmarks</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="Save%20and%20Load.html">Results, resume, and summary</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Examples</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="Examples.html">Quickstart — coding benchmark</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Examples.html#speed-probe">Speed probe</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Examples.html#plots-and-ranking">Plots and ranking</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Examples.html#useful-cli-flags">Useful CLI flags</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Examples.html#what-is-ranked">What is ranked</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Dry_Run.html">Dry run</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Coding.html">Coding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Knowledge_Suites.html">Knowledge suite</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Plots.html">Plots &amp; ranking</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Save%20and%20Load.html">Results, folders, and resume</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
 <ul>
@@ -77,7 +70,6 @@
 <li class="toctree-l1"><a class="reference internal" href="Documentation.html#github">Github</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Documentation.html#colab-notebook">Colab Notebook</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Documentation.html#citing">Citing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Coding%20quality.html">Coding quality</a></li>
 <li class="toctree-l1"><a class="reference internal" href="localbenchmark.localbenchmark.html">API References</a></li>
 </ul>
 
@@ -116,38 +108,22 @@ to measure them together under realistic local constraints.</p>
 <h2>Aim<a class="headerlink" href="#aim" title="Link to this heading"></a></h2>
 <p>Provide a single, resume-safe evaluation pipeline that:</p>
 <ul class="simple">
-<li><p>Runs <strong>HumanEval-style</strong> coding tasks through <strong>LM Studio</strong></p></li>
-<li><p>Stresses <strong>context windows</strong> (e.g. 50k–180k tokens), with optional fill</p></li>
+<li><p>Estimates <strong>memory and decode speed</strong> for a model before it is loaded (dry run)</p></li>
+<li><p>Runs <strong>coding tasks</strong> (HumanEval, MBPP, SWE-bench) through <strong>LM Studio</strong></p></li>
+<li><p>Asks <strong>knowledge questions</strong> closed-book, and <strong>company questions</strong> from your own documents</p></li>
+<li><p>Checks whether a model <strong>declines</strong> questions its documents cannot answer</p></li>
+<li><p>Scores open-ended answers with a <strong>judge model</strong>, optionally</p></li>
+<li><p>Stresses <strong>context windows</strong> (e.g. 50k–180k tokens)</p></li>
 <li><p>Records <strong>pass rate</strong>, <strong>decode speed</strong>, <strong>TTFT</strong>, and <strong>peak GPU memory</strong></p></li>
-<li><p>Aborts configurations that are too slow to finish in practice</p></li>
 <li><p>Produces <strong>rank-sum plots</strong> so quality and speed are not confused</p></li>
 </ul>
 </section>
 <section id="results">
 <h2>Results<a class="headerlink" href="#results" title="Link to this heading"></a></h2>
-<p>Each <strong>model × context</strong> run is stored in durable CSV files. A summary file
-tracks finished configurations so restarts skip completed work. Ranking plots
-combine pass rate, speed, latency, memory, and context capability — with higher
-weight on pass rate and decode speed.</p>
-</section>
-</section>
-<section id="schematic-overview">
-<h1>Schematic overview<a class="headerlink" href="#schematic-overview" title="Link to this heading"></a></h1>
-<p>The evaluation flow is:</p>
-<ol class="arabic simple">
-<li><p>Discover each model’s max context from LM Studio</p></li>
-<li><p>Load the model at the requested window size</p></li>
-<li><p>Optionally fill part of the context with unrelated code</p></li>
-<li><p>Run coding problems; execute generated code against tests</p></li>
-<li><p>Log metrics; abort if decode speed stays below a minimum</p></li>
-<li><p>Aggregate results and generate ranking / trend plots</p></li>
-</ol>
-<figure class="align-default" id="id2">
-<span id="id1"></span><img alt="Schematic overview of localbenchmark" src="_images/schematic_overview.png" />
-<figcaption>
-<p><span class="caption-text">High-level flow: LM Studio → load model → HumanEval / speed probe → CSV → plots.</span><a class="headerlink" href="#id2" title="Link to this image"></a></p>
-</figcaption>
-</figure>
+<p>Each run is stored in durable CSV files, in a folder named after its benchmark.
+A summary file tracks finished configurations so restarts skip completed work.
+Ranking plots combine pass rate, speed, latency, memory, and context capability —
+with higher weight on pass rate and decode speed.</p>
 <hr>
 <center>
         <script async src="https://media.ethicalads.io/media/client/ethicalads.min.js"></script>
@@ -156,13 +132,14 @@ weight on pass rate and decode speed.</p>
         <div data-ea-publisher="erdogantgithubio" data-ea-type="image" data-ea-style="stickybox"></div>
 </center>
 <hr></section>
+</section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="index.html" class="btn btn-neutral float-left" title="localbenchmark’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="Installation.html" class="btn btn-neutral float-right" title="Installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="index.html" class="btn btn-neutral float-left" title="localbenchmark" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Quickstart.html" class="btn btn-neutral float-right" title="Quickstart" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

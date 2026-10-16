@@ -72,9 +72,11 @@ From source (development)
 LM Studio
 **********************
 
-The coding benchmark and speed probe expect a running
+The benchmarks and knowledge suites expect a running
 `LM Studio <https://lmstudio.ai/>`_ server (default ``http://localhost:1234``)
-with models available on the machine.
+with models available on the machine. A dry run does not need the server: it reads
+the model files on disk. Without ``--models``, the models are taken from the
+server, or from the LM Studio model folders when the server is not running.
 
 1. Install LM Studio
 2. Download one or more coding models
@@ -85,11 +87,12 @@ with models available on the machine.
 Dependencies
 **********************
 
-Core packages: ``numpy``, ``pandas``, ``matplotlib``, ``requests``, ``tqdm``,
-``openai``, ``scikit-learn``, ``pymupdf``, ``json_repair``, ``datazets``.
+Core packages: ``numpy``, ``pandas``, ``matplotlib``, ``requests``, ``openai``,
+``datasets`` (downloads HumanEval, MBPP and SWE-bench problems), and ``adjustText``
+(plot labels).
 
-Optional: ``llama-cpp-python`` if you load local GGUF files through LLMlight
-helpers instead of LM Studio.
+Optional: ``swebench`` for scoring SWE-bench patches. The scoring runs the official
+harness in Docker, so Docker must be running.
 
 
 Uninstalling

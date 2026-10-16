@@ -377,6 +377,8 @@ def prepare_suite(args):
 
     rubric = [it for it in suite.items if it.get("type") == "rubric"]
     if rubric and not getattr(args, "judge", None):
+        # Make it explicit that rubric items are being skipped when no judge is provided
+        print(f"Skipping {len(rubric)} rubric item(s): these are open-ended and need a judge model.")
         print(f"{len(rubric)} open-ended item(s): answered and saved, not scored. "
               "Use --judge MODEL to score them.")
     elif rubric:

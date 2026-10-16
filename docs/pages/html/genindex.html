@@ -44,24 +44,17 @@
               <p class="caption" role="heading"><span class="caption-text">Background</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="Abstract.html">Background</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Abstract.html#schematic-overview">Schematic overview</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Installation</span></p>
-<ul>
+<li class="toctree-l1"><a class="reference internal" href="Quickstart.html">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Installation.html#uninstalling">Uninstalling</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Results</span></p>
+<p class="caption" role="heading"><span class="caption-text">Benchmarks</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="Save%20and%20Load.html">Results, resume, and summary</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Examples</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="Examples.html">Quickstart — coding benchmark</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Examples.html#speed-probe">Speed probe</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Examples.html#plots-and-ranking">Plots and ranking</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Examples.html#useful-cli-flags">Useful CLI flags</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Examples.html#what-is-ranked">What is ranked</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Dry_Run.html">Dry run</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Coding.html">Coding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Knowledge_Suites.html">Knowledge suite</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Plots.html">Plots &amp; ranking</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Save%20and%20Load.html">Results, folders, and resume</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
 <ul>
@@ -70,7 +63,6 @@
 <li class="toctree-l1"><a class="reference internal" href="Documentation.html#github">Github</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Documentation.html#colab-notebook">Colab Notebook</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Documentation.html#citing">Citing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Coding%20quality.html">Coding quality</a></li>
 <li class="toctree-l1"><a class="reference internal" href="localbenchmark.localbenchmark.html">API References</a></li>
 </ul>
 
@@ -108,20 +100,28 @@
  | <a href="#C"><strong>C</strong></a>
  | <a href="#D"><strong>D</strong></a>
  | <a href="#E"><strong>E</strong></a>
+ | <a href="#F"><strong>F</strong></a>
  | <a href="#G"><strong>G</strong></a>
+ | <a href="#I"><strong>I</strong></a>
+ | <a href="#J"><strong>J</strong></a>
+ | <a href="#K"><strong>K</strong></a>
  | <a href="#L"><strong>L</strong></a>
  | <a href="#M"><strong>M</strong></a>
+ | <a href="#N"><strong>N</strong></a>
  | <a href="#P"><strong>P</strong></a>
  | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
  | <a href="#T"><strong>T</strong></a>
  | <a href="#U"><strong>U</strong></a>
+ | <a href="#V"><strong>V</strong></a>
  | <a href="#W"><strong>W</strong></a>
  
 </div>
 <h2 id="A">A</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.llm_plots.agg_by_context">agg_by_context() (in module localbenchmark.llm_plots)</a>
+</li>
       <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.api">api() (in module localbenchmark.localbenchmark)</a>
 </li>
   </ul></td>
@@ -130,13 +130,27 @@
 </li>
       <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.append_row">append_row() (in module localbenchmark.localbenchmark)</a>
 </li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.apply_judgements">apply_judgements() (in module localbenchmark.localbenchmark)</a>
+</li>
   </ul></td>
 </tr></table>
 
 <h2 id="B">B</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.docs.build_context">build_context() (in module localbenchmark.docs)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.suite_scoring.build_judge_prompt">build_judge_prompt() (in module localbenchmark.suite_scoring)</a>
+</li>
       <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.build_program">build_program() (in module localbenchmark.localbenchmark)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.build_program_mbpp">build_program_mbpp() (in module localbenchmark.localbenchmark)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.build_suite_prompt">build_suite_prompt() (in module localbenchmark.localbenchmark)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.build_swe_prompt">build_swe_prompt() (in module localbenchmark.localbenchmark)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -144,11 +158,17 @@
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.suite_scoring.check_context">check_context() (in module localbenchmark.suite_scoring)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.suite_scoring.check_gold">check_gold() (in module localbenchmark.suite_scoring)</a>
+</li>
       <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.check_lm_studio">check_lm_studio() (in module localbenchmark.localbenchmark)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.check_results_schema">check_results_schema() (in module localbenchmark.localbenchmark)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.checkout_base">checkout_base() (in module localbenchmark.localbenchmark)</a>
 </li>
       <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.create_summary">create_summary() (in module localbenchmark.localbenchmark)</a>
 </li>
@@ -158,7 +178,27 @@
 <h2 id="D">D</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.suite_scoring.ScoreResult.detail">detail (localbenchmark.suite_scoring.ScoreResult attribute)</a>
+</li>
       <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.determine_model_contexts">determine_model_contexts() (in module localbenchmark.localbenchmark)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.llm_plots.discover_context_bins">discover_context_bins() (in module localbenchmark.llm_plots)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.discover_models">discover_models() (in module localbenchmark.localbenchmark)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.docs.Doc">Doc (class in localbenchmark.docs)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.dryrun_console">dryrun_console() (in module localbenchmark.localbenchmark)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.dryrun_leaderboard">dryrun_leaderboard() (in module localbenchmark.localbenchmark)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.dryrun_plan">dryrun_plan() (in module localbenchmark.localbenchmark)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.dryrun_report">dryrun_report() (in module localbenchmark.localbenchmark)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.dryrun_rows">dryrun_rows() (in module localbenchmark.localbenchmark)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -166,13 +206,35 @@
 <h2 id="E">E</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.execute_program">execute_program() (in module localbenchmark.localbenchmark)</a>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.ensure_repo">ensure_repo() (in module localbenchmark.localbenchmark)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.docs.Doc.est_tokens">est_tokens (localbenchmark.docs.Doc attribute)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.docs.estimate_tokens">estimate_tokens() (in module localbenchmark.docs)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.execute_program">execute_program() (in module localbenchmark.localbenchmark)</a>
+</li>
       <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.experiment_id_for">experiment_id_for() (in module localbenchmark.localbenchmark)</a>
 </li>
       <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.extract_code">extract_code() (in module localbenchmark.localbenchmark)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.extract_diff">extract_diff() (in module localbenchmark.localbenchmark)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="F">F</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.find_gguf">find_gguf() (in module localbenchmark.localbenchmark)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.llm_plots.find_raw_results">find_raw_results() (in module localbenchmark.llm_plots)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.docs.fit_report">fit_report() (in module localbenchmark.docs)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -184,11 +246,55 @@
 </li>
       <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.get_corpus">get_corpus() (in module localbenchmark.localbenchmark)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.get_gpu_memory">get_gpu_memory() (in module localbenchmark.localbenchmark)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.get_lm_models">get_lm_models() (in module localbenchmark.localbenchmark)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.gguf_kv">gguf_kv() (in module localbenchmark.localbenchmark)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.suite_scoring.gold_answer">gold_answer() (in module localbenchmark.suite_scoring)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="I">I</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.docs.Doc.id">id (localbenchmark.docs.Doc attribute)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.llm_plots.is_raw_results">is_raw_results() (in module localbenchmark.llm_plots)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.item_question">item_question() (in module localbenchmark.localbenchmark)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.suite_scoring.Suite.items">items (localbenchmark.suite_scoring.Suite attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="J">J</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.judge_calibration">judge_calibration() (in module localbenchmark.localbenchmark)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.judge_file_for">judge_file_for() (in module localbenchmark.localbenchmark)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="K">K</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.kv_explanation">kv_explanation() (in module localbenchmark.localbenchmark)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.kv_profile">kv_profile() (in module localbenchmark.localbenchmark)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -196,18 +302,50 @@
 <h2 id="L">L</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.llm_plots.leaderboard">leaderboard() (in module localbenchmark.llm_plots)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.llm_plots.legend_outside">legend_outside() (in module localbenchmark.llm_plots)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.load_benchmark">load_benchmark() (in module localbenchmark.localbenchmark)</a>
+</li>
       <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.load_completed">load_completed() (in module localbenchmark.localbenchmark)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.docs.load_docs">load_docs() (in module localbenchmark.docs)</a>
 </li>
       <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.load_humaneval">load_humaneval() (in module localbenchmark.localbenchmark)</a>
 </li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.load_mbpp">load_mbpp() (in module localbenchmark.localbenchmark)</a>
+</li>
       <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.load_model">load_model() (in module localbenchmark.localbenchmark)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.load_probe_done">load_probe_done() (in module localbenchmark.localbenchmark)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.llm_plots.load_results">load_results() (in module localbenchmark.llm_plots)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.suite_scoring.load_suite">load_suite() (in module localbenchmark.suite_scoring)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.load_probe_done">load_probe_done() (in module localbenchmark.localbenchmark)</a>
-</li>
       <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.load_summary_configs">load_summary_configs() (in module localbenchmark.localbenchmark)</a>
 </li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.load_swe_done">load_swe_done() (in module localbenchmark.localbenchmark)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.load_swebench">load_swebench() (in module localbenchmark.localbenchmark)</a>
+</li>
+      <li>
+    localbenchmark.docs
+
+      <ul>
+        <li><a href="localbenchmark.localbenchmark.html#module-localbenchmark.docs">module</a>
+</li>
+      </ul></li>
+      <li>
+    localbenchmark.llm_plots
+
+      <ul>
+        <li><a href="localbenchmark.localbenchmark.html#module-localbenchmark.llm_plots">module</a>
+</li>
+      </ul></li>
       <li>
     localbenchmark.localbenchmark
 
@@ -215,35 +353,118 @@
         <li><a href="localbenchmark.localbenchmark.html#module-localbenchmark.localbenchmark">module</a>
 </li>
       </ul></li>
+      <li>
+    localbenchmark.suite_scoring
+
+      <ul>
+        <li><a href="localbenchmark.localbenchmark.html#module-localbenchmark.suite_scoring">module</a>
+</li>
+      </ul></li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.lookup_model">lookup_model() (in module localbenchmark.localbenchmark)</a>
+</li>
   </ul></td>
 </tr></table>
 
 <h2 id="M">M</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.main">main() (in module localbenchmark.localbenchmark)</a>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.docs.main">main() (in module localbenchmark.docs)</a>
+
+      <ul>
+        <li><a href="localbenchmark.localbenchmark.html#localbenchmark.llm_plots.main">(in module localbenchmark.llm_plots)</a>
+</li>
+        <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.main">(in module localbenchmark.localbenchmark)</a>
+</li>
+        <li><a href="localbenchmark.localbenchmark.html#localbenchmark.suite_scoring.main">(in module localbenchmark.suite_scoring)</a>
+</li>
+      </ul></li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.llm_plots.make_all">make_all() (in module localbenchmark.llm_plots)</a>
 </li>
       <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.make_filler">make_filler() (in module localbenchmark.localbenchmark)</a>
 </li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.llm_plots.make_plots_for">make_plots_for() (in module localbenchmark.llm_plots)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.make_program">make_program() (in module localbenchmark.localbenchmark)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.suite_scoring.ScoreResult.method">method (localbenchmark.suite_scoring.ScoreResult attribute)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.model_kv_profile">model_kv_profile() (in module localbenchmark.localbenchmark)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.model_params">model_params() (in module localbenchmark.localbenchmark)</a>
+</li>
       <li>
     module
 
       <ul>
+        <li><a href="localbenchmark.localbenchmark.html#module-localbenchmark.docs">localbenchmark.docs</a>
+</li>
+        <li><a href="localbenchmark.localbenchmark.html#module-localbenchmark.llm_plots">localbenchmark.llm_plots</a>
+</li>
         <li><a href="localbenchmark.localbenchmark.html#module-localbenchmark.localbenchmark">localbenchmark.localbenchmark</a>
 </li>
+        <li><a href="localbenchmark.localbenchmark.html#module-localbenchmark.suite_scoring">localbenchmark.suite_scoring</a>
+</li>
       </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="N">N</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.suite_scoring.Suite.name">name (localbenchmark.suite_scoring.Suite attribute)</a>
+</li>
   </ul></td>
 </tr></table>
 
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.probe_progress">probe_progress() (in module localbenchmark.localbenchmark)</a>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.llm_plots.pareto_front">pareto_front() (in module localbenchmark.llm_plots)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.suite_scoring.parse_judge_reply">parse_judge_reply() (in module localbenchmark.suite_scoring)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.suite_scoring.parse_numbers">parse_numbers() (in module localbenchmark.suite_scoring)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.suite_scoring.ScoreResult.passed">passed (localbenchmark.suite_scoring.ScoreResult attribute)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.patch_applies">patch_applies() (in module localbenchmark.localbenchmark)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.suite_scoring.Suite.path">path (localbenchmark.suite_scoring.Suite attribute)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.pending_judgements">pending_judgements() (in module localbenchmark.localbenchmark)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.plot_dryrun">plot_dryrun() (in module localbenchmark.localbenchmark)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.llm_plots.plot_gpu_vs_context">plot_gpu_vs_context() (in module localbenchmark.llm_plots)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.llm_plots.plot_heatmap">plot_heatmap() (in module localbenchmark.llm_plots)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.llm_plots.plot_pass_vs_context">plot_pass_vs_context() (in module localbenchmark.llm_plots)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.llm_plots.plot_rank_sum">plot_rank_sum() (in module localbenchmark.llm_plots)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.llm_plots.plot_rank_sum_per_model">plot_rank_sum_per_model() (in module localbenchmark.llm_plots)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.llm_plots.plot_ranking">plot_ranking() (in module localbenchmark.llm_plots)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.llm_plots.plot_tps_retention">plot_tps_retention() (in module localbenchmark.llm_plots)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.llm_plots.plot_tps_vs_context">plot_tps_vs_context() (in module localbenchmark.llm_plots)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.llm_plots.plot_tradeoff">plot_tradeoff() (in module localbenchmark.llm_plots)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.llm_plots.plot_ttft_vs_context">plot_ttft_vs_context() (in module localbenchmark.llm_plots)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.prepare_suite">prepare_suite() (in module localbenchmark.localbenchmark)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.print_table">print_table() (in module localbenchmark.localbenchmark)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.probe_progress">probe_progress() (in module localbenchmark.localbenchmark)</a>
+</li>
       <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.probe_targets_for">probe_targets_for() (in module localbenchmark.localbenchmark)</a>
 </li>
   </ul></td>
@@ -252,15 +473,43 @@
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.llm_plots.rank_sum_per_model">rank_sum_per_model() (in module localbenchmark.llm_plots)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.llm_plots.rank_sum_table">rank_sum_table() (in module localbenchmark.llm_plots)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.read_gguf_metadata">read_gguf_metadata() (in module localbenchmark.localbenchmark)</a>
+</li>
       <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.repair_results_file">repair_results_file() (in module localbenchmark.localbenchmark)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.llm_plots.resolve_inputs">resolve_inputs() (in module localbenchmark.llm_plots)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.resolve_output">resolve_output() (in module localbenchmark.localbenchmark)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.resolve_vram">resolve_vram() (in module localbenchmark.localbenchmark)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.row_to_item">row_to_item() (in module localbenchmark.localbenchmark)</a>
 </li>
       <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.run_experiment">run_experiment() (in module localbenchmark.localbenchmark)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.run_git">run_git() (in module localbenchmark.localbenchmark)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.run_judge_stage">run_judge_stage() (in module localbenchmark.localbenchmark)</a>
+</li>
       <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.run_plots">run_plots() (in module localbenchmark.localbenchmark)</a>
 </li>
       <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.run_probe">run_probe() (in module localbenchmark.localbenchmark)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.run_suite_experiment">run_suite_experiment() (in module localbenchmark.localbenchmark)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.run_swe_harness">run_swe_harness() (in module localbenchmark.localbenchmark)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.run_swebench_eval">run_swebench_eval() (in module localbenchmark.localbenchmark)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.run_swebench_experiment">run_swebench_experiment() (in module localbenchmark.localbenchmark)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.run_swebench_generation">run_swebench_generation() (in module localbenchmark.localbenchmark)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -270,9 +519,47 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.safe_name">safe_name() (in module localbenchmark.localbenchmark)</a>
 </li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.llm_plots.save">save() (in module localbenchmark.llm_plots)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.scan_gguf_index">scan_gguf_index() (in module localbenchmark.localbenchmark)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.suite_scoring.ScoreResult.score">score (localbenchmark.suite_scoring.ScoreResult attribute)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.suite_scoring.score_item">score_item() (in module localbenchmark.suite_scoring)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.suite_scoring.score_keywords">score_keywords() (in module localbenchmark.suite_scoring)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.suite_scoring.score_mc">score_mc() (in module localbenchmark.suite_scoring)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.suite_scoring.score_numeric">score_numeric() (in module localbenchmark.suite_scoring)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.suite_scoring.score_short">score_short() (in module localbenchmark.suite_scoring)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.suite_scoring.score_unanswerable">score_unanswerable() (in module localbenchmark.suite_scoring)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.suite_scoring.ScoreResult">ScoreResult (class in localbenchmark.suite_scoring)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.select_context_files">select_context_files() (in module localbenchmark.localbenchmark)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.llm_plots.set_ctx_axis">set_ctx_axis() (in module localbenchmark.llm_plots)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.suite_scoring.Suite.sha256">sha256 (localbenchmark.suite_scoring.Suite attribute)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.llm_plots.snap_context">snap_context() (in module localbenchmark.llm_plots)</a>
+</li>
       <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.solve_problem">solve_problem() (in module localbenchmark.localbenchmark)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.suite_scoring.strip_think">strip_think() (in module localbenchmark.suite_scoring)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.llm_plots.style_map">style_map() (in module localbenchmark.llm_plots)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.suite_scoring.Suite">Suite (class in localbenchmark.suite_scoring)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.suite_summary">suite_summary() (in module localbenchmark.localbenchmark)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.swe_gen_file">swe_gen_file() (in module localbenchmark.localbenchmark)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -280,7 +567,15 @@
 <h2 id="T">T</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.docs.Doc.text">text (localbenchmark.docs.Doc attribute)</a>
+</li>
       <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.timestamp">timestamp() (in module localbenchmark.localbenchmark)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.suite_scoring.tokens">tokens() (in module localbenchmark.suite_scoring)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.llm_plots.trend_table">trend_table() (in module localbenchmark.llm_plots)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -293,13 +588,33 @@
   </ul></td>
 </tr></table>
 
-<h2 id="W">W</h2>
+<h2 id="V">V</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.wilson">wilson() (in module localbenchmark.localbenchmark)</a>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.suite_scoring.Suite.version">version (localbenchmark.suite_scoring.Suite attribute)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.vram_estimate">vram_estimate() (in module localbenchmark.localbenchmark)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="W">W</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.llm_plots.weighted_tps">weighted_tps() (in module localbenchmark.llm_plots)</a>
+</li>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.llm_plots.wilson">wilson() (in module localbenchmark.llm_plots)</a>
+
+      <ul>
+        <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.wilson">(in module localbenchmark.localbenchmark)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="localbenchmark.localbenchmark.html#localbenchmark.docs.Doc.words">words (localbenchmark.docs.Doc attribute)</a>
+</li>
       <li><a href="localbenchmark.localbenchmark.html#localbenchmark.localbenchmark.write_diagnostics">write_diagnostics() (in module localbenchmark.localbenchmark)</a>
 </li>
   </ul></td>

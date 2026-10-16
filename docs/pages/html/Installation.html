@@ -20,8 +20,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Results, resume, and summary" href="Save%20and%20Load.html" />
-    <link rel="prev" title="Background" href="Abstract.html" /> 
+    <link rel="next" title="Dry run" href="Dry_Run.html" />
+    <link rel="prev" title="Quickstart" href="Quickstart.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -45,12 +45,9 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
     
               <p class="caption" role="heading"><span class="caption-text">Background</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="Abstract.html">Background</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Abstract.html#schematic-overview">Schematic overview</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Installation</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Abstract.html">Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Quickstart.html">Quickstart</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#create-conda-environment">Create Conda Environment</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#create-venv-environment">Create venv Environment</a></li>
@@ -67,17 +64,13 @@
 </ul>
 </li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Results</span></p>
+<p class="caption" role="heading"><span class="caption-text">Benchmarks</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="Save%20and%20Load.html">Results, resume, and summary</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Examples</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="Examples.html">Quickstart — coding benchmark</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Examples.html#speed-probe">Speed probe</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Examples.html#plots-and-ranking">Plots and ranking</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Examples.html#useful-cli-flags">Useful CLI flags</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Examples.html#what-is-ranked">What is ranked</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Dry_Run.html">Dry run</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Coding.html">Coding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Knowledge_Suites.html">Knowledge suite</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Plots.html">Plots &amp; ranking</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Save%20and%20Load.html">Results, folders, and resume</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
 <ul>
@@ -86,7 +79,6 @@
 <li class="toctree-l1"><a class="reference internal" href="Documentation.html#github">Github</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Documentation.html#colab-notebook">Colab Notebook</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Documentation.html#citing">Citing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Coding%20quality.html">Coding quality</a></li>
 <li class="toctree-l1"><a class="reference internal" href="localbenchmark.localbenchmark.html">API References</a></li>
 </ul>
 
@@ -177,9 +169,11 @@ environment using conda or venv.</p>
 </section>
 <section id="lm-studio">
 <h2>LM Studio<a class="headerlink" href="#lm-studio" title="Link to this heading"></a></h2>
-<p>The coding benchmark and speed probe expect a running
+<p>The benchmarks and knowledge suites expect a running
 <a class="reference external" href="https://lmstudio.ai/">LM Studio</a> server (default <code class="docutils literal notranslate"><span class="pre">http://localhost:1234</span></code>)
-with models available on the machine.</p>
+with models available on the machine. A dry run does not need the server: it reads
+the model files on disk. Without <code class="docutils literal notranslate"><span class="pre">--models</span></code>, the models are taken from the
+server, or from the LM Studio model folders when the server is not running.</p>
 <ol class="arabic simple">
 <li><p>Install LM Studio</p></li>
 <li><p>Download one or more coding models</p></li>
@@ -189,10 +183,11 @@ with models available on the machine.</p>
 </section>
 <section id="dependencies">
 <h2>Dependencies<a class="headerlink" href="#dependencies" title="Link to this heading"></a></h2>
-<p>Core packages: <code class="docutils literal notranslate"><span class="pre">numpy</span></code>, <code class="docutils literal notranslate"><span class="pre">pandas</span></code>, <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code>, <code class="docutils literal notranslate"><span class="pre">requests</span></code>, <code class="docutils literal notranslate"><span class="pre">tqdm</span></code>,
-<code class="docutils literal notranslate"><span class="pre">openai</span></code>, <code class="docutils literal notranslate"><span class="pre">scikit-learn</span></code>, <code class="docutils literal notranslate"><span class="pre">pymupdf</span></code>, <code class="docutils literal notranslate"><span class="pre">json_repair</span></code>, <code class="docutils literal notranslate"><span class="pre">datazets</span></code>.</p>
-<p>Optional: <code class="docutils literal notranslate"><span class="pre">llama-cpp-python</span></code> if you load local GGUF files through LLMlight
-helpers instead of LM Studio.</p>
+<p>Core packages: <code class="docutils literal notranslate"><span class="pre">numpy</span></code>, <code class="docutils literal notranslate"><span class="pre">pandas</span></code>, <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code>, <code class="docutils literal notranslate"><span class="pre">requests</span></code>, <code class="docutils literal notranslate"><span class="pre">openai</span></code>,
+<code class="docutils literal notranslate"><span class="pre">datasets</span></code> (downloads HumanEval, MBPP and SWE-bench problems), and <code class="docutils literal notranslate"><span class="pre">adjustText</span></code>
+(plot labels).</p>
+<p>Optional: <code class="docutils literal notranslate"><span class="pre">swebench</span></code> for scoring SWE-bench patches. The scoring runs the official
+harness in Docker, so Docker must be running.</p>
 </section>
 </section>
 <section id="uninstalling">
@@ -229,8 +224,8 @@ helpers instead of LM Studio.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="Abstract.html" class="btn btn-neutral float-left" title="Background" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="Save%20and%20Load.html" class="btn btn-neutral float-right" title="Results, resume, and summary" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="Quickstart.html" class="btn btn-neutral float-left" title="Quickstart" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Dry_Run.html" class="btn btn-neutral float-right" title="Dry run" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

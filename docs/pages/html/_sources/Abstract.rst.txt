@@ -11,38 +11,21 @@ Aim
 
 Provide a single, resume-safe evaluation pipeline that:
 
-* Runs **HumanEval-style** coding tasks through **LM Studio**
-* Stresses **context windows** (e.g. 50k–180k tokens), with optional fill
+* Estimates **memory and decode speed** for a model before it is loaded (dry run)
+* Runs **coding tasks** (HumanEval, MBPP, SWE-bench) through **LM Studio**
+* Asks **knowledge questions** closed-book, and **company questions** from your own documents
+* Checks whether a model **declines** questions its documents cannot answer
+* Scores open-ended answers with a **judge model**, optionally
+* Stresses **context windows** (e.g. 50k–180k tokens)
 * Records **pass rate**, **decode speed**, **TTFT**, and **peak GPU memory**
-* Aborts configurations that are too slow to finish in practice
 * Produces **rank-sum plots** so quality and speed are not confused
 
 Results
 ********
 
-Each **model × context** run is stored in durable CSV files. A summary file
-tracks finished configurations so restarts skip completed work. Ranking plots
-combine pass rate, speed, latency, memory, and context capability — with higher
-weight on pass rate and decode speed.
-
-Schematic overview
-####################
-
-The evaluation flow is:
-
-1. Discover each model's max context from LM Studio
-2. Load the model at the requested window size
-3. Optionally fill part of the context with unrelated code
-4. Run coding problems; execute generated code against tests
-5. Log metrics; abort if decode speed stays below a minimum
-6. Aggregate results and generate ranking / trend plots
-
-.. _schematic_overview:
-
-.. figure:: ../figs/schematic_overview.png
-   :alt: Schematic overview of localbenchmark
-
-   High-level flow: LM Studio → load model → HumanEval / speed probe → CSV → plots.
-
+Each run is stored in durable CSV files, in a folder named after its benchmark.
+A summary file tracks finished configurations so restarts skip completed work.
+Ranking plots combine pass rate, speed, latency, memory, and context capability —
+with higher weight on pass rate and decode speed.
 
 .. include:: add_bottom.add
