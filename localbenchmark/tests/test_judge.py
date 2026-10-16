@@ -1,6 +1,7 @@
 """Judge model for open-ended answers. Run with: python -m unittest test_judge -v"""
 import contextlib
 import io
+import json
 import os
 import sys
 import tempfile
@@ -22,6 +23,23 @@ import localbenchmark as lb  # noqa: E402
 import suite_scoring as SS  # noqa: E402
 
 GK = HERE / "suites" / "general_knowledge.jsonl"
+REFERENCE = ("The revolutions spread because Soviet leaders would not send troops to stop them, "
+             "the Eastern bloc economies were stagnating, and mass protests in many cities made "
+             "the old governments impossible to keep.")
+
+
+def suite_with_reference(folder):
+    """A copy of the general-knowledge suite where the open item has a reference answer.
+    The tests do not depend on the copy in the suites folder, which may be older."""
+    rows = [json.loads(line) for line in GK.read_text(encoding="utf-8").splitlines() if line.strip()]
+    for row in rows:
+        if row["id"] == "ev-07":
+            row["reference"] = REFERENCE
+    path = Path(folder) / "general_knowledge.jsonl"
+    path.write_text("\n".join(json.dumps(r, ensure_ascii=False) for r in rows) + "\n", encoding="utf-8")
+    return path
+
+
 ITEMS = {it["id"]: it for it in SS.load_suite(GK).items}
 BY_QUESTION = {lb.item_question(it): it for it in ITEMS.values() if it["type"] != "rubric"}
 OPEN_Q = lb.item_question(ITEMS["ev-07"])
@@ -33,6 +51,7 @@ class Judge(unittest.TestCase):
         self.cwd = os.getcwd()
         self.tmp = tempfile.mkdtemp()
         os.chdir(self.tmp)
+        self.suite_path = suite_with_reference(self.tmp)
         self.loads = []
         self.judge_garbage_once = False
         self.saved = {n: getattr(lb, n) for n in ["check_lm_studio", "determine_model_contexts",
@@ -76,7 +95,7 @@ class Judge(unittest.TestCase):
         raise AssertionError("unexpected system prompt")
 
     def command(self, *extra):
-        sys.argv = ["localbenchmark", "--benchmark", "suite", "--suite", str(GK),
+        sys.argv = ["localbenchmark", "--benchmark", "suite", "--suite", str(self.suite_path),
                     "--models", "candidate/model", "--contexts", "50000",
                     "--docs", str(Path(self.tmp) / "none")] + list(extra)
         out = io.StringIO()

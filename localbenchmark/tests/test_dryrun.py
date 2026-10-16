@@ -212,12 +212,15 @@ class Run(unittest.TestCase):
         self.cwd = os.getcwd()
         self.tmp = tempfile.mkdtemp()
         os.chdir(self.tmp)
-        self.saved = {n: getattr(lb, n) for n in ["check_lm_studio", "OpenAI", "LOCAL_MODEL_DIRS"]}
+        self.saved = {n: getattr(lb, n) for n in ["check_lm_studio", "OpenAI", "LOCAL_MODEL_DIRS",
+                                                    "discover_models"]}
         def boom(*a, **k):
             raise AssertionError("network call during dry run")
         lb.check_lm_studio = boom
         lb.OpenAI = boom
         lb.LOCAL_MODEL_DIRS = [Path(self.tmp) / "no-models"]
+        # no model is found, whether or not an LM Studio server is running on this machine
+        lb.discover_models = lambda base_url: ([], "nowhere (test)")
 
     def tearDown(self):
         for n, f in self.saved.items():

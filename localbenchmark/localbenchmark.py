@@ -377,8 +377,6 @@ def prepare_suite(args):
 
     rubric = [it for it in suite.items if it.get("type") == "rubric"]
     if rubric and not getattr(args, "judge", None):
-        # Make it explicit that rubric items are being skipped when no judge is provided
-        print(f"Skipping {len(rubric)} rubric item(s): these are open-ended and need a judge model.")
         print(f"{len(rubric)} open-ended item(s): answered and saved, not scored. "
               "Use --judge MODEL to score them.")
     elif rubric:
@@ -572,9 +570,10 @@ def apply_judgements(df, results_file, judge_model):
 
 def judge_calibration(client, server, items):
     """Score each reference answer with the judge. The judge must give full marks."""
-    for it in items.values():
-        if it.get("type") != "rubric" or not it.get("reference"):
-            continue
+    references = [it for it in items.values() if it.get("type") == "rubric" and it.get("reference")]
+    if not references:
+        print("judge check: no reference answers in this suite (calibration skipped)")
+    for it in references:
         llm = solve_problem(client, server, SS.build_judge_prompt(it, it["reference"]), "",
                             JUDGE_MAX_TOKENS, system=SS.JUDGE_SYSTEM_PROMPT)
         try:
