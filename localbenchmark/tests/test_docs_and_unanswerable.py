@@ -2,6 +2,10 @@
 Run with: python -m unittest test_docs_and_unanswerable -v"""
 import tempfile
 import unittest
+
+from offline_guard import block_network
+
+block_network()
 from pathlib import Path
 
 import docs as D

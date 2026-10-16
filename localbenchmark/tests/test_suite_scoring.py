@@ -2,6 +2,10 @@
 import json
 import tempfile
 import unittest
+
+from offline_guard import block_network
+
+block_network()
 from pathlib import Path
 
 import suite_scoring as S

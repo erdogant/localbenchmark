@@ -9,6 +9,10 @@ import sys
 import tempfile
 import types
 import unittest
+
+from offline_guard import block_network
+
+block_network()
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))

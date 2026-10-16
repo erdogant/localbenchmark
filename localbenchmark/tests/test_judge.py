@@ -7,6 +7,10 @@ import sys
 import tempfile
 import types
 import unittest
+
+from offline_guard import block_network
+
+block_network()
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent

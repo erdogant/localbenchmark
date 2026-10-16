@@ -7,6 +7,10 @@ import sys
 import tempfile
 import types
 import unittest
+
+from offline_guard import block_network
+
+block_network()
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -24,7 +28,7 @@ import suite_scoring as SS  # noqa: E402
 
 GK = HERE / "suites" / "general_knowledge.jsonl"
 GK_ITEMS = SS.load_suite(GK).items
-BY_QUESTION = {lb.item_question(it): it for it in GK_ITEMS if it["type"] != "rubric"}
+BY_QUESTION = {lb.item_question(it): it for it in GK_ITEMS}
 
 
 class ClosedBook(unittest.TestCase):
@@ -57,7 +61,7 @@ class ClosedBook(unittest.TestCase):
         self.systems.append(system)
         question = prompt.split("## Question\n", 1)[-1]   # closed book: prompt is the question alone
         item = BY_QUESTION.get(question) or BY_QUESTION[prompt]
-        return {"raw": SS.gold_answer(item), "code": "", "ttft": 0.5, "generation_time": 1.0,
+        return {"raw": SS.gold_answer(item) or "A short answer.", "code": "", "ttft": 0.5, "generation_time": 1.0,
                 "decode_time": 1.0, "decode_tps": 40.0, "prompt_tokens": 80,
                 "completion_tokens": 10, "finish_reason": "stop"}
 
@@ -72,13 +76,15 @@ class ClosedBook(unittest.TestCase):
             lb.main()
         return out.getvalue()
 
-    # def test_runs_without_documents_and_passes_gold_answers(self):
-    #     out = self.run_command()
-    #     self.assertIn("Closed-book run", out)
-    #     self.assertIn("Skipping 1 rubric item", out)
-    #     r = pd.read_csv(Path(self.tmp) / "suite" / "suite_results_general_knowledge.csv")
-    #     self.assertEqual(len(r), len(BY_QUESTION))
-    #     self.assertTrue(r["passed"].astype(str).str.lower().eq("true").all())
+    def test_runs_without_documents_and_passes_gold_answers(self):
+        out = self.run_command()
+        self.assertIn("Closed-book run", out)
+        self.assertIn("1 open-ended item(s): answered and saved, not scored", out)
+        r = pd.read_csv(Path(self.tmp) / "suite" / "suite_results_general_knowledge.csv")
+        self.assertEqual(len(r), len(GK_ITEMS))
+        scored = r[r["error_type"].astype(str) != "NEEDS_JUDGE"]
+        self.assertTrue(scored["passed"].astype(str).str.lower().eq("true").all())
+        self.assertEqual(int((r["error_type"] == "NEEDS_JUDGE").sum()), 1)
 
     def test_prompt_has_no_document_text(self):
         self.run_command()
