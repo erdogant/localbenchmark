@@ -13,7 +13,7 @@
 
 <div>
 <a href="https://erdogant.github.io/localbenchmark/">
-  <img src="https://raw.githubusercontent.com/erdogant/localbenchmark/master/docs/figs/logo.png"
+  <img src="https://raw.githubusercontent.com/erdogant/localbenchmark/master/docs/source/figs/logo.png"
        width="100"
        align="left" />
 </a>
@@ -112,6 +112,10 @@ localbenchmark --benchmark swebench  --models "openai/gpt-oss-20b" --contexts 80
 
 ```
 
+<a href="https://erdogant.github.io/localbenchmark/">
+  <img src="https://raw.githubusercontent.com/erdogant/localbenchmark/master/docs/source/figs/09_rank_sum.png" width="75%" alt="Localbenchmark model ranking comparison">
+</a>
+
 Results are written to CSV. Configurations already present in the **summary** CSV are skipped on the next run. Configurations that abort for low tok/s stay in the summary so they are not reloaded endlessly.
 
 **Useful flags**
@@ -129,6 +133,9 @@ Results are written to CSV. Configurations already present in the **summary** CS
 | `--docs-ids` | Use exactly these document file names |
 
 ---
+
+
+
 
 ### Custom (Company) QA
 
