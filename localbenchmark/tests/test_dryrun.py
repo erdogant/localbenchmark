@@ -118,9 +118,9 @@ class Estimates(unittest.TestCase):
         # a file the size of the real Ornith Q4_K_M (6.55 GB), with its architecture in the header
         name = "ornith-1.0-9b-q4_k_m.gguf"
         (self.dir / name).write_bytes(gguf_bytes(LLAMA_LIKE))
-        with open(self.dir / name, "ab") as f:
-            f.truncate(6_550_000_000)
         self.index = lb.scan_gguf_index([self.dir])
+        for entry in self.index:                # report the real size without writing 6.55 GB to disk
+            entry["size"] = 6_550_000_000
 
     def test_weights_come_from_the_file(self):
         df = lb.dryrun_rows(["ornith-1.0-9b"], [50000], 16.0, 600, 40, ["Q4_K_M"], self.index)
