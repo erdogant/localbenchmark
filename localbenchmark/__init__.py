@@ -1,6 +1,6 @@
 import logging
 import localbenchmark.localbenchmark as localbenchmark
-import localbenchmark.llm_plots as llm_plots
+import localbenchmark.benchmark_plots as benchmark_plots
 
 __author__ = 'Erdogan Taskesen'
 __email__ = 'erdogant@gmail.com'

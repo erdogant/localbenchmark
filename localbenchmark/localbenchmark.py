@@ -24,9 +24,9 @@ import requests
 from openai import OpenAI
 
 try:
-    from . import llm_plots
+    from . import benchmark_plots
 except Exception as e:
-    import llm_plots
+    import benchmark_plots
 
 # =============================================================================
 # CONFIGURATION
@@ -2300,7 +2300,7 @@ def main():
 
     if args.benchmark == "suite" and SS is None:
         print("STOP: suite mode needs suite_scoring.py and docs.py in the localbenchmark "
-              "package folder (next to localbenchmark.py and llm_plots.py).")
+              "package folder (next to localbenchmark.py and benchmark_plots.py).")
         return
     if args.benchmark == "suite" and not args.dry_run and not args.suite:
         print("STOP: --benchmark suite needs --suite <file.jsonl>")
@@ -2495,7 +2495,7 @@ def main():
 
 def run_plots(results_file, plots_dir, probe_file=None, diag_file=None):
     try:
-        llm_plots.make_all(results_file, plots_dir)
+        benchmark_plots.make_all(results_file, plots_dir)
     except ImportError as e:
         print(f"Plotting skipped ({e}). Install matplotlib: pip install matplotlib")
         return
