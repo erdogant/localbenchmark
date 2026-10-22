@@ -75,6 +75,7 @@ The run works in two steps. The candidate answers every question first. Then it 
 * A ``reference`` answer on a rubric item is graded first. If the judge does not give it full marks, the run warns that the judge may not be reliable.
 * Use a different model as the judge than the candidate. A model grading its own answers tends to score them high.
 * ``--judge-context`` sets the judge's context length (default 16,000).
+* On servers other than LM Studio nothing is loaded or unloaded: the judge must be served by the same server as the candidate.
 
 Judgements are saved in their own file, so you can judge a finished run again with a different judge. A failed judge reply is recorded as ``PARSE_ERROR`` and tried again on the next run.
 
@@ -140,8 +141,9 @@ Options
 Option                        Meaning
 ============================  =========================================================
 ``--suite``                   Suite file (``.jsonl``).
-``--models``                  LM Studio model keys. Default: all local models.
-``--contexts``                Context window sizes in tokens. Default: 50k to 180k.
+``--models``                  Model keys. Default: all available models (see ``--list``).
+``--list``                    List the available models and exit.
+``--contexts``                Context window sizes in tokens. Default: 50k to 180k. Only LM Studio can change the window.
 ``--limit``                   Run only the first N questions.
 ``--docs``                    Document folder. Default ``company_docs``.
 ``--docs-limit``              Use only the first N documents, in name order.
@@ -149,7 +151,9 @@ Option                        Meaning
 ``--closed-book``             Ask without documents, even if the suite cites some.
 ``--judge``                   Judge model for open-ended answers.
 ``--judge-context``           Context length for the judge (default 16,000).
-``--base-url``                LM Studio server. Default ``http://localhost:1234``.
+``--base-url``                Server URL. Default ``http://localhost:1234``.
+``--backend``                 ``auto`` (default), ``lmstudio`` or ``openai``.
+``--api-key``                 API key for servers that need one.
 ============================  =========================================================
 
 .. include:: add_bottom.add

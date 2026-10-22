@@ -8,7 +8,15 @@ Setup
 
 Install the package (see :doc:`Installation`).
 
-For coding benchmarks and knowledge suites, start LM Studio, enable its local server (default ``http://localhost:1234``), and load a model. The dry run needs no server.
+For coding benchmarks and knowledge suites, start LM Studio, enable its local server (default ``http://localhost:1234``), and load a model. Another OpenAI-compatible server (llama.cpp, vLLM, Ollama, ...) also works: pass its address with ``--base-url`` (see :doc:`Coding`). The dry run needs no server.
+
+List the available models:
+
+.. code-block:: console
+
+    localbenchmark --list
+
+Without ``--models``, every available model is tested.
 
 Dry run
 *******

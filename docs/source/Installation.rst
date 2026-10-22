@@ -73,15 +73,28 @@ LM Studio
 **********************
 
 The benchmarks and knowledge suites expect a running
-`LM Studio <https://lmstudio.ai/>`_ server (default ``http://localhost:1234``)
-with models available on the machine. A dry run does not need the server: it reads
+`LM Studio <https://lmstudio.ai/>`_ server (default ``http://localhost:1234``),
+or another OpenAI-compatible server (see below), with models available on the machine. A dry run does not need the server: it reads
 the model files on disk. Without ``--models``, the models are taken from the
 server, or from the LM Studio model folders when the server is not running.
 
 1. Install LM Studio
 2. Download one or more coding models
 3. Enable the local server (Developer mode)
-4. Note the model key (as shown in LM Studio) for ``--models``
+4. Note the model key (as shown in LM Studio) for ``--models``, or run ``localbenchmark --list``
+
+
+Other servers
+**********************
+
+Any server that exposes the OpenAI-compatible ``/v1/models`` and
+``/v1/chat/completions`` endpoints works, for example llama.cpp, vLLM or Ollama.
+Point ``--base-url`` at it. The backend is detected automatically; force it with
+``--backend openai``. Use ``--api-key`` if the server needs a key.
+
+Such a server owns its model, so localbenchmark cannot load, unload or resize it.
+Each model is tested once, at the context window the server reports. If the server
+reports none, start it with the context size you pass in ``--contexts``.
 
 
 Dependencies

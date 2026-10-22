@@ -22,7 +22,7 @@ Colab Notebook
 ################
 
 .. note::
-	Experiment with local APIs where possible; full GPU benchmarks typically need a local LM Studio host rather than Colab.
+	Experiment with local APIs where possible; full GPU benchmarks typically need a local LM Studio (or other OpenAI-compatible) host rather than Colab.
 
 
 Citing

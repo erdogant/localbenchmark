@@ -19,7 +19,7 @@ localbenchmark
 
    *localbenchmark* is a Python package for **local LLM evaluation**: coding benchmarks,
    long-context stress tests, speed probes, and ranking plots — driven through
-   `LM Studio <https://lmstudio.ai/>`_ (OpenAI-compatible API).
+   `LM Studio <https://lmstudio.ai/>`_ or any other OpenAI-compatible server (llama.cpp, vLLM, Ollama, ...).
 
    It answers a practical question: *can this model still write correct code when
    the context window is large, and is it fast enough that you would actually use it?*
@@ -34,12 +34,14 @@ localbenchmark
 **Key Features:**
 
     - **Dry run**: Estimate memory, quantization and decode speed before loading a model
-    - **Coding benchmarks**: HumanEval, MBPP and SWE-bench via LM Studio (temperature 0)
+    - **Coding benchmarks**: HumanEval, MBPP and SWE-bench via LM Studio or any OpenAI-compatible server (temperature 0)
     - **Knowledge suites**: Closed-book questions, scored deterministically, with an optional judge model for open-ended answers
     - **Company QA**: Questions answered from your own documents, with unanswerable questions that must be declined
     - **Long context**: Fixed windows (e.g. 50k–180k) to test how speed and memory change
     - **Resume-safe CSVs**: Skip finished configurations; retry LLM errors
     - **Rank-sum plots**: Pass rate, speed, TTFT, GPU, context — weighted ranking
+    - **Any backend**: LM Studio's native API or any OpenAI-compatible server, detected automatically
+    - **Model discovery**: ``--list`` shows every available model; without ``--models`` all of them are tested
 
 -----------------------------------
 
@@ -94,7 +96,7 @@ Content
    Coding
    Knowledge_Suites
    Plots
-   Save and Load
+   Save_and_Load
 
 
 .. toctree::

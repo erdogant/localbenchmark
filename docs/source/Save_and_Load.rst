@@ -48,7 +48,7 @@ Judge and diagnostics files
 ---------------------------
 
 * With ``--judge``, the judge's scores are in ``<results>_judge.csv``, one row per judged answer. A judge can be run again later with another model, and each judge's rows are kept separately.
-* ``<results>_diagnostics.jsonl`` records the settings LM Studio reported for each model load.
+* ``<results>_diagnostics.jsonl`` records the load configuration for each model load (LM Studio's reported settings; on other servers, the context window used).
 
 Speed probe file
 ----------------
