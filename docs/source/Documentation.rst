@@ -8,7 +8,7 @@ Medium Blog
 ############
 
 .. note::
-	`Medium Blog: Step 2 — Build One Benchmark That Tests It All <https://erdogant.medium.com>`_
+	`Medium Blog: Build One Benchmark That Tests It All <https://medium.com/data-science-collective/benchmark-local-coding-llms-find-a-model-thats-up-to-10-faster-without-sacrificing-accuracy-4d5a5efdcf01>`_
 
 
 Github
