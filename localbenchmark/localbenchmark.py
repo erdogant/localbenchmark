@@ -105,23 +105,72 @@ def api(base_url, path):
     return base_url.rstrip("/") + path
 
 
-def check_lm_studio(base_url):
+# "lmstudio": LM Studio's native API (/api/v1/...). It can load and unload models and
+#   set the context window, so every requested context is really tested.
+# "openai":   any OpenAI-compatible server (llama.cpp, vLLM, Ollama, ...). It only offers
+#   /v1/models and /v1/chat/completions. The model and its context window are fixed by
+#   how the server was started; this tool cannot change them.
+BACKEND = "lmstudio"
+API_KEY = "lm-studio"   # most local servers ignore the key; set --api-key for the ones that do not
+
+
+def auth_headers():
+    return {"Authorization": f"Bearer {API_KEY}"}
+
+
+def detect_backend(base_url, choice="auto"):
+    """Set and return BACKEND. Stays on "lmstudio" when no server answers."""
+    global BACKEND
+    if choice != "auto":
+        BACKEND = choice
+        return BACKEND
     try:
-        requests.get(api(base_url, "/api/v1/models"), timeout=5).raise_for_status()
+        r = requests.get(api(base_url, "/api/v1/models"), timeout=3)
+        if r.status_code == 200 and "models" in r.json():
+            BACKEND = "lmstudio"
+            return BACKEND
+    except Exception:
+        pass
+    try:
+        r = requests.get(api(base_url, "/v1/models"), headers=auth_headers(), timeout=3)
+        if r.status_code == 200 and "data" in r.json():
+            BACKEND = "openai"
+    except Exception:
+        pass
+    return BACKEND
+
+
+def check_server(base_url):
+    path = "/api/v1/models" if BACKEND == "lmstudio" else "/v1/models"
+    try:
+        requests.get(api(base_url, path), headers=auth_headers(), timeout=5).raise_for_status()
     except Exception as e:
         raise RuntimeError(
-            f"Could not connect to LM Studio at {base_url}. "
-            f"Is the server running?\n{e}"
+            f"Could not connect to the {BACKEND} server at {base_url}. "
+            f"Is it running? (use --backend lmstudio|openai to force the API)\n{e}"
         )
 
 
 def get_lm_models(base_url):
-    r = requests.get(api(base_url, "/api/v1/models"), timeout=10)
+    """Models in LM Studio's format: {"models": [{key, max_context_length, loaded_instances, type}]}."""
+    if BACKEND == "lmstudio":
+        r = requests.get(api(base_url, "/api/v1/models"), timeout=10)
+        r.raise_for_status()
+        return r.json()
+    r = requests.get(api(base_url, "/v1/models"), headers=auth_headers(), timeout=10)
     r.raise_for_status()
-    return r.json()
+    models = []
+    for m in r.json().get("data", []):
+        ctx = next((m[k] for k in ("max_model_len", "context_length", "context_window",
+                                   "max_context_length") if m.get(k)), None)
+        models.append({"key": m["id"], "max_context_length": ctx, "loaded_instances": [],
+                       "type": "embedding" if "embed" in m["id"].lower() else "llm"})
+    return {"models": models}
 
 
 def unload_all_models(base_url):
+    if BACKEND != "lmstudio":
+        return  # the server decides which model is in memory
     instances = []
     for m in get_lm_models(base_url).get("models", []):
         for inst in m.get("loaded_instances", []):
@@ -142,6 +191,9 @@ def unload_all_models(base_url):
 
 
 def load_model(base_url, model, context, extra_params):
+    if BACKEND != "lmstudio":  # nothing to load; the server already serves the model
+        return {"instance_id": model, "load_config": {"context_length": context},
+                "_benchmark_load_time": 0.0}
     payload = {
         "model": model,
         "context_length": context,
@@ -177,6 +229,15 @@ def get_actual_context(load_response):
     return int(ctx)
 
 
+def server_context(base_url):
+    """Context window of a running llama.cpp server (/props), or None."""
+    try:
+        r = requests.get(api(base_url, "/props"), timeout=3)
+        return int(r.json()["default_generation_settings"]["n_ctx"])
+    except Exception:
+        return None
+
+
 def determine_model_contexts(base_url, model, requested):
     """Clamp requested contexts to the model's maximum (max tested once)."""
     info = next(
@@ -184,6 +245,16 @@ def determine_model_contexts(base_url, model, requested):
          if m.get("key") == model),
         None,
     )
+    if BACKEND != "lmstudio":
+        # The context window is fixed by the server: test once, at that size.
+        ctx = (info or {}).get("max_context_length") or server_context(base_url)
+        if ctx:
+            print(f"{model}: server context {int(ctx):,} (fixed by the server) -> testing once")
+        else:
+            ctx = max(requested)
+            print(f"{model}: server context unknown -> testing once, labelled {ctx:,}. "
+                  "Start the server with that context size for the label to be true.")
+        return [int(ctx)]
     if info is None:
         raise RuntimeError(f"Model '{model}' not found in LM Studio.")
 
@@ -408,7 +479,7 @@ def run_suite_experiment(df, meta, args, results_file, docs_context, force_rerun
         meta["model"], meta["context_requested"], meta["cache_label"], args.fill)
     print(f"\n{'=' * 80}\nEXPERIMENT {experiment_id}\n{'=' * 80}")
 
-    client = OpenAI(base_url=api(args.base_url, "/v1"), api_key="lm-studio",
+    client = OpenAI(base_url=api(args.base_url, "/v1"), api_key=API_KEY,
                     timeout=REQUEST_TIMEOUT, max_retries=0)
     completed = set() if force_rerun else load_completed(results_file)
     slow_streak = 0
@@ -598,7 +669,7 @@ def run_judge_stage(df, args, results_file, experiment_id):
     try:
         load = load_model(args.base_url, args.judge, args.judge_context, {})
         server = load.get("instance_id") or args.judge
-        client = OpenAI(base_url=api(args.base_url, "/v1"), api_key="lm-studio",
+        client = OpenAI(base_url=api(args.base_url, "/v1"), api_key=API_KEY,
                         timeout=REQUEST_TIMEOUT, max_retries=0)
         judge_calibration(client, server, items)
         jf = judge_file_for(results_file)
@@ -1031,7 +1102,7 @@ def run_swebench_experiment(df, meta, args, results_file):
     experiment_id = experiment_id_for(meta["model"], meta["context_requested"],
                                       meta["cache_label"], args.fill)
     print(f"\n{'=' * 80}\nEXPERIMENT {experiment_id}\n{'=' * 80}")
-    client = OpenAI(base_url=api(args.base_url, "/v1"), api_key="lm-studio",
+    client = OpenAI(base_url=api(args.base_url, "/v1"), api_key=API_KEY,
                     timeout=REQUEST_TIMEOUT, max_retries=0)
     gen_file = swe_gen_file(results_file)
     run_swebench_generation(client, meta, df, gen_file, experiment_id)
@@ -1309,7 +1380,7 @@ def run_probe(meta, args, probe_file):
     Filler differs per repetition, so LM Studio's prefix cache can't hide
     the prefill cost.
     """
-    client = OpenAI(base_url=api(args.base_url, "/v1"), api_key="lm-studio",
+    client = OpenAI(base_url=api(args.base_url, "/v1"), api_key=API_KEY,
                     timeout=REQUEST_TIMEOUT, max_retries=0)
     done_set = load_probe_done(probe_file)
     targets = probe_targets_for(meta["context_actual"], args.probe_tokens)
@@ -1441,7 +1512,7 @@ def run_experiment(df, meta, args, results_file, force_rerun=False):
 
     client = OpenAI(
         base_url=api(args.base_url, "/v1"),
-        api_key="lm-studio",
+        api_key=API_KEY,
         timeout=REQUEST_TIMEOUT,
         max_retries=0,
     )
@@ -2215,12 +2286,11 @@ def resolve_output(explicit, default_name, bench_dir):
 def discover_models(base_url):
     """All local models: from the LM Studio server if it runs, otherwise from the model folders."""
     try:
-        r = requests.get(api(base_url, "/api/v1/models"), timeout=3)
-        r.raise_for_status()
-        keys = [m["key"] for m in r.json().get("models", [])
+        keys = [m["key"] for m in get_lm_models(base_url).get("models", [])
                 if m.get("key") and m.get("type", "llm") == "llm"]
         if keys:
-            return sorted(set(keys)), "the LM Studio server"
+            name = "the LM Studio server" if BACKEND == "lmstudio" else f"the server at {base_url}"
+            return sorted(set(keys)), name
     except Exception:
         pass
     keys = set()
@@ -2236,15 +2306,34 @@ def discover_models(base_url):
     return sorted(keys), source
 
 
+def print_model_list(base_url):
+    keys, source = discover_models(base_url)
+    if not keys:
+        print(f"No models found at {base_url} or in the local model folders.\n"
+              "Start the server, or check --base-url / --backend.")
+        return
+    print(f"{len(keys)} model(s) from {source} (backend: {BACKEND}):")
+    for i, key in enumerate(keys, 1):
+        print(f"  {i:2d}. {key}")
+
+
 def main():
     DEFAULT_LM_STUDIO_URL = "http://localhost:1234"
     CONTEXTS = [50_000, 80_000, 100_000, 120_000, 150_000, 180_000]
     MODELS = []
 
-    parser = argparse.ArgumentParser(description="Benchmark local coding LLMs through LM Studio.")
+    parser = argparse.ArgumentParser(description="Benchmark local coding LLMs through LM Studio or any OpenAI-compatible server.")
     parser.add_argument("--models", nargs="+", default=MODELS)
     parser.add_argument("--contexts", nargs="+", type=int, default=CONTEXTS)
-    parser.add_argument("--base-url", default=DEFAULT_LM_STUDIO_URL)
+    parser.add_argument("--base-url", default=DEFAULT_LM_STUDIO_URL,
+                        help="Server URL (LM Studio, llama.cpp, vLLM, Ollama, ...).")
+    parser.add_argument("--backend", choices=["auto", "lmstudio", "openai"], default="auto",
+                        help="API to use. auto: LM Studio's native API if present, otherwise "
+                             "OpenAI-compatible (model and context are then fixed by the server).")
+    parser.add_argument("--api-key", default=None,
+                        help="API key for servers that need one (default: $OPENAI_API_KEY or a dummy).")
+    parser.add_argument("--list", action="store_true",
+                        help="List all available models and exit.")
     parser.add_argument("--benchmark", choices=["humaneval", "mbpp", "swebench", "suite"],
                         default="humaneval", help="Which benchmark to run.")
     parser.add_argument("--suite", default=None,
@@ -2288,6 +2377,16 @@ def main():
                              "add Q3_K_M and Q5_K_M explicitly).")
     args = parser.parse_args()
 
+    global API_KEY
+    API_KEY = args.api_key or os.environ.get("OPENAI_API_KEY") or "lm-studio"
+    args.base_url = args.base_url.rstrip("/")
+    if args.base_url.endswith("/v1"):  # accept an OpenAI-style base URL
+        args.base_url = args.base_url[:-3]
+    detect_backend(args.base_url, args.backend)
+    if args.list:
+        print_model_list(args.base_url)
+        return
+
     # Fixed defaults (no longer CLI flags)
     args.no_plots = False
     args.max_tokens = SWE_MAX_TOKENS if args.benchmark == "swebench" else DEFAULT_MAX_TOKENS
@@ -2305,7 +2404,6 @@ def main():
         print("STOP: --benchmark suite needs --suite <file.jsonl>")
         return
 
-    args.base_url = args.base_url.rstrip("/")
     contexts = sorted(set(args.contexts))
 
     # Every job writes into its own folder: dryrun/, humaneval/, mbpp/, swebench/, suite/
@@ -2336,7 +2434,7 @@ def main():
         keys, source = discover_models(args.base_url)
         if not keys:
             print("STOP: no --models given and no local models were found.\n"
-                  "Load a model in LM Studio, or pass --models \"openai/gpt-oss-20b\".")
+                  "Start your server with a model loaded, or pass --models \"openai/gpt-oss-20b\".")
             return
         args.models = keys
         print(f"No --models given: using {len(keys)} model(s) from {source}.")
@@ -2346,7 +2444,7 @@ def main():
         dryrun_report(args, args.models, contexts)
         return
 
-    check_lm_studio(args.base_url)
+    check_server(args.base_url)
     repair_results_file(results_file)
     if args.benchmark != "suite":
         check_results_schema(results_file)
