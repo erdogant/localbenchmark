@@ -30,6 +30,9 @@ _DEFAULT_SETTINGS = {
     "models": None,
     "contexts": None,
     "base_url": None,
+    "backend": None,
+    "api_key": None,
+    "list": False,
     "results": "coding_benchmark_results.csv",
     "limit": None,
     "plots_only": False,
@@ -55,6 +58,27 @@ _DEFAULT_ARG_META = {
         "help": None,
         "flag": "--base-url",
         "is_flag": False,
+    },
+    "backend": {
+        "choices": ["auto", "lmstudio", "openai"],
+        "type": None,
+        "help": "API to use (auto: LM Studio native API if present, else OpenAI-compatible).",
+        "flag": "--backend",
+        "is_flag": False,
+    },
+    "api_key": {
+        "choices": None,
+        "type": None,
+        "help": "API key for servers that need one.",
+        "flag": "--api-key",
+        "is_flag": False,
+    },
+    "list": {
+        "choices": None,
+        "type": None,
+        "help": "List all available models and exit.",
+        "flag": "--list",
+        "is_flag": True,
     },
     "results": {
         "choices": None,
@@ -115,28 +139,33 @@ def _fallback_models():
         return []
 
 
-def list_available_models(base_url=None):
+def list_available_models(base_url=None, api_key=None):
     """
-    Return model keys from LM Studio, or the benchmark default list.
+    Return model keys from the server, or the benchmark default list.
 
-    Tries GET {base_url}/api/v1/models first so the menu matches what is
-    actually installed on the machine.
+    Tries LM Studio's GET {base_url}/api/v1/models first, then the
+    OpenAI-compatible GET {base_url}/v1/models (llama.cpp, vLLM, Ollama, ...),
+    so the menu matches what the server actually offers.
     """
     base = (base_url or _DEFAULT_BASE_URL).rstrip("/")
+    if base.endswith("/v1"):
+        base = base[:-3]
+    headers = {"Authorization": f"Bearer {api_key}"} if api_key else {}
     if requests is not None:
-        try:
-            r = requests.get(f"{base}/api/v1/models", timeout=5)
-            if r.status_code == 200:
-                data = r.json()
+        for path, list_key in (("/api/v1/models", "models"), ("/v1/models", "data")):
+            try:
+                r = requests.get(f"{base}{path}", headers=headers, timeout=5)
+                if r.status_code != 200:
+                    continue
                 keys = []
-                for m in data.get("models") or []:
+                for m in r.json().get(list_key) or []:
                     key = m.get("key") or m.get("id") or m.get("name")
-                    if key:
+                    if key and "embed" not in str(key).lower():
                         keys.append(str(key))
                 if keys:
                     return keys
-        except Exception:
-            pass
+            except Exception:
+                pass
     return _fallback_models()
 
 
@@ -284,7 +313,7 @@ def build_cli():
     # Prefill model choices from LM Studio (or fallback list) so /settings
     # and /models can show what is available.
     base_url = settings.get("base_url") or _DEFAULT_BASE_URL
-    available = list_available_models(base_url)
+    available = list_available_models(base_url, settings.get("api_key"))
     if available:
         arg_meta["models"]["choices"] = available
 
@@ -322,7 +351,7 @@ def build_cli():
     @cli.command("/status", "Show selected models and summary status")
     def _cmd_status(prompt):
         base = cli.config.get("base_url") or _DEFAULT_BASE_URL
-        models = list_available_models(base)
+        models = list_available_models(base, cli.config.get("api_key"))
         selected = cli.config.get("models") or []
         if isinstance(selected, str):
             selected = selected.split()
@@ -351,11 +380,11 @@ def build_cli():
     )
     def _cmd_models(prompt):
         base = cli.config.get("base_url") or _DEFAULT_BASE_URL
-        models = list_available_models(base)
+        models = list_available_models(base, cli.config.get("api_key"))
         if not models:
             cli.assistant_message(
                 "No models found.\n"
-                f"Is LM Studio running at {base}?\n"
+                f"Is the server (LM Studio, llama.cpp, vLLM, Ollama, ...) running at {base}?\n"
                 "Start the server, then try /models again."
             )
             return
@@ -409,10 +438,10 @@ def build_cli():
         models = cli.config.get("models")
         if models is None:
             cli.assistant_message(
-                "No models selected yet. Use /models to list and pick, "
-                "or /settings to set models."
+                "No models selected: every available model will be tested. "
+                "Use /models to pick specific ones."
             )
-            # Still allow run: benchmark defaults apply when --models omitted
+            # Still allow run: main() tests all available models when --models is omitted
         cli.status("Running...")
         if call_style == "argv":
             # main() takes no arguments and parses its own argparse

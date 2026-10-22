@@ -18,7 +18,7 @@
        align="left" />
 </a>
 
-**localbenchmark** is a Python package for **local LLM evaluation**: coding benchmarks, long-context stress tests, speed probes, and ranking plots — driven through [LM Studio](https://lmstudio.ai/) (OpenAI-compatible API).
+**localbenchmark** is a Python package for **local LLM evaluation**: coding benchmarks, long-context stress tests, speed probes, and ranking plots — driven through [LM Studio](https://lmstudio.ai/) or any other OpenAI-compatible server (llama.cpp, vLLM, Ollama, ...).
 It answers a practical question: *can this model still write correct code when the context window is large, and is it fast enough that you would actually use it?* ⭐️Star it if you like it⭐️
 </div>
 
@@ -30,12 +30,14 @@ It answers a practical question: *can this model still write correct code when t
 
 | Feature | Description |
 |--------|-------------|
-| **Coding benchmark** | HumanEval-style tasks via LM Studio; temperature 0 for comparable runs |
+| **Coding benchmark** | HumanEval-style tasks via LM Studio or any OpenAI-compatible server; temperature 0 for comparable runs |
 | **Long context** | Test fixed windows (e.g. 50k–180k); optional context *fill* so the KV cache is exercised |
 | **Speed probe** | Prefill / decode tok/s at controlled tokens-in-cache levels |
 | **Resume-safe CSVs** | Durable results; skip finished configs; retry LLM errors |
 | **Slow-model abort** | Stop a config after a streak of low decode speed; ranking accounts for incomplete runs |
 | **Rank-sum plots** | Pass rate, decode speed, TTFT, GPU peak, context — weighted ranking (model × context and per model) |
+| **Any backend** | LM Studio's native API or any OpenAI-compatible server, detected automatically |
+| **Model discovery** | `--list` shows every available model; running without `--models` tests all of them |
 
 ---
 
@@ -85,10 +87,10 @@ rank  model                         quant   context  total GB  headroom GB  offl
 
 ### Quick start — coding benchmark
 
-Start LM Studio, enable the local server, load a coding model, then:
+Start your server (for LM Studio: enable the local server), then:
 
 ```bash
-# Full default suite (models × context windows)
+# Full default suite: every available model × every context window
 localbenchmark
 
 # Full default with base URL
@@ -101,7 +103,31 @@ localbenchmark --models unsloth/qwen3-coder-30b-a3b-instruct openai/gpt-oss-20b 
 
 ---
 
-Start LM Studio, enable the local server, load a coding model, then:
+### Backends and model discovery
+
+localbenchmark detects which API the server speaks. LM Studio's native API is used when present; otherwise any server that exposes the OpenAI-compatible `/v1/models` and `/v1/chat/completions` endpoints works (llama.cpp, vLLM, Ollama, ...).
+
+```bash
+# List every available model and exit
+localbenchmark --list
+localbenchmark --list --base-url http://localhost:8080
+
+# Other servers
+localbenchmark --base-url http://localhost:8080  --models my-model
+localbenchmark --base-url http://localhost:11434 --backend openai --models qwen3-coder:30b
+localbenchmark --base-url https://my-server/v1   --api-key $MY_KEY
+```
+
+Without `--models`, every model the server (or, if it is not running, the local LM Studio model folders) reports is tested. Embedding models are skipped.
+
+| | LM Studio | Other OpenAI-compatible servers |
+|---|---|---|
+| Model loading / unloading | by localbenchmark | not possible: the server decides |
+| Context window | every `--contexts` value is loaded and tested | fixed by the server; each model is tested once at that size |
+| Context detection | from the load response | `max_model_len` (vLLM) or `/props` (llama.cpp); if unknown, the run is labelled with the largest `--contexts` value, so start the server with that size |
+| `--judge` model | loaded for you | must be served by the same server |
+
+Run the other benchmarks:
 
 ```bash
 # Different types of benchmarks
@@ -122,8 +148,12 @@ Results are written to CSV. Configurations already present in the **summary** CS
 
 | Flag | Meaning |
 |------|---------|
-| `--models` | One or more LM Studio model keys |
-| `--contexts` | Context sizes in tokens (default includes 50k, 80k, 100k, 120k, 150k, 180k) |
+| `--models` | One or more model keys (default: all available models) |
+| `--list` | List all available models and exit |
+| `--base-url` | Server URL (default `http://localhost:1234`; a trailing `/v1` is accepted) |
+| `--backend` | `auto` (default), `lmstudio` or `openai`: force which API is used |
+| `--api-key` | API key for servers that need one (default: `$OPENAI_API_KEY`) |
+| `--contexts` | Context sizes in tokens (default includes 50k, 80k, 100k, 120k, 150k, 180k). Only LM Studio can change the window; other servers are tested once at their own size |
 | `--limit` | Run only the first N HumanEval problems |
 | `--results` | Results CSV path (default depends on `--benchmark`) |
 | `--benchmark` | `humaneval`, `mbpp`, `swebench` or `suite` |
@@ -143,7 +173,7 @@ Suite mode asks questions about a set of company documents. Every selected docum
 
 #### Commands
 
-Run the suite with LM Studio running:
+Run the suite with the server running:
 
 ```bash
 Example of lines:
@@ -171,7 +201,7 @@ Example of jsonl:
 
 #### Commands
 
-Run the suite with LM Studio running:
+Run the suite with the server running:
 
 ```bash
 localbenchmark --benchmark suite --suite northwind_demo.jsonl --docs path/to/company_docs \
