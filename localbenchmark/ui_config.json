@@ -1,0 +1,20 @@
+{
+  "output_root": "d:\\temp",
+  "base_url": "http://localhost:1234",
+  "backend": "auto",
+  "api_key": "",
+  "python_executable": "C:\\Users\\erdog\\miniconda3\\envs\\env_thessy\\python.exe",
+  "default_contexts": [
+    80000,
+    100000
+  ],
+  "default_benchmark": "humaneval",
+  "last_models": [
+    "clm-v0.1-8b"
+  ],
+  "last_results": [
+    "d:\\temp\\humaneval\\coding_benchmark_results_summary.csv",
+    "d:\\temp\\humaneval\\coding_benchmark_results.csv",
+    "d:\\temp\\suites\\suite\\suite_results_general_knowledge_summary.csv"
+  ]
+}

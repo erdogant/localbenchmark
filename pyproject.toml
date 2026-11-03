@@ -38,6 +38,7 @@ dependencies = [
 localbenchmark = "localbenchmark.localbenchmark:main"
 localbenchmarkplot = "localbenchmark.llm_plots:main"
 suite_scoring = "localbenchmark.suite_scoring:main"
+localbenchmark_app = "localbenchmark.streamlit_app:cli"
 # localbenchmarkcli = "localbenchmark.clizard_main:main"
 
 
